@@ -32,8 +32,3 @@ javac PufferfishSurvival_Version3.java
 java PufferfishSurvival_Version3
 ```
 
-## Files
-
-- `PufferfishSurvival_Version3.java` — Latest version with all features
-- `PufferfishSurvival_Version2.java` — Original gameplay code
-- `BetterGraphicsHighlight_Version2 (1).java` — Earlier graphics improvements
