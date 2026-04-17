@@ -6,57 +6,73 @@
 
 <style>
 body {
-    margin: 0;
-    background: radial-gradient(circle at center, #0af, #003);
-    overflow: hidden;
-    font-family: Arial;
+    margin:0;
+    overflow:hidden;
+    font-family:Arial;
+    background: radial-gradient(circle,#0af,#003);
 }
 
-canvas { display: block; }
+canvas { display:block; }
 
-#ui {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    color: white;
-}
-
-#lobby, #shop {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,50,0.9);
-    color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+.panel {
+    position:absolute;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,40,0.9);
+    color:white;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
 }
 
 button {
-    padding: 10px 20px;
-    margin: 10px;
-    font-size: 18px;
+    padding:12px 25px;
+    margin:10px;
+    font-size:18px;
+    border:none;
+    border-radius:10px;
+    background:#0af;
+    color:white;
+    cursor:pointer;
+}
+
+button:hover {
+    background:#08c;
+}
+
+#ui {
+    position:absolute;
+    top:10px;
+    right:10px;
+    color:white;
+    font-size:18px;
 }
 </style>
 </head>
 
 <body>
 
-<div id="lobby">
+<!-- LOBBY -->
+<div id="lobby" class="panel">
 <h1>🐡 דג הבלון</h1>
-<p>אסוף דגים, ברח מכרישים ונצח את הבוס!</p>
+<p>אסוף דגים, התחמק מכרישים והביס את הבוס!</p>
 <button onclick="startGame()">🎮 התחל</button>
 <button onclick="openShop()">🛒 חנות</button>
 </div>
 
-<div id="shop" style="display:none;">
+<!-- SHOP -->
+<div id="shop" class="panel" style="display:none;">
 <h1>🛒 חנות סקינים</h1>
-<button onclick="buySkin('yellow',0)">🟡 רגיל (חינם)</button>
-<button onclick="buySkin('red',50)">🔴 אדום (50)</button>
-<button onclick="buySkin('blue',100)">🔵 כחול (100)</button>
-<button onclick="buySkin('green',150)">🟢 ירוק (150)</button>
-<button onclick="closeShop()">⬅ חזרה</button>
+<div id="skins"></div>
+<button onclick="closeShop()">⬅ חזור</button>
+</div>
+
+<!-- PAUSE -->
+<div id="pause" class="panel" style="display:none;">
+<h1>⏸️ המשחק נעצר</h1>
+<button onclick="resume()">▶ המשך</button>
+<button onclick="backToLobby()">🏠 לובי</button>
 </div>
 
 <div id="ui">
@@ -68,96 +84,62 @@ button {
 <script>
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
-
 canvas.width = innerWidth;
 canvas.height = innerHeight;
 
 // ===== DATA =====
 let coins = Number(localStorage.getItem("coins")||0);
-let skin = localStorage.getItem("skin") || "yellow";
+let owned = JSON.parse(localStorage.getItem("owned")||'["yellow"]');
+let skin = localStorage.getItem("skin")||"yellow";
+
 document.getElementById("coins").innerText = coins;
 
-let level = 1;
-let score = 0;
+// ===== SKINS =====
+const skins = {
+    yellow:{color:"yellow",price:0},
+    red:{color:"red",price:50},
+    blue:{color:"cyan",price:100},
+    green:{color:"lime",price:150}
+};
 
 // ===== PLAYER =====
-let player = {
-    x: 200,
-    y: 200,
-    size: 30,
-    speed: 4,
-    inflated: false
-};
+let player = {x:200,y:200,size:30,speed:4,inflated:false};
 
-// ===== ARRAYS =====
-let fish = [];
-let sharks = [];
-let boss = null;
-let gameRunning = false;
-
-// ===== COLORS =====
-const skins = {
-    yellow: "yellow",
-    red: "red",
-    blue: "cyan",
-    green: "lime"
-};
-
-// ===== SPAWN =====
-function spawnFish(){
-    let types = [
-        {color:"white", value:1},
-        {color:"gold", value:2},
-        {color:"lime", value:3},
-        {color:"cyan", value:5}
-    ];
-
-    let t = types[Math.floor(Math.random()*types.length)];
-
-    fish.push({
-        x: Math.random()*canvas.width,
-        y: Math.random()*canvas.height,
-        size: 20,
-        color: t.color,
-        value: t.value
-    });
-}
-
-function spawnShark(){
-    sharks.push({
-        x: Math.random()*canvas.width,
-        y: Math.random()*canvas.height,
-        size: 50,
-        speed: 2 + level*0.3
-    });
-}
+// ===== GAME =====
+let fish=[], sharks=[], boss=null;
+let level=1, score=0;
+let running=false;
 
 // ===== CONTROLS =====
-let keys = {};
-document.addEventListener("keydown", e=>{
+let keys={};
+document.addEventListener("keydown",e=>{
     keys[e.key]=true;
+
     if(e.key===" ") player.inflated=true;
+
+    if(e.key==="Escape"){
+        if(running) pause();
+    }
 });
-document.addEventListener("keyup", e=>{
+document.addEventListener("keyup",e=>{
     keys[e.key]=false;
     if(e.key===" ") player.inflated=false;
 });
 
 // MOBILE
-canvas.addEventListener("touchmove", e=>{
-    let t = e.touches[0];
-    player.x = t.clientX;
-    player.y = t.clientY;
+canvas.addEventListener("touchmove",e=>{
+    let t=e.touches[0];
+    player.x=t.clientX;
+    player.y=t.clientY;
 });
 
-// ===== DRAW FISH =====
+// ===== DRAW =====
 function drawFish(x,y,size,color){
-    ctx.fillStyle = color;
+    ctx.fillStyle=color;
     ctx.beginPath();
-    ctx.ellipse(x,y,size, size*0.6,0,0,Math.PI*2);
+    ctx.ellipse(x,y,size,size*0.6,0,0,Math.PI*2);
     ctx.fill();
 
-    // tail
     ctx.beginPath();
     ctx.moveTo(x-size,y);
     ctx.lineTo(x-size-10,y-10);
@@ -165,14 +147,12 @@ function drawFish(x,y,size,color){
     ctx.fill();
 }
 
-// ===== DRAW SHARK =====
 function drawShark(s){
-    ctx.fillStyle = "gray";
+    ctx.fillStyle="gray";
     ctx.beginPath();
     ctx.ellipse(s.x,s.y,s.size,s.size*0.5,0,0,Math.PI*2);
     ctx.fill();
 
-    // fin
     ctx.beginPath();
     ctx.moveTo(s.x,s.y-s.size/2);
     ctx.lineTo(s.x+10,s.y-s.size);
@@ -180,9 +160,25 @@ function drawShark(s){
     ctx.fill();
 }
 
+// ===== SPAWN =====
+function spawnFish(){
+    let types=[
+        {c:"white",v:1},
+        {c:"gold",v:2},
+        {c:"lime",v:3},
+        {c:"cyan",v:5}
+    ];
+    let t=types[Math.floor(Math.random()*types.length)];
+    fish.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,size:20,color:t.c,value:t.v});
+}
+
+function spawnShark(){
+    sharks.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,size:50,speed:2+level*0.3});
+}
+
 // ===== LOOP =====
-function gameLoop(){
-    if(!gameRunning) return;
+function loop(){
+    if(!running) return;
 
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
@@ -192,22 +188,20 @@ function gameLoop(){
     if(keys["ArrowLeft"]) player.x-=player.speed;
     if(keys["ArrowRight"]) player.x+=player.speed;
 
-    let size = player.inflated ? 60 : 30;
+    let size=player.inflated?60:30;
 
     // PLAYER
-    ctx.fillStyle = skins[skin];
+    ctx.fillStyle=skins[skin].color;
     ctx.beginPath();
-    ctx.arc(player.x, player.y, size, 0, Math.PI*2);
+    ctx.arc(player.x,player.y,size,0,Math.PI*2);
     ctx.fill();
 
-    // spikes
     if(player.inflated){
         for(let i=0;i<20;i++){
             let a=i*(Math.PI*2/20);
             ctx.beginPath();
             ctx.moveTo(player.x,player.y);
-            ctx.lineTo(player.x+Math.cos(a)*size*1.4, player.y+Math.sin(a)*size*1.4);
-            ctx.strokeStyle="white";
+            ctx.lineTo(player.x+Math.cos(a)*size*1.4,player.y+Math.sin(a)*size*1.4);
             ctx.stroke();
         }
     }
@@ -216,7 +210,7 @@ function gameLoop(){
     fish.forEach((f,i)=>{
         drawFish(f.x,f.y,f.size,f.color);
 
-        if(Math.hypot(player.x-f.x, player.y-f.y)<30){
+        if(Math.hypot(player.x-f.x,player.y-f.y)<30){
             coins+=f.value;
             score++;
             localStorage.setItem("coins",coins);
@@ -230,12 +224,10 @@ function gameLoop(){
         }
     });
 
-    // SHARK
+    // SHARKS
     sharks.forEach(s=>{
-        let dx=player.x-s.x;
-        let dy=player.y-s.y;
+        let dx=player.x-s.x, dy=player.y-s.y;
         let d=Math.hypot(dx,dy);
-
         s.x+=dx/d*s.speed;
         s.y+=dy/d*s.speed;
 
@@ -255,8 +247,7 @@ function gameLoop(){
         ctx.arc(boss.x,boss.y,boss.size,0,Math.PI*2);
         ctx.fill();
 
-        let dx=player.x-boss.x;
-        let dy=player.y-boss.y;
+        let dx=player.x-boss.x, dy=player.y-boss.y;
         let d=Math.hypot(dx,dy);
 
         boss.x+=dx/d*1.2;
@@ -266,31 +257,68 @@ function gameLoop(){
         if(player.inflated && d<120){
             boss.hp--;
             if(boss.hp<=0){
-                alert("🔥 ניצחת את הבוס!");
+                alert("🔥 ניצחת!");
                 boss=null;
                 level++;
             }
         }
     }
 
-    requestAnimationFrame(gameLoop);
+    requestAnimationFrame(loop);
 }
 
-// ===== GAME =====
+// ===== UI =====
 function startGame(){
     document.getElementById("lobby").style.display="none";
-    gameRunning=true;
+    running=true;
 
     setInterval(spawnFish,800);
     setInterval(spawnShark,4000);
 
-    gameLoop();
+    loop();
+}
+
+function pause(){
+    running=false;
+    document.getElementById("pause").style.display="flex";
+}
+
+function resume(){
+    document.getElementById("pause").style.display="none";
+    running=true;
+    loop();
+}
+
+function backToLobby(){
+    location.reload();
 }
 
 // ===== SHOP =====
 function openShop(){
     document.getElementById("lobby").style.display="none";
     document.getElementById("shop").style.display="flex";
+
+    let container=document.getElementById("skins");
+    container.innerHTML="";
+
+    for(let s in skins){
+        let div=document.createElement("div");
+
+        let ownedSkin=owned.includes(s);
+
+        let btn;
+        if(ownedSkin){
+            btn=`<button onclick="equip('${s}')">Equip</button>`;
+        }else{
+            btn=`<button onclick="buy('${s}')">Buy (${skins[s].price})</button>`;
+        }
+
+        div.innerHTML=`
+        <p>${s}</p>
+        ${btn}
+        `;
+        container.appendChild(div);
+    }
 }
 
 function closeShop(){
@@ -298,17 +326,20 @@ function closeShop(){
     document.getElementById("lobby").style.display="flex";
 }
 
-function buySkin(name,price){
-    if(coins>=price){
-        coins-=price;
-        skin=name;
+function buy(s){
+    if(coins>=skins[s].price){
+        coins-=skins[s].price;
+        owned.push(s);
         localStorage.setItem("coins",coins);
-        localStorage.setItem("skin",name);
-        document.getElementById("coins").innerText=coins;
-        alert("קנית סקין!");
-    }else{
-        alert("אין מספיק כסף");
+        localStorage.setItem("owned",JSON.stringify(owned));
+        openShop();
     }
+}
+
+function equip(s){
+    skin=s;
+    localStorage.setItem("skin",s);
+    alert("סקין נבחר!");
 }
 
 // ===== DIE =====
