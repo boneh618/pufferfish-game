@@ -2,7 +2,7 @@
 <html lang="he">
 <head>
 <meta charset="UTF-8">
-<title>🐡 דג הבלון</title>
+<title>🐡 Pufferfish Game</title>
 
 <style>
 body {
@@ -11,7 +11,6 @@ body {
     font-family:Arial;
     background: radial-gradient(circle,#0af,#003);
 }
-
 canvas { display:block; }
 
 .panel {
@@ -34,11 +33,6 @@ button {
     border-radius:10px;
     background:#0af;
     color:white;
-    cursor:pointer;
-}
-
-button:hover {
-    background:#08c;
 }
 
 #ui {
@@ -46,33 +40,28 @@ button:hover {
     top:10px;
     right:10px;
     color:white;
-    font-size:18px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- LOBBY -->
 <div id="lobby" class="panel">
-<h1>🐡 דג הבלון</h1>
-<p>אסוף דגים, התחמק מכרישים והביס את הבוס!</p>
-<button onclick="startGame()">🎮 התחל</button>
-<button onclick="openShop()">🛒 חנות</button>
+<h1>🐡 Pufferfish</h1>
+<button onclick="startGame()">Start</button>
+<button onclick="openShop()">Shop</button>
 </div>
 
-<!-- SHOP -->
 <div id="shop" class="panel" style="display:none;">
-<h1>🛒 חנות סקינים</h1>
+<h1>Shop</h1>
 <div id="skins"></div>
-<button onclick="closeShop()">⬅ חזור</button>
+<button onclick="closeShop()">Back</button>
 </div>
 
-<!-- PAUSE -->
 <div id="pause" class="panel" style="display:none;">
-<h1>⏸️ המשחק נעצר</h1>
-<button onclick="resume()">▶ המשך</button>
-<button onclick="backToLobby()">🏠 לובי</button>
+<h1>Paused</h1>
+<button onclick="resume()">Resume</button>
+<button onclick="location.reload()">Exit</button>
 </div>
 
 <div id="ui">
@@ -84,6 +73,7 @@ button:hover {
 <script>
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
+
 canvas.width = innerWidth;
 canvas.height = innerHeight;
 
@@ -103,7 +93,7 @@ const skins = {
 };
 
 // ===== PLAYER =====
-let player = {x:200,y:200,size:30,speed:4,inflated:false};
+let player = {x:300,y:300,size:30,speed:4,inflated:false};
 
 // ===== GAME =====
 let fish=[], sharks=[], boss=null;
@@ -113,16 +103,16 @@ let running=false;
 // ===== CONTROLS =====
 let keys={};
 document.addEventListener("keydown",e=>{
-    keys[e.key]=true;
+    keys[e.key.toLowerCase()]=true;
 
     if(e.key===" ") player.inflated=true;
 
-    if(e.key==="Escape"){
-        if(running) pause();
+    if(e.key==="Escape" && running){
+        pause();
     }
 });
 document.addEventListener("keyup",e=>{
-    keys[e.key]=false;
+    keys[e.key.toLowerCase()]=false;
     if(e.key===" ") player.inflated=false;
 });
 
@@ -133,7 +123,65 @@ canvas.addEventListener("touchmove",e=>{
     player.y=t.clientY;
 });
 
-// ===== DRAW =====
+// ===== DRAW PUFFER =====
+function drawPufferfish(x,y,size,spikes,color){
+    ctx.fillStyle=color;
+    ctx.beginPath();
+    ctx.arc(x,y,size,0,Math.PI*2);
+    ctx.fill();
+
+    for(let i=0;i<spikes;i++){
+        let a=i*(Math.PI*2/spikes);
+        ctx.beginPath();
+        ctx.moveTo(x+Math.cos(a)*size,y+Math.sin(a)*size);
+        ctx.lineTo(x+Math.cos(a)*(size+10),y+Math.sin(a)*(size+10));
+        ctx.stroke();
+    }
+
+    ctx.fillStyle="white";
+    ctx.beginPath();
+    ctx.arc(x+size/3,y-size/3,5,0,Math.PI*2);
+    ctx.fill();
+
+    ctx.fillStyle="black";
+    ctx.beginPath();
+    ctx.arc(x+size/3,y-size/3,2,0,Math.PI*2);
+    ctx.fill();
+}
+
+// ===== DRAW ANGLER =====
+function drawAngler(b){
+    ctx.fillStyle="darkgreen";
+    ctx.beginPath();
+    ctx.ellipse(b.x,b.y,b.size,b.size*0.6,0,0,Math.PI*2);
+    ctx.fill();
+
+    ctx.fillStyle="black";
+    ctx.beginPath();
+    ctx.arc(b.x+b.size/2,b.y,20,0,Math.PI*2);
+    ctx.fill();
+
+    ctx.strokeStyle="white";
+    for(let i=0;i<5;i++){
+        ctx.beginPath();
+        ctx.moveTo(b.x+b.size/2-10+i*5,b.y-10);
+        ctx.lineTo(b.x+b.size/2-10+i*5,b.y+10);
+        ctx.stroke();
+    }
+
+    ctx.strokeStyle="yellow";
+    ctx.beginPath();
+    ctx.moveTo(b.x,b.y-b.size);
+    ctx.lineTo(b.x+20,b.y-b.size-20);
+    ctx.stroke();
+
+    ctx.fillStyle="yellow";
+    ctx.beginPath();
+    ctx.arc(b.x+20,b.y-b.size-20,6,0,Math.PI*2);
+    ctx.fill();
+}
+
+// ===== DRAW FISH =====
 function drawFish(x,y,size,color){
     ctx.fillStyle=color;
     ctx.beginPath();
@@ -147,35 +195,6 @@ function drawFish(x,y,size,color){
     ctx.fill();
 }
 
-function drawShark(s){
-    ctx.fillStyle="gray";
-    ctx.beginPath();
-    ctx.ellipse(s.x,s.y,s.size,s.size*0.5,0,0,Math.PI*2);
-    ctx.fill();
-
-    ctx.beginPath();
-    ctx.moveTo(s.x,s.y-s.size/2);
-    ctx.lineTo(s.x+10,s.y-s.size);
-    ctx.lineTo(s.x+20,s.y-s.size/2);
-    ctx.fill();
-}
-
-// ===== SPAWN =====
-function spawnFish(){
-    let types=[
-        {c:"white",v:1},
-        {c:"gold",v:2},
-        {c:"lime",v:3},
-        {c:"cyan",v:5}
-    ];
-    let t=types[Math.floor(Math.random()*types.length)];
-    fish.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,size:20,color:t.c,value:t.v});
-}
-
-function spawnShark(){
-    sharks.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,size:50,speed:2+level*0.3});
-}
-
 // ===== LOOP =====
 function loop(){
     if(!running) return;
@@ -183,28 +202,19 @@ function loop(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
     // MOVE
-    if(keys["ArrowUp"]) player.y-=player.speed;
-    if(keys["ArrowDown"]) player.y+=player.speed;
-    if(keys["ArrowLeft"]) player.x-=player.speed;
-    if(keys["ArrowRight"]) player.x+=player.speed;
+    if(keys["arrowup"]||keys["w"]) player.y-=player.speed;
+    if(keys["arrowdown"]||keys["s"]) player.y+=player.speed;
+    if(keys["arrowleft"]||keys["a"]) player.x-=player.speed;
+    if(keys["arrowright"]||keys["d"]) player.x+=player.speed;
 
-    let size=player.inflated?60:30;
+    let size = player.inflated ? 60 : 30;
+
+    // 🚫 LIMITS (IMPORTANT)
+    player.x = Math.max(size, Math.min(canvas.width - size, player.x));
+    player.y = Math.max(size, Math.min(canvas.height - size, player.y));
 
     // PLAYER
-    ctx.fillStyle=skins[skin].color;
-    ctx.beginPath();
-    ctx.arc(player.x,player.y,size,0,Math.PI*2);
-    ctx.fill();
-
-    if(player.inflated){
-        for(let i=0;i<20;i++){
-            let a=i*(Math.PI*2/20);
-            ctx.beginPath();
-            ctx.moveTo(player.x,player.y);
-            ctx.lineTo(player.x+Math.cos(a)*size*1.4,player.y+Math.sin(a)*size*1.4);
-            ctx.stroke();
-        }
-    }
+    drawPufferfish(player.x,player.y,size,player.inflated?25:10,skins[skin].color);
 
     // FISH
     fish.forEach((f,i)=>{
@@ -224,28 +234,26 @@ function loop(){
         }
     });
 
-    // SHARKS
+    // SHARK
     sharks.forEach(s=>{
         let dx=player.x-s.x, dy=player.y-s.y;
         let d=Math.hypot(dx,dy);
+
         s.x+=dx/d*s.speed;
         s.y+=dy/d*s.speed;
 
-        drawShark(s);
+        drawFish(s.x,s.y,s.size,"gray");
 
         if(d<40) die();
     });
 
     // BOSS
     if(level>=3 && !boss){
-        boss={x:300,y:300,size:100,hp:20+level*5};
+        boss={x:400,y:300,size:80,hp:20+level*5};
     }
 
     if(boss){
-        ctx.fillStyle="purple";
-        ctx.beginPath();
-        ctx.arc(boss.x,boss.y,boss.size,0,Math.PI*2);
-        ctx.fill();
+        drawAngler(boss);
 
         let dx=player.x-boss.x, dy=player.y-boss.y;
         let d=Math.hypot(dx,dy);
@@ -257,7 +265,7 @@ function loop(){
         if(player.inflated && d<120){
             boss.hp--;
             if(boss.hp<=0){
-                alert("🔥 ניצחת!");
+                alert("🔥 You Win!");
                 boss=null;
                 level++;
             }
@@ -267,30 +275,49 @@ function loop(){
     requestAnimationFrame(loop);
 }
 
-// ===== UI =====
+// ===== GAME =====
 function startGame(){
     document.getElementById("lobby").style.display="none";
     running=true;
 
-    setInterval(spawnFish,800);
-    setInterval(spawnShark,4000);
+    setInterval(()=>spawnFish(),800);
+    setInterval(()=>spawnShark(),4000);
 
     loop();
 }
 
+function spawnFish(){
+    let colors=["white","gold","lime","cyan"];
+    let values=[1,2,3,5];
+    let i=Math.floor(Math.random()*4);
+
+    fish.push({
+        x:Math.random()*canvas.width,
+        y:Math.random()*canvas.height,
+        size:20,
+        color:colors[i],
+        value:values[i]
+    });
+}
+
+function spawnShark(){
+    sharks.push({
+        x:Math.random()*canvas.width,
+        y:Math.random()*canvas.height,
+        size:40,
+        speed:2+level*0.3
+    });
+}
+
+// ===== UI =====
 function pause(){
     running=false;
     document.getElementById("pause").style.display="flex";
 }
-
 function resume(){
     document.getElementById("pause").style.display="none";
     running=true;
     loop();
-}
-
-function backToLobby(){
-    location.reload();
 }
 
 // ===== SHOP =====
@@ -302,22 +329,13 @@ function openShop(){
     container.innerHTML="";
 
     for(let s in skins){
-        let div=document.createElement("div");
-
         let ownedSkin=owned.includes(s);
 
-        let btn;
-        if(ownedSkin){
-            btn=`<button onclick="equip('${s}')">Equip</button>`;
-        }else{
-            btn=`<button onclick="buy('${s}')">Buy (${skins[s].price})</button>`;
-        }
+        let btn = ownedSkin
+            ? `<button onclick="equip('${s}')">Equip</button>`
+            : `<button onclick="buy('${s}')">Buy (${skins[s].price})</button>`;
 
-        div.innerHTML=`
-        <p>${s}</p>
-        ${btn}
-        `;
-        container.appendChild(div);
+        container.innerHTML += `<div><p>${s}</p>${btn}</div>`;
     }
 }
 
@@ -339,12 +357,12 @@ function buy(s){
 function equip(s){
     skin=s;
     localStorage.setItem("skin",s);
-    alert("סקין נבחר!");
+    alert("Equipped!");
 }
 
 // ===== DIE =====
 function die(){
-    alert("💀 נפסלת!");
+    alert("💀 Game Over");
     location.reload();
 }
 </script>
