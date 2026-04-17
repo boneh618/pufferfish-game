@@ -1,278 +1,175 @@
 <!DOCTYPE html>
-<html>
+<html lang="he">
 <head>
 <meta charset="UTF-8">
-<title>Pufferfish Game FIXED</title>
+<title>משחק כדורגל</title>
 
 <style>
-body { margin:0; overflow:hidden; background:#002; color:white; font-family:Arial; }
-canvas { display:block; }
+    body {
+        margin: 0;
+        font-family: Arial;
+        background: linear-gradient(#0f2027, #2c5364);
+        color: white;
+        text-align: center;
+    }
 
-.panel {
- position:absolute;
- width:100%;
- height:100%;
- background:rgba(0,0,40,0.9);
- display:flex;
- flex-direction:column;
- align-items:center;
- justify-content:center;
-}
+    h1 {
+        margin: 10px;
+    }
 
-button {
- padding:10px 20px;
- margin:10px;
- font-size:18px;
-}
+    #game {
+        margin: auto;
+        background: #1e7f3f;
+        border: 5px solid white;
+        border-radius: 15px;
+        display: block;
+    }
 
-#ui {
- position:absolute;
- top:10px;
- right:10px;
-}
+    #score {
+        font-size: 22px;
+        margin: 10px;
+    }
+
+    #bracelet {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: black;
+        padding: 15px;
+        border-radius: 12px;
+        border: 2px solid red;
+        display: none;
+        animation: pop 0.5s ease;
+    }
+
+    @keyframes pop {
+        from { transform: scale(0); }
+        to { transform: scale(1); }
+    }
+
+    button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 10px;
+        background: #00c853;
+        color: white;
+        cursor: pointer;
+    }
 </style>
 </head>
 
 <body>
 
-<div id="menu" class="panel">
-<h1>🐡 Pufferfish</h1>
-<button onclick="start()">Start</button>
-</div>
+<h1>⚽ משחק כדורגל</h1>
+<div id="score">גולים: 0</div>
 
-<div id="pause" class="panel" style="display:none;">
-<h1>Paused</h1>
-<button onclick="resume()">Resume</button>
-</div>
+<canvas id="game" width="600" height="400"></canvas>
 
-<div id="ui">
-💰 <span id="coins">0</span> | 🏆 <span id="level">1</span>
+<div id="bracelet">
+    ⌚ שיחקת יותר מדי! קח הפסקה!
+    <br><br>
+    <button onclick="closeBracelet()">סגור</button>
 </div>
-
-<canvas id="game"></canvas>
 
 <script>
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
-function resize(){
- canvas.width = innerWidth;
- canvas.height = innerHeight;
-}
-resize();
-addEventListener("resize", resize);
+let player = { x: 50, y: 200, size: 15 };
+let ball = { x: 300, y: 200, size: 10, vx: 0, vy: 0 };
+let goal = { x: 550, y: 150, w: 40, h: 100 };
 
-// ===== GAME STATE =====
-let running = false;
-let player, fish=[], sharks=[], boss=null;
-let keys={};
-let coins=0, level=1;
+let score = 0;
+let keys = {};
 
-// ===== INPUT =====
-document.addEventListener("keydown",e=>{
- keys[e.key.toLowerCase()] = true;
+document.addEventListener("keydown", e => keys[e.key.toLowerCase()] = true);
+document.addEventListener("keyup", e => keys[e.key.toLowerCase()] = false);
 
- if(e.key===" ") player.inflated=true;
+function update() {
+    // movement
+    if (keys["w"]) player.y -= 3;
+    if (keys["s"]) player.y += 3;
+    if (keys["a"]) player.x -= 3;
+    if (keys["d"]) player.x += 3;
 
- if(e.key==="Escape" && running){
-  pause();
- }
-});
+    // borders
+    player.x = Math.max(0, Math.min(canvas.width, player.x));
+    player.y = Math.max(0, Math.min(canvas.height, player.y));
 
-document.addEventListener("keyup",e=>{
- keys[e.key.toLowerCase()] = false;
- if(e.key===" ") player.inflated=false;
-});
+    // ball physics
+    let dx = ball.x - player.x;
+    let dy = ball.y - player.y;
+    let dist = Math.sqrt(dx*dx + dy*dy);
 
-// ===== DRAW =====
-function drawPuffer(p){
- let size = p.inflated ? 60 : 30;
+    if (dist < player.size + ball.size) {
+        ball.vx = dx * 0.3;
+        ball.vy = dy * 0.3;
+    }
 
- ctx.fillStyle="yellow";
- ctx.beginPath();
- ctx.arc(p.x,p.y,size,0,Math.PI*2);
- ctx.fill();
+    ball.x += ball.vx;
+    ball.y += ball.vy;
 
- // spikes
- for(let i=0;i<20;i++){
-  let a=i*(Math.PI*2/20);
-  ctx.beginPath();
-  ctx.moveTo(p.x+Math.cos(a)*size,p.y+Math.sin(a)*size);
-  ctx.lineTo(p.x+Math.cos(a)*(size+10),p.y+Math.sin(a)*(size+10));
-  ctx.stroke();
- }
+    ball.vx *= 0.98;
+    ball.vy *= 0.98;
 
- // eye
- ctx.fillStyle="white";
- ctx.beginPath();
- ctx.arc(p.x+10,p.y-10,5,0,Math.PI*2);
- ctx.fill();
-
- ctx.fillStyle="black";
- ctx.beginPath();
- ctx.arc(p.x+10,p.y-10,2,0,Math.PI*2);
- ctx.fill();
+    // goal detection
+    if (
+        ball.x > goal.x &&
+        ball.y > goal.y &&
+        ball.y < goal.y + goal.h
+    ) {
+        score++;
+        document.getElementById("score").innerText = "גולים: " + score;
+        resetBall();
+    }
 }
 
-function drawFish(f){
- ctx.fillStyle=f.color;
- ctx.beginPath();
- ctx.ellipse(f.x,f.y,f.size,f.size*0.6,0,0,Math.PI*2);
- ctx.fill();
+function resetBall() {
+    ball.x = 300;
+    ball.y = 200;
+    ball.vx = 0;
+    ball.vy = 0;
 }
 
-function drawBoss(b){
- ctx.fillStyle="darkgreen";
- ctx.beginPath();
- ctx.ellipse(b.x,b.y,b.size,b.size*0.6,0,0,Math.PI*2);
- ctx.fill();
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
- // light
- ctx.strokeStyle="yellow";
- ctx.beginPath();
- ctx.moveTo(b.x,b.y-b.size);
- ctx.lineTo(b.x+20,b.y-b.size-20);
- ctx.stroke();
+    // field
+    ctx.fillStyle = "#1e7f3f";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
- ctx.beginPath();
- ctx.arc(b.x+20,b.y-b.size-20,6,0,Math.PI*2);
- ctx.fill();
+    // goal
+    ctx.fillStyle = "white";
+    ctx.fillRect(goal.x, goal.y, goal.w, goal.h);
+
+    // player
+    ctx.fillStyle = "blue";
+    ctx.beginPath();
+    ctx.arc(player.x, player.y, player.size, 0, Math.PI * 2);
+    ctx.fill();
+
+    // ball
+    ctx.fillStyle = "white";
+    ctx.beginPath();
+    ctx.arc(ball.x, ball.y, ball.size, 0, Math.PI * 2);
+    ctx.fill();
 }
 
-// ===== LOOP =====
-function loop(){
- if(!running) return;
-
- ctx.clearRect(0,0,canvas.width,canvas.height);
-
- let speed = 4;
-
- if(keys["w"]||keys["arrowup"]) player.y-=speed;
- if(keys["s"]||keys["arrowdown"]) player.y+=speed;
- if(keys["a"]||keys["arrowleft"]) player.x-=speed;
- if(keys["d"]||keys["arrowright"]) player.x+=speed;
-
- let size = player.inflated ? 60 : 30;
-
- // ===== BORDER FIX =====
- player.x = Math.max(size, Math.min(canvas.width-size, player.x));
- player.y = Math.max(size, Math.min(canvas.height-size, player.y));
-
- drawPuffer(player);
-
- // ===== FISH =====
- fish.forEach((f,i)=>{
-  drawFish(f);
-
-  let d = Math.hypot(player.x-f.x,player.y-f.y);
-
-  if(d < size){
-   coins++;
-   document.getElementById("coins").innerText = coins;
-   fish.splice(i,1);
-
-   if(coins % 10 === 0){
-    level++;
-    document.getElementById("level").innerText = level;
-   }
-  }
- });
-
- // ===== SHARKS =====
- sharks.forEach(s=>{
-  let dx=player.x-s.x;
-  let dy=player.y-s.y;
-  let d=Math.hypot(dx,dy) || 1;
-
-  s.x += dx/d * s.speed;
-  s.y += dy/d * s.speed;
-
-  drawFish({...s,color:"gray"});
-
-  if(d < 40) die();
- });
-
- // ===== BOSS =====
- if(level >= 3 && !boss){
-  boss = {x:200,y:200,size:80,hp:20};
- }
-
- if(boss){
-  drawBoss(boss);
-
-  let dx=player.x-boss.x;
-  let dy=player.y-boss.y;
-  let d=Math.hypot(dx,dy) || 1;
-
-  boss.x += dx/d * 1.2;
-
-  if(d < 80) die();
-
-  if(player.inflated && d < 120){
-   boss.hp--;
-
-   if(boss.hp <= 0){
-    alert("YOU WIN 🔥");
-    boss=null;
-   }
-  }
- }
-
- requestAnimationFrame(loop);
+function loop() {
+    update();
+    draw();
+    requestAnimationFrame(loop);
 }
 
-// ===== SPAWN =====
-let fishInterval, sharkInterval;
+loop();
 
-function spawnFish(){
- fish.push({
-  x:Math.random()*canvas.width,
-  y:Math.random()*canvas.height,
-  size:20,
-  color:"cyan"
- });
-}
+// bracelet system
+setTimeout(() => {
+    document.getElementById("bracelet").style.display = "block";
+}, 20000); // after 20 seconds
 
-function spawnShark(){
- sharks.push({
-  x:Math.random()*canvas.width,
-  y:Math.random()*canvas.height,
-  size:40,
-  speed:2+level*0.3
- });
-}
-
-// ===== GAME =====
-function start(){
- document.getElementById("menu").style.display="none";
-
- player = {x:300,y:300,inflated:false};
-
- running = true;
-
- clearInterval(fishInterval);
- clearInterval(sharkInterval);
-
- fishInterval = setInterval(spawnFish,800);
- sharkInterval = setInterval(spawnShark,4000);
-
- loop();
-}
-
-function pause(){
- running=false;
- document.getElementById("pause").style.display="flex";
-}
-
-function resume(){
- running=true;
- document.getElementById("pause").style.display="none";
- loop();
-}
-
-function die(){
- alert("💀 Game Over");
- location.reload();
+function closeBracelet() {
+    document.getElementById("bracelet").style.display = "none";
 }
 </script>
 
