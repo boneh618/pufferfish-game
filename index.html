@@ -321,7 +321,7 @@ canvas { display:block; }
         <div class="hud-item hud-score">⭐ <span id="hud-score">0</span></div>
         <div class="hud-item hud-level">שלב <span id="hud-level">1</span></div>
     </div>
-    <div style="position:fixed;top:48px;left:0;right:0;display:flex;justify-content:center;gap:12px;padding:0 14px;z-index:10;pointer-events:none;" id="bars-row">
+    <div style="position:fixed;bottom:12px;left:12px;display:flex;flex-direction:column;gap:6px;z-index:10;pointer-events:none;" id="bars-row">
         <div class="hud-bar-container">
             <span class="hud-bar-label">❤️</span>
             <div class="hud-bar-track">
@@ -1141,7 +1141,7 @@ function spawnShark() {
     else if(edge===1){x=canvas.width+60;y=Math.random()*canvas.height;}
     else if(edge===2){y=-60;x=Math.random()*canvas.width;}
     else{y=canvas.height+60;x=Math.random()*canvas.width;}
-    sharks.push({ x,y,size:35+Math.random()*15,speed:1.2+level*0.25+Math.random()*0.5,dir:1 });
+    sharks.push({ x,y,size:35+Math.random()*15+level*2,speed:1.2+level*0.35+Math.random()*0.6,dir:1 });
 }
 
 // ===== CONTROLS =====
@@ -1198,7 +1198,7 @@ function quitToLobby() {
 }
 
 // ===== LEVELS =====
-function getMaxBossHp() { return 10 + level * 5; }
+function getMaxBossHp() { return 10 + level * 8; }
 
 const levelMessages = [
     "רק מתחממים! הבוס הבא לא יהיה כזה קל...",
@@ -1216,6 +1216,11 @@ function levelUp() {
     let bonus = level * 5;
     earnedCoins += bonus;
     updateHUD();
+    // Update spawn rates for new level difficulty
+    clearInterval(spawnFishInterval);
+    clearInterval(spawnSharkInterval);
+    spawnFishInterval = setInterval(spawnFish, Math.max(400, 800 - level * 40));
+    spawnSharkInterval = setInterval(spawnShark, Math.max(1500, 4000 - level * 350));
     // Show level complete screen
     paused = true;
     document.getElementById("lc-level").textContent = level;
@@ -1226,6 +1231,14 @@ function levelUp() {
 
 function dismissLevelComplete() {
     paused = false;
+    // Reset player to center
+    player.x = canvas.width / 2;
+    player.y = canvas.height / 2;
+    player.vx = 0;
+    player.vy = 0;
+    player.trail = [];
+    // Clear remaining sharks so player doesn't instantly die
+    sharks = [];
     hideAllOverlays();
     document.getElementById("hud").style.display = "flex";
 }
@@ -1396,7 +1409,7 @@ function gameLoop() {
     // ===== BOSS =====
     if (score > 0 && score % 15 === 0 && !boss && score > (level-1)*15) {
         let maxHp = getMaxBossHp();
-        boss = { x:canvas.width/2, y:-80, size:60+level*8, hp:maxHp, maxHp, speed:1+level*0.2, dir:1 };
+        boss = { x:canvas.width/2, y:-80, size:60+level*10, hp:maxHp, maxHp, speed:1+level*0.35, dir:1 };
     }
     if (boss) {
         let dx = player.x-boss.x, dy = player.y-boss.y;
@@ -1446,8 +1459,8 @@ function startGame() {
 
     clearInterval(spawnFishInterval);
     clearInterval(spawnSharkInterval);
-    spawnFishInterval = setInterval(spawnFish, 800);
-    spawnSharkInterval = setInterval(spawnShark, 4000);
+    spawnFishInterval = setInterval(spawnFish, Math.max(400, 800 - level * 40));
+    spawnSharkInterval = setInterval(spawnShark, Math.max(1500, 4000 - level * 350));
 
     for (let i = 0; i < 6; i++) spawnFish();
     gameLoop();
