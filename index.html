@@ -175,6 +175,49 @@ canvas { display:block; }
     backdrop-filter: blur(4px);
 }
 
+/* ===== LEVEL COMPLETE ===== */
+#level-complete {
+    background: rgba(0,0,20,0.85);
+    backdrop-filter: blur(12px);
+}
+#level-complete h2 {
+    font-size: 38px;
+    background: linear-gradient(135deg, #ffd700, #ffaa00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: levelPulse 0.6s ease;
+}
+#level-complete .level-num {
+    font-size: 64px;
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 0 0 30px rgba(99,102,241,0.5);
+    animation: levelPop 0.5s ease 0.2s both;
+}
+#level-complete .level-reward {
+    color: #ffd700;
+    font-size: 20px;
+    font-weight: 700;
+}
+#level-complete .level-msg {
+    color: rgba(255,255,255,0.6);
+    font-size: 14px;
+    max-width: 280px;
+    text-align: center;
+    line-height: 1.5;
+}
+@keyframes levelPulse {
+    0% { transform: scale(0.5); opacity: 0; }
+    60% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+}
+@keyframes levelPop {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
 /* ===== PARTICLES ===== */
 .coin-particle {
     position: fixed;
@@ -218,6 +261,15 @@ canvas { display:block; }
     <p class="pause-sub">המשחק מושהה</p>
     <button class="btn" onclick="resumeGame()">▶️ המשך</button>
     <button class="btn btn-secondary" onclick="quitToLobby()">🏠 חזור ללובי</button>
+</div>
+
+<!-- LEVEL COMPLETE -->
+<div id="level-complete" class="overlay">
+    <h2>🎉 כל הכבוד!</h2>
+    <div class="level-num" id="lc-level">2</div>
+    <p class="level-reward">+<span id="lc-reward">0</span> 🪙 בונוס</p>
+    <p class="level-msg" id="lc-msg">עברת את השלב! הבוס הבא יהיה קשה יותר...</p>
+    <button class="btn" onclick="dismissLevelComplete()">🚀 המשך למשחק</button>
 </div>
 
 <!-- SHOP -->
@@ -466,15 +518,16 @@ function renderShop() {
 // ===============================
 //        OVERLAY MANAGER
 // ===============================
+const ALL_OVERLAYS = ["lobby","gameover","pause-screen","shop","level-complete"];
 function showOverlay(id) {
-    ["lobby","gameover","pause-screen","shop"].forEach(oid => {
+    ALL_OVERLAYS.forEach(oid => {
         const el = document.getElementById(oid);
         if (oid === id) el.classList.add("show");
         else el.classList.remove("show");
     });
 }
 function hideAllOverlays() {
-    ["lobby","gameover","pause-screen","shop"].forEach(oid => {
+    ALL_OVERLAYS.forEach(oid => {
         document.getElementById(oid).classList.remove("show");
     });
 }
@@ -761,65 +814,136 @@ function drawPuffer(x, y, size, inflated) {
 function drawBoss(x, y, size, hp, maxHp) {
     ctx.save();
     ctx.translate(x, y);
-    ctx.shadowColor = "#f00";
-    ctx.shadowBlur = 20;
+
+    let t = Date.now() / 400;
+    let sway = Math.sin(t) * 3;
+
+    // Angelfish body: tall diamond/disc shape
+    ctx.shadowColor = "#ff2200";
+    ctx.shadowBlur = 22;
     ctx.beginPath();
-    ctx.ellipse(0, 0, size, size * 0.5, 0, 0, Math.PI * 2);
-    ctx.fillStyle = "#8b0000";
+    ctx.ellipse(0, sway, size * 0.7, size, 0, 0, Math.PI * 2);
+    ctx.fillStyle = "#cc1100";
     ctx.fill();
     ctx.shadowBlur = 0;
+
+    // Vertical stripes (angelfish pattern)
+    ctx.globalAlpha = 0.25;
     for (let i = -2; i <= 2; i++) {
         ctx.beginPath();
-        ctx.ellipse(i * size * 0.25, 0, size * 0.12, size * 0.45, 0, 0, Math.PI * 2);
-        ctx.strokeStyle = "rgba(255,0,0,0.3)";
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
+        ctx.ellipse(i * size * 0.18, sway, size * 0.06, size * 0.85, 0, 0, Math.PI * 2);
+        ctx.fillStyle = "#000";
+        ctx.fill();
     }
+    ctx.globalAlpha = 1;
+
+    // Lighter belly area
     ctx.beginPath();
-    ctx.moveTo(-size * 0.3, -size * 0.45);
-    ctx.lineTo(0, -size * 1.1);
-    ctx.lineTo(size * 0.3, -size * 0.45);
-    ctx.fillStyle = "#a00";
+    ctx.ellipse(0, sway + size * 0.15, size * 0.45, size * 0.5, 0, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(255,120,80,0.35)";
     ctx.fill();
+
+    // Tall dorsal fin (top) – signature angelfish triangular fin
     ctx.beginPath();
-    ctx.moveTo(-size * 0.8, 0);
-    ctx.lineTo(-size * 1.3, -size * 0.5);
-    ctx.lineTo(-size * 1.0, 0);
-    ctx.lineTo(-size * 1.3, size * 0.5);
+    ctx.moveTo(-size * 0.15, sway - size * 0.9);
+    ctx.quadraticCurveTo(size * 0.1, sway - size * 1.6, size * 0.35, sway - size * 0.85);
+    ctx.lineTo(0, sway - size * 0.7);
     ctx.closePath();
-    ctx.fillStyle = "#a00";
+    ctx.fillStyle = "#aa0000";
     ctx.fill();
-    for (let side of [-1, 1]) {
-        ctx.beginPath();
-        ctx.arc(side * size * 0.4, -size * 0.1, size * 0.12, 0, Math.PI * 2);
-        ctx.fillStyle = "#ff0";
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(side * size * 0.42, -size * 0.1, size * 0.06, 0, Math.PI * 2);
-        ctx.fillStyle = "#f00";
-        ctx.fill();
-        ctx.beginPath();
-        ctx.moveTo(side * size * 0.25, -size * 0.25);
-        ctx.lineTo(side * size * 0.55, -size * 0.18);
-        ctx.strokeStyle = "#600";
-        ctx.lineWidth = 3;
-        ctx.stroke();
-    }
+    // Fin edge detail
+    ctx.strokeStyle = "rgba(255,200,0,0.3)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Long ventral fin (bottom) – angelfish style trailing fin
+    ctx.beginPath();
+    ctx.moveTo(-size * 0.1, sway + size * 0.9);
+    ctx.quadraticCurveTo(size * 0.05, sway + size * 1.5, size * 0.3, sway + size * 0.85);
+    ctx.lineTo(0, sway + size * 0.7);
+    ctx.closePath();
+    ctx.fillStyle = "#aa0000";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255,200,0,0.3)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Tail fin – forked
+    ctx.beginPath();
+    ctx.moveTo(-size * 0.6, sway - size * 0.1);
+    ctx.quadraticCurveTo(-size * 1.2, sway - size * 0.6, -size * 1.3, sway - size * 0.5);
+    ctx.lineTo(-size * 0.7, sway);
+    ctx.lineTo(-size * 1.3, sway + size * 0.5);
+    ctx.quadraticCurveTo(-size * 1.2, sway + size * 0.6, -size * 0.6, sway + size * 0.1);
+    ctx.closePath();
+    ctx.fillStyle = "#bb2200";
+    ctx.fill();
+
+    // Pectoral fin (small side fin)
+    let finWave = Math.sin(t * 2) * 0.15;
+    ctx.beginPath();
+    ctx.ellipse(size * 0.3, sway + size * 0.1, size * 0.2, size * 0.08,
+        finWave + 0.3, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(200,60,30,0.5)";
+    ctx.fill();
+
+    // Eye – large, menacing
+    ctx.beginPath();
+    ctx.arc(size * 0.3, sway - size * 0.15, size * 0.16, 0, Math.PI * 2);
     ctx.fillStyle = "#fff";
-    for (let i = -3; i <= 3; i++) {
-        ctx.beginPath();
-        let tx = size * 0.65 + i * size * 0.07;
-        ctx.moveTo(tx, size * 0.1);
-        ctx.lineTo(tx - 4, size * 0.25);
-        ctx.lineTo(tx + 4, size * 0.25);
-        ctx.closePath();
-        ctx.fill();
-    }
-    let barW = size * 1.6, barH = 8;
+    ctx.fill();
+    // Iris
+    ctx.beginPath();
+    ctx.arc(size * 0.33, sway - size * 0.15, size * 0.09, 0, Math.PI * 2);
+    ctx.fillStyle = "#ff0";
+    ctx.fill();
+    // Pupil (slit)
+    ctx.beginPath();
+    ctx.ellipse(size * 0.34, sway - size * 0.15, size * 0.03, size * 0.08, 0, 0, Math.PI * 2);
+    ctx.fillStyle = "#200";
+    ctx.fill();
+    // Angry brow
+    ctx.beginPath();
+    ctx.moveTo(size * 0.15, sway - size * 0.35);
+    ctx.lineTo(size * 0.45, sway - size * 0.28);
+    ctx.strokeStyle = "#600";
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    // Mouth
+    ctx.beginPath();
+    ctx.moveTo(size * 0.55, sway + size * 0.05);
+    ctx.lineTo(size * 0.65, sway);
+    ctx.lineTo(size * 0.55, sway - size * 0.05);
+    ctx.strokeStyle = "#800";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Danger aura (pulsing)
+    let auraAlpha = 0.08 + Math.sin(t * 2) * 0.04;
+    ctx.beginPath();
+    ctx.ellipse(0, sway, size * 0.9, size * 1.2, 0, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(255,0,0,${auraAlpha})`;
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    // HP bar
+    let barW = size * 1.4, barH = 8;
+    let barY = sway - size * 1.1 - 14;
     ctx.fillStyle = "rgba(0,0,0,0.5)";
-    ctx.fillRect(-barW / 2, -size * 0.7, barW, barH);
+    ctx.beginPath();
+    ctx.roundRect(-barW/2, barY, barW, barH, 4);
+    ctx.fill();
     ctx.fillStyle = hp > maxHp * 0.3 ? "#f44" : "#ff0";
-    ctx.fillRect(-barW / 2, -size * 0.7, barW * (hp / maxHp), barH);
+    ctx.beginPath();
+    ctx.roundRect(-barW/2, barY, barW * (hp / maxHp), barH, 4);
+    ctx.fill();
+    // Boss label
+    ctx.fillStyle = "rgba(255,255,255,0.5)";
+    ctx.font = "bold 10px sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("BOSS", 0, barY - 4);
+
     ctx.restore();
 }
 
@@ -943,13 +1067,35 @@ function quitToLobby() {
 
 // ===== LEVELS =====
 function getMaxBossHp() { return 10 + level * 5; }
+
+const levelMessages = [
+    "רק מתחממים! הבוס הבא לא יהיה כזה קל...",
+    "מרשים! אתה שוחה כמו אלוף!",
+    "הכרישים רועדים מפחד ממך!",
+    "בלתי ניתן לעצירה! ממשיכים!",
+    "אגדה של האוקיינוס! 🌊",
+    "אין מי שיעצור אותך!",
+    "מלך הים העמוק! 👑",
+];
+
 function levelUp() {
     level++;
     boss = null;
     let bonus = level * 5;
     earnedCoins += bonus;
-    showParticle(canvas.width / 2, canvas.height / 2, `שלב ${level}! +${bonus}🪙`);
     updateHUD();
+    // Show level complete screen
+    paused = true;
+    document.getElementById("lc-level").textContent = level;
+    document.getElementById("lc-reward").textContent = bonus;
+    document.getElementById("lc-msg").textContent = levelMessages[Math.min(level - 2, levelMessages.length - 1)];
+    showOverlay("level-complete");
+}
+
+function dismissLevelComplete() {
+    paused = false;
+    hideAllOverlays();
+    document.getElementById("hud").style.display = "flex";
 }
 
 // ===== HUD =====
