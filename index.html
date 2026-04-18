@@ -23,49 +23,66 @@ canvas { display:block; }
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 18px;
+    padding: 10px 14px;
     z-index: 10;
     pointer-events: none;
 }
+.hud-right, .hud-left { display:flex; gap:8px; align-items:center; }
 .hud-item {
-    background: rgba(0,0,0,0.45);
+    background: rgba(0,0,0,0.5);
     backdrop-filter: blur(8px);
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: 50px;
-    padding: 6px 16px;
+    padding: 5px 14px;
     color: #fff;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 700;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
 }
 .hud-coins { color: #ffd700; }
 .hud-score { color: #4ade80; }
 .hud-level { color: #60a5fa; }
+#pause-btn {
+    pointer-events: auto;
+    cursor: pointer;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 50%;
+    width: 38px; height: 38px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: #fff;
+    backdrop-filter: blur(8px);
+}
+#pause-btn:active { transform: scale(0.9); }
 
-/* ===== LOBBY ===== */
-#lobby {
-    position: fixed;
-    inset: 0;
-    background: linear-gradient(180deg, #001030 0%, #003060 100%);
+/* ===== OVERLAYS (shared) ===== */
+.overlay {
+    position: fixed; inset: 0;
     color: white;
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     z-index: 100;
     gap: 10px;
 }
-#lobby h1 { font-size: 42px; margin-bottom: 4px; }
-#lobby .sub { color: rgba(255,255,255,0.5); font-size: 14px; margin-bottom: 20px; }
-#lobby .saved-coins { color: #ffd700; font-size: 18px; margin-bottom: 20px; }
+.overlay.show { display: flex; }
+
+/* ===== LOBBY ===== */
+#lobby {
+    background: linear-gradient(180deg, #001030 0%, #003060 100%);
+}
+#lobby h1 { font-size: 40px; margin-bottom: 2px; }
+#lobby .sub { color: rgba(255,255,255,0.5); font-size: 13px; margin-bottom: 16px; }
+#lobby .saved-coins { color: #ffd700; font-size: 18px; margin-bottom: 16px; }
 .btn {
     background: linear-gradient(135deg, #6366f1, #8b5cf6);
     color: white;
     border: none;
-    padding: 14px 40px;
-    font-size: 18px;
+    padding: 13px 36px;
+    font-size: 17px;
     font-weight: 700;
     border-radius: 14px;
     cursor: pointer;
@@ -78,24 +95,65 @@ canvas { display:block; }
     background: rgba(255,255,255,0.08);
     border: 1px solid rgba(255,255,255,0.15);
 }
+.btn-shop {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
 
 /* ===== GAME OVER ===== */
 #gameover {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.8);
+    background: rgba(0,0,0,0.85);
     backdrop-filter: blur(10px);
-    color: white;
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-    gap: 12px;
 }
-#gameover h2 { font-size: 32px; color: #f87171; }
-#gameover .stats { color: rgba(255,255,255,0.7); font-size: 16px; }
+#gameover h2 { font-size: 30px; color: #f87171; }
+#gameover .stats { color: rgba(255,255,255,0.7); font-size: 15px; }
 #gameover .earned { color: #ffd700; font-size: 22px; font-weight: 700; }
+
+/* ===== PAUSE ===== */
+#pause-screen {
+    background: rgba(0,0,20,0.88);
+    backdrop-filter: blur(14px);
+}
+#pause-screen h2 { font-size: 34px; margin-bottom: 6px; }
+#pause-screen .pause-sub { color: rgba(255,255,255,0.4); font-size: 13px; margin-bottom: 10px; }
+
+/* ===== SHOP ===== */
+#shop {
+    background: linear-gradient(180deg, #0a0a1a 0%, #0f1b3d 100%);
+    overflow-y: auto;
+    padding: 20px;
+}
+#shop h2 { font-size: 28px; margin-bottom: 4px; }
+#shop .shop-coins { color: #ffd700; font-size: 16px; margin-bottom: 16px; }
+.skin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 12px;
+    max-width: 500px;
+    width: 100%;
+    margin-bottom: 20px;
+}
+.skin-card {
+    background: rgba(255,255,255,0.06);
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 14px 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.15s, border-color 0.2s;
+}
+.skin-card:active { transform: scale(0.95); }
+.skin-card.owned { border-color: rgba(74,222,128,0.4); }
+.skin-card.equipped { border-color: #4ade80; box-shadow: 0 0 16px rgba(74,222,128,0.2); }
+.skin-card.locked { opacity: 0.7; }
+.skin-preview {
+    width: 60px; height: 60px;
+    margin: 0 auto 8px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+}
+.skin-name { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+.skin-price { font-size: 12px; color: #ffd700; }
+.skin-status { font-size: 11px; color: #4ade80; }
 
 /* ===== INFLATE BUTTON (mobile) ===== */
 #inflate-btn {
@@ -103,13 +161,12 @@ canvas { display:block; }
     bottom: 24px;
     left: 50%;
     transform: translateX(-50%);
-    width: 90px;
-    height: 90px;
+    width: 80px; height: 80px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(255,165,0,0.6), rgba(255,100,0,0.3));
-    border: 3px solid rgba(255,165,0,0.5);
+    background: radial-gradient(circle, rgba(255,165,0,0.5), rgba(255,100,0,0.25));
+    border: 3px solid rgba(255,165,0,0.4);
     color: white;
-    font-size: 28px;
+    font-size: 26px;
     z-index: 20;
     display: none;
     align-items: center;
@@ -122,7 +179,7 @@ canvas { display:block; }
 .coin-particle {
     position: fixed;
     pointer-events: none;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 800;
     color: #ffd700;
     z-index: 50;
@@ -130,22 +187,23 @@ canvas { display:block; }
 }
 @keyframes particleUp {
     0% { opacity:1; transform: translateY(0) scale(1); }
-    100% { opacity:0; transform: translateY(-60px) scale(1.4); }
+    100% { opacity:0; transform: translateY(-60px) scale(1.3); }
 }
 </style>
 </head>
 <body>
 
 <!-- LOBBY -->
-<div id="lobby">
+<div id="lobby" class="overlay show">
     <h1>🐡 דג הבלון</h1>
     <p class="sub">אסוף דגים • היזהר מכרישים • הילחם בבוס</p>
     <p class="saved-coins">💰 <span id="lobby-coins">0</span> מטבעות</p>
     <button class="btn" onclick="startGame()">🎮 התחל משחק</button>
+    <button class="btn btn-shop" onclick="openShop()">🛒 חנות סקינים</button>
 </div>
 
 <!-- GAME OVER -->
-<div id="gameover">
+<div id="gameover" class="overlay">
     <h2>💀 נפסלת!</h2>
     <p class="stats">ניקוד: <span id="go-score">0</span> &nbsp;|&nbsp; שלב: <span id="go-level">1</span></p>
     <p class="earned">+<span id="go-earned">0</span> 🪙</p>
@@ -154,11 +212,32 @@ canvas { display:block; }
     <button class="btn btn-secondary" onclick="goLobby()">🏠 לובי</button>
 </div>
 
+<!-- PAUSE -->
+<div id="pause-screen" class="overlay">
+    <h2>⏸️ השהייה</h2>
+    <p class="pause-sub">המשחק מושהה</p>
+    <button class="btn" onclick="resumeGame()">▶️ המשך</button>
+    <button class="btn btn-secondary" onclick="quitToLobby()">🏠 חזור ללובי</button>
+</div>
+
+<!-- SHOP -->
+<div id="shop" class="overlay">
+    <h2>🛒 חנות סקינים</h2>
+    <p class="shop-coins">💰 <span id="shop-coins">0</span> מטבעות</p>
+    <div class="skin-grid" id="skin-grid"></div>
+    <button class="btn btn-secondary" onclick="closeShop()">חזור</button>
+</div>
+
 <!-- HUD -->
 <div class="hud" id="hud" style="display:none;">
-    <div class="hud-item hud-coins">🪙 <span id="hud-coins">0</span></div>
-    <div class="hud-item hud-score">⭐ <span id="hud-score">0</span></div>
-    <div class="hud-item hud-level">שלב <span id="hud-level">1</span></div>
+    <div class="hud-left">
+        <div class="hud-item hud-coins">🪙 <span id="hud-coins">0</span></div>
+        <div class="hud-item hud-score">⭐ <span id="hud-score">0</span></div>
+        <div class="hud-item hud-level">שלב <span id="hud-level">1</span></div>
+    </div>
+    <div class="hud-right">
+        <div id="pause-btn" onclick="togglePause()">⏸</div>
+    </div>
 </div>
 
 <!-- INFLATE BUTTON (mobile) -->
@@ -178,20 +257,234 @@ function resize() {
 resize();
 window.addEventListener("resize", resize);
 
-// ===== SAVED DATA =====
-function loadCoins() {
-    return Number(localStorage.getItem("puff_coins")) || 0;
+// ===============================
+//        SAVE / LOAD DATA
+// ===============================
+function loadData() {
+    try {
+        let d = JSON.parse(localStorage.getItem("puff_save"));
+        if (d && typeof d === "object") return d;
+    } catch(e) {}
+    return { coins: 0, ownedSkins: ["classic"], equippedSkin: "classic", bestScore: 0, bestLevel: 0 };
 }
-function saveCoins(val) {
-    localStorage.setItem("puff_coins", String(val));
+function saveData() {
+    localStorage.setItem("puff_save", JSON.stringify(gameData));
 }
 
-let totalCoins = loadCoins();
-document.getElementById("lobby-coins").textContent = totalCoins;
+let gameData = loadData();
 
-// ===== GAME STATE =====
+// ===============================
+//            SKINS
+// ===============================
+const SKINS = [
+    {
+        id: "classic",
+        name: "קלאסי",
+        price: 0,
+        bodyColor: "#ffcc00",
+        inflatedColor: "#ff8c00",
+        spikeColor: "#cc6600",
+        eyeColor: "#222",
+        finColor: "rgba(255,200,0,0.5)",
+        glowColor: "#ffcc00",
+        trailColor: "255,200,0",
+        preview: "#ffcc00",
+        special: null
+    },
+    {
+        id: "ocean",
+        name: "אוקיינוס",
+        price: 50,
+        bodyColor: "#00bfff",
+        inflatedColor: "#0080ff",
+        spikeColor: "#004488",
+        eyeColor: "#001",
+        finColor: "rgba(0,180,255,0.5)",
+        glowColor: "#00bfff",
+        trailColor: "0,180,255",
+        preview: "#00bfff",
+        special: null
+    },
+    {
+        id: "lava",
+        name: "לבה",
+        price: 100,
+        bodyColor: "#ff3300",
+        inflatedColor: "#ff6600",
+        spikeColor: "#cc0000",
+        eyeColor: "#300",
+        finColor: "rgba(255,100,0,0.5)",
+        glowColor: "#ff4400",
+        trailColor: "255,80,0",
+        preview: "#ff3300",
+        special: "fire"
+    },
+    {
+        id: "ghost",
+        name: "רוח רפאים",
+        price: 150,
+        bodyColor: "rgba(200,210,255,0.5)",
+        inflatedColor: "rgba(180,190,255,0.6)",
+        spikeColor: "rgba(150,160,200,0.5)",
+        eyeColor: "#99aaff",
+        finColor: "rgba(180,190,255,0.3)",
+        glowColor: "#aabbff",
+        trailColor: "180,190,255",
+        preview: "#aabbdd",
+        special: "ghost"
+    },
+    {
+        id: "toxic",
+        name: "רעיל",
+        price: 120,
+        bodyColor: "#39ff14",
+        inflatedColor: "#00ff00",
+        spikeColor: "#008800",
+        eyeColor: "#030",
+        finColor: "rgba(0,255,50,0.5)",
+        glowColor: "#39ff14",
+        trailColor: "50,255,20",
+        preview: "#39ff14",
+        special: "toxic"
+    },
+    {
+        id: "royal",
+        name: "מלכותי",
+        price: 200,
+        bodyColor: "#9b59b6",
+        inflatedColor: "#8e44ad",
+        spikeColor: "#6c3483",
+        eyeColor: "#1a0025",
+        finColor: "rgba(155,89,182,0.5)",
+        glowColor: "#bb77dd",
+        trailColor: "155,89,182",
+        preview: "#9b59b6",
+        special: "crown"
+    },
+    {
+        id: "golden",
+        name: "זהב",
+        price: 300,
+        bodyColor: "#ffd700",
+        inflatedColor: "#ffaa00",
+        spikeColor: "#b8860b",
+        eyeColor: "#332200",
+        finColor: "rgba(255,215,0,0.6)",
+        glowColor: "#ffd700",
+        trailColor: "255,215,0",
+        preview: "#ffd700",
+        special: "sparkle"
+    },
+    {
+        id: "galaxy",
+        name: "גלקסי",
+        price: 500,
+        bodyColor: "#1a0033",
+        inflatedColor: "#2a0055",
+        spikeColor: "#ff00ff",
+        eyeColor: "#ff88ff",
+        finColor: "rgba(150,0,255,0.5)",
+        glowColor: "#aa00ff",
+        trailColor: "150,0,255",
+        preview: "#2a0055",
+        special: "stars"
+    }
+];
+
+function getSkin() {
+    return SKINS.find(s => s.id === gameData.equippedSkin) || SKINS[0];
+}
+
+// ===============================
+//         SHOP UI
+// ===============================
+function openShop() {
+    document.getElementById("shop-coins").textContent = gameData.coins;
+    renderShop();
+    showOverlay("shop");
+}
+function closeShop() {
+    showOverlay("lobby");
+    document.getElementById("lobby-coins").textContent = gameData.coins;
+}
+
+function renderShop() {
+    const grid = document.getElementById("skin-grid");
+    grid.innerHTML = "";
+    SKINS.forEach(skin => {
+        const owned = gameData.ownedSkins.includes(skin.id);
+        const equipped = gameData.equippedSkin === skin.id;
+        const canBuy = gameData.coins >= skin.price;
+
+        const card = document.createElement("div");
+        card.className = "skin-card" + (equipped ? " equipped" : owned ? " owned" : " locked");
+
+        let statusHTML = "";
+        if (equipped) statusHTML = `<div class="skin-status">✔ מצויד</div>`;
+        else if (owned) statusHTML = `<div class="skin-status" style="color:#60a5fa">לחץ לציוד</div>`;
+        else statusHTML = `<div class="skin-price">${skin.price === 0 ? "חינם" : skin.price + " 🪙"}</div>`;
+
+        let previewBg = skin.preview;
+        if (skin.id === "ghost") previewBg = "rgba(170,187,221,0.3)";
+        if (skin.id === "galaxy") previewBg = "linear-gradient(135deg, #1a0033, #0a001a, #2a0055)";
+
+        let specialBadge = "";
+        if (skin.special === "fire") specialBadge = "🔥";
+        else if (skin.special === "ghost") specialBadge = "👻";
+        else if (skin.special === "toxic") specialBadge = "☠️";
+        else if (skin.special === "crown") specialBadge = "👑";
+        else if (skin.special === "sparkle") specialBadge = "✨";
+        else if (skin.special === "stars") specialBadge = "🌌";
+
+        card.innerHTML = `
+            <div class="skin-preview" style="background:${previewBg};border-radius:50%;">
+                <span style="font-size:24px;">${specialBadge || "🐡"}</span>
+            </div>
+            <div class="skin-name">${skin.name}</div>
+            ${statusHTML}
+        `;
+
+        card.onclick = () => {
+            if (equipped) return;
+            if (owned) {
+                gameData.equippedSkin = skin.id;
+                saveData();
+                renderShop();
+            } else if (canBuy) {
+                gameData.coins -= skin.price;
+                gameData.ownedSkins.push(skin.id);
+                gameData.equippedSkin = skin.id;
+                saveData();
+                document.getElementById("shop-coins").textContent = gameData.coins;
+                renderShop();
+            }
+        };
+        grid.appendChild(card);
+    });
+}
+
+// ===============================
+//        OVERLAY MANAGER
+// ===============================
+function showOverlay(id) {
+    ["lobby","gameover","pause-screen","shop"].forEach(oid => {
+        const el = document.getElementById(oid);
+        if (oid === id) el.classList.add("show");
+        else el.classList.remove("show");
+    });
+}
+function hideAllOverlays() {
+    ["lobby","gameover","pause-screen","shop"].forEach(oid => {
+        document.getElementById(oid).classList.remove("show");
+    });
+}
+
+// ===============================
+//         GAME STATE
+// ===============================
 let player, fishList, sharks, boss, bubbles;
 let gameRunning = false;
+let paused = false;
 let score, earnedCoins, level, levelTimer;
 let spawnFishInterval, spawnSharkInterval;
 let shakeTimer = 0;
@@ -215,9 +508,10 @@ function initGame() {
     level = 1;
     levelTimer = 0;
     shakeTimer = 0;
+    paused = false;
 }
 
-// ===== FISH TYPES (drawn, no sprites) =====
+// ===== FISH TYPES =====
 const fishTypes = [
     { color: "#ff6b6b", glowColor: "rgba(255,107,107,0.3)", value: 1, size: 16 },
     { color: "#ffd93d", glowColor: "rgba(255,217,61,0.3)", value: 2, size: 18 },
@@ -226,21 +520,20 @@ const fishTypes = [
     { color: "#ff6fff", glowColor: "rgba(255,111,255,0.3)", value: 10, size: 14 }
 ];
 
-// ===== DRAWING FUNCTIONS =====
+// ===============================
+//      DRAWING FUNCTIONS
+// ===============================
 function drawFishShape(x, y, size, color, glowColor, dir) {
     ctx.save();
     ctx.translate(x, y);
     ctx.scale(dir, 1);
-    // Glow
     ctx.shadowColor = color;
     ctx.shadowBlur = 12;
-    // Body
     ctx.beginPath();
     ctx.ellipse(0, 0, size, size * 0.6, 0, 0, Math.PI * 2);
     ctx.fillStyle = color;
     ctx.fill();
     ctx.shadowBlur = 0;
-    // Tail
     ctx.beginPath();
     ctx.moveTo(-size * 0.8, 0);
     ctx.lineTo(-size * 1.5, -size * 0.6);
@@ -250,7 +543,6 @@ function drawFishShape(x, y, size, color, glowColor, dir) {
     ctx.globalAlpha = 0.7;
     ctx.fill();
     ctx.globalAlpha = 1;
-    // Eye
     ctx.beginPath();
     ctx.arc(size * 0.4, -size * 0.1, size * 0.18, 0, Math.PI * 2);
     ctx.fillStyle = "#fff";
@@ -266,12 +558,10 @@ function drawShark(x, y, size, dir) {
     ctx.save();
     ctx.translate(x, y);
     ctx.scale(dir, 1);
-    // Body
     ctx.beginPath();
     ctx.ellipse(0, 0, size, size * 0.4, 0, 0, Math.PI * 2);
     ctx.fillStyle = "#667";
     ctx.fill();
-    // Dorsal fin
     ctx.beginPath();
     ctx.moveTo(-size * 0.1, -size * 0.35);
     ctx.lineTo(size * 0.2, -size * 0.9);
@@ -279,7 +569,6 @@ function drawShark(x, y, size, dir) {
     ctx.closePath();
     ctx.fillStyle = "#556";
     ctx.fill();
-    // Tail
     ctx.beginPath();
     ctx.moveTo(-size * 0.8, 0);
     ctx.lineTo(-size * 1.4, -size * 0.5);
@@ -288,12 +577,10 @@ function drawShark(x, y, size, dir) {
     ctx.closePath();
     ctx.fillStyle = "#556";
     ctx.fill();
-    // Belly
     ctx.beginPath();
     ctx.ellipse(0, size * 0.1, size * 0.7, size * 0.2, 0, 0, Math.PI);
     ctx.fillStyle = "#aab";
     ctx.fill();
-    // Eye
     ctx.beginPath();
     ctx.arc(size * 0.5, -size * 0.05, size * 0.1, 0, Math.PI * 2);
     ctx.fillStyle = "#fff";
@@ -302,7 +589,6 @@ function drawShark(x, y, size, dir) {
     ctx.arc(size * 0.53, -size * 0.05, size * 0.05, 0, Math.PI * 2);
     ctx.fillStyle = "#c00";
     ctx.fill();
-    // Teeth
     ctx.beginPath();
     ctx.moveTo(size * 0.7, size * 0.05);
     for (let i = 0; i < 4; i++) {
@@ -316,32 +602,120 @@ function drawShark(x, y, size, dir) {
 }
 
 function drawPuffer(x, y, size, inflated) {
+    const skin = getSkin();
     ctx.save();
     ctx.translate(x, y);
 
-    let bodyColor = inflated ? "#ff8c00" : "#ffcc00";
+    let bodyColor = inflated ? skin.inflatedColor : skin.bodyColor;
     let bodySize = inflated ? size * 1.8 : size;
 
-    // Glow
-    ctx.shadowColor = bodyColor;
+    ctx.shadowColor = skin.glowColor;
     ctx.shadowBlur = inflated ? 25 : 12;
 
-    // Body
-    ctx.beginPath();
-    ctx.arc(0, 0, bodySize, 0, Math.PI * 2);
-    ctx.fillStyle = bodyColor;
-    ctx.fill();
-    ctx.shadowBlur = 0;
+    // Galaxy special: inner pattern
+    if (skin.special === "stars") {
+        ctx.beginPath();
+        ctx.arc(0, 0, bodySize, 0, Math.PI * 2);
+        ctx.fillStyle = bodyColor;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        // Stars inside body
+        let t = Date.now() / 600;
+        for (let i = 0; i < 12; i++) {
+            let a = i * 0.52 + t * 0.3;
+            let r = bodySize * (0.2 + (i % 3) * 0.2);
+            let sx = Math.cos(a) * r, sy = Math.sin(a) * r;
+            ctx.beginPath();
+            ctx.arc(sx, sy, 1.5, 0, Math.PI * 2);
+            ctx.fillStyle = `hsl(${(i * 50 + Date.now() / 10) % 360}, 100%, 80%)`;
+            ctx.fill();
+        }
+    } else {
+        ctx.beginPath();
+        ctx.arc(0, 0, bodySize, 0, Math.PI * 2);
+        ctx.fillStyle = bodyColor;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+    }
 
-    // Belly highlight
-    ctx.beginPath();
-    ctx.arc(0, bodySize * 0.15, bodySize * 0.6, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(255,255,255,0.15)";
-    ctx.fill();
+    // Belly highlight (skip for ghost)
+    if (skin.special !== "ghost") {
+        ctx.beginPath();
+        ctx.arc(0, bodySize * 0.15, bodySize * 0.6, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(255,255,255,0.12)";
+        ctx.fill();
+    }
+
+    // Ghost special: wavy outline
+    if (skin.special === "ghost") {
+        ctx.strokeStyle = "rgba(200,210,255,0.3)";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        for (let a = 0; a < Math.PI * 2; a += 0.1) {
+            let wave = Math.sin(a * 6 + Date.now() / 200) * 2;
+            ctx.lineTo(Math.cos(a) * (bodySize + wave), Math.sin(a) * (bodySize + wave));
+        }
+        ctx.closePath();
+        ctx.stroke();
+    }
+
+    // Fire special: flame particles around body
+    if (skin.special === "fire" && inflated) {
+        for (let i = 0; i < 8; i++) {
+            let a = i * (Math.PI * 2 / 8) + Date.now() / 300;
+            let fr = bodySize * 1.3 + Math.sin(Date.now() / 100 + i) * 5;
+            ctx.beginPath();
+            ctx.arc(Math.cos(a) * fr, Math.sin(a) * fr, 3, 0, Math.PI * 2);
+            ctx.fillStyle = i % 2 === 0 ? "#ff4400" : "#ffaa00";
+            ctx.fill();
+        }
+    }
+
+    // Toxic special: drip effect
+    if (skin.special === "toxic") {
+        for (let i = 0; i < 5; i++) {
+            let dx = (i - 2) * bodySize * 0.3;
+            let dripY = bodySize + Math.abs(Math.sin(Date.now() / 400 + i)) * 8;
+            ctx.beginPath();
+            ctx.ellipse(dx, dripY, 2.5, 4, 0, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(50,255,20,0.5)";
+            ctx.fill();
+        }
+    }
+
+    // Crown special
+    if (skin.special === "crown") {
+        ctx.fillStyle = "#ffd700";
+        let cy = -bodySize - 6;
+        ctx.beginPath();
+        ctx.moveTo(-bodySize * 0.4, cy);
+        ctx.lineTo(-bodySize * 0.35, cy - 12);
+        ctx.lineTo(-bodySize * 0.15, cy - 5);
+        ctx.lineTo(0, cy - 14);
+        ctx.lineTo(bodySize * 0.15, cy - 5);
+        ctx.lineTo(bodySize * 0.35, cy - 12);
+        ctx.lineTo(bodySize * 0.4, cy);
+        ctx.closePath();
+        ctx.fill();
+    }
+
+    // Sparkle special (golden)
+    if (skin.special === "sparkle") {
+        let t = Date.now() / 250;
+        for (let i = 0; i < 6; i++) {
+            let a = i * 1.05 + t;
+            let sr = bodySize * 1.2 + Math.sin(t + i * 2) * 4;
+            let alpha = 0.4 + Math.sin(t * 2 + i) * 0.3;
+            ctx.beginPath();
+            ctx.arc(Math.cos(a) * sr, Math.sin(a) * sr, 2, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255,215,0,${alpha})`;
+            ctx.fill();
+        }
+    }
 
     // Spikes when inflated
     if (inflated) {
-        ctx.strokeStyle = "#cc6600";
+        ctx.strokeStyle = skin.spikeColor;
         ctx.lineWidth = 2.5;
         for (let i = 0; i < 16; i++) {
             let a = i * (Math.PI * 2 / 16) + Math.sin(Date.now() / 200 + i) * 0.1;
@@ -357,18 +731,18 @@ function drawPuffer(x, y, size, inflated) {
     for (let side of [-1, 1]) {
         ctx.beginPath();
         ctx.arc(side * eyeOff, -bodySize * 0.2, bodySize * 0.22, 0, Math.PI * 2);
-        ctx.fillStyle = "#fff";
+        ctx.fillStyle = skin.special === "ghost" ? "rgba(255,255,255,0.6)" : "#fff";
         ctx.fill();
         ctx.beginPath();
         ctx.arc(side * eyeOff + side * 2, -bodySize * 0.18, bodySize * 0.11, 0, Math.PI * 2);
-        ctx.fillStyle = "#222";
+        ctx.fillStyle = skin.eyeColor;
         ctx.fill();
     }
 
     // Mouth
     ctx.beginPath();
     ctx.arc(0, bodySize * 0.15, bodySize * 0.15, 0, Math.PI);
-    ctx.strokeStyle = "#b07800";
+    ctx.strokeStyle = skin.spikeColor;
     ctx.lineWidth = 2;
     ctx.stroke();
 
@@ -377,7 +751,7 @@ function drawPuffer(x, y, size, inflated) {
         ctx.beginPath();
         ctx.ellipse(side * bodySize * 0.9, 0, bodySize * 0.25, bodySize * 0.12,
             side * 0.3 + Math.sin(Date.now() / 150) * 0.2, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(255,200,0,0.5)";
+        ctx.fillStyle = skin.finColor;
         ctx.fill();
     }
 
@@ -387,8 +761,6 @@ function drawPuffer(x, y, size, inflated) {
 function drawBoss(x, y, size, hp, maxHp) {
     ctx.save();
     ctx.translate(x, y);
-
-    // Body
     ctx.shadowColor = "#f00";
     ctx.shadowBlur = 20;
     ctx.beginPath();
@@ -396,8 +768,6 @@ function drawBoss(x, y, size, hp, maxHp) {
     ctx.fillStyle = "#8b0000";
     ctx.fill();
     ctx.shadowBlur = 0;
-
-    // Armor plates
     for (let i = -2; i <= 2; i++) {
         ctx.beginPath();
         ctx.ellipse(i * size * 0.25, 0, size * 0.12, size * 0.45, 0, 0, Math.PI * 2);
@@ -405,16 +775,12 @@ function drawBoss(x, y, size, hp, maxHp) {
         ctx.lineWidth = 1.5;
         ctx.stroke();
     }
-
-    // Dorsal fin
     ctx.beginPath();
     ctx.moveTo(-size * 0.3, -size * 0.45);
     ctx.lineTo(0, -size * 1.1);
     ctx.lineTo(size * 0.3, -size * 0.45);
     ctx.fillStyle = "#a00";
     ctx.fill();
-
-    // Tail
     ctx.beginPath();
     ctx.moveTo(-size * 0.8, 0);
     ctx.lineTo(-size * 1.3, -size * 0.5);
@@ -423,8 +789,6 @@ function drawBoss(x, y, size, hp, maxHp) {
     ctx.closePath();
     ctx.fillStyle = "#a00";
     ctx.fill();
-
-    // Eyes (angry)
     for (let side of [-1, 1]) {
         ctx.beginPath();
         ctx.arc(side * size * 0.4, -size * 0.1, size * 0.12, 0, Math.PI * 2);
@@ -434,7 +798,6 @@ function drawBoss(x, y, size, hp, maxHp) {
         ctx.arc(side * size * 0.42, -size * 0.1, size * 0.06, 0, Math.PI * 2);
         ctx.fillStyle = "#f00";
         ctx.fill();
-        // Angry brow
         ctx.beginPath();
         ctx.moveTo(side * size * 0.25, -size * 0.25);
         ctx.lineTo(side * size * 0.55, -size * 0.18);
@@ -442,8 +805,6 @@ function drawBoss(x, y, size, hp, maxHp) {
         ctx.lineWidth = 3;
         ctx.stroke();
     }
-
-    // Teeth
     ctx.fillStyle = "#fff";
     for (let i = -3; i <= 3; i++) {
         ctx.beginPath();
@@ -454,30 +815,23 @@ function drawBoss(x, y, size, hp, maxHp) {
         ctx.closePath();
         ctx.fill();
     }
-
-    // HP bar
-    let barW = size * 1.6;
-    let barH = 8;
+    let barW = size * 1.6, barH = 8;
     ctx.fillStyle = "rgba(0,0,0,0.5)";
     ctx.fillRect(-barW / 2, -size * 0.7, barW, barH);
     ctx.fillStyle = hp > maxHp * 0.3 ? "#f44" : "#ff0";
     ctx.fillRect(-barW / 2, -size * 0.7, barW * (hp / maxHp), barH);
-
     ctx.restore();
 }
 
 // ===== WATER BACKGROUND =====
 let waterOffset = 0;
 function drawWater() {
-    // Gradient
     let g = ctx.createLinearGradient(0, 0, 0, canvas.height);
     g.addColorStop(0, "#001830");
     g.addColorStop(0.5, "#003060");
     g.addColorStop(1, "#005090");
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Subtle wave lines
     waterOffset += 0.3;
     ctx.strokeStyle = "rgba(100,180,255,0.06)";
     ctx.lineWidth = 1.5;
@@ -493,15 +847,8 @@ function drawWater() {
 
 // ===== BUBBLES =====
 function spawnBubble(x, y) {
-    bubbles.push({
-        x: x + (Math.random() - 0.5) * 20,
-        y: y,
-        r: 2 + Math.random() * 4,
-        speed: 0.5 + Math.random() * 1.5,
-        life: 1
-    });
+    bubbles.push({ x: x + (Math.random()-0.5)*20, y, r: 2+Math.random()*4, speed: 0.5+Math.random()*1.5, life: 1 });
 }
-
 function updateBubbles() {
     for (let i = bubbles.length - 1; i >= 0; i--) {
         let b = bubbles[i];
@@ -517,38 +864,28 @@ function updateBubbles() {
     }
 }
 
-// ===== SPAWN FUNCTIONS =====
+// ===== SPAWN =====
 function spawnFish() {
-    if (!gameRunning) return;
+    if (!gameRunning || paused) return;
     let type = fishTypes[Math.floor(Math.random() * fishTypes.length)];
-    // rare fish less common
-    if (type.value >= 10 && Math.random() > 0.15) {
-        type = fishTypes[Math.floor(Math.random() * 4)];
-    }
+    if (type.value >= 10 && Math.random() > 0.15) type = fishTypes[Math.floor(Math.random() * 4)];
     let edge = Math.floor(Math.random() * 4);
-    let x, y, vx, vy;
-    let sp = 0.5 + Math.random() * 1.5;
-    if (edge === 0) { x = -30; y = Math.random() * canvas.height; vx = sp; vy = (Math.random()-0.5)*0.5; }
-    else if (edge === 1) { x = canvas.width + 30; y = Math.random() * canvas.height; vx = -sp; vy = (Math.random()-0.5)*0.5; }
-    else if (edge === 2) { y = -30; x = Math.random() * canvas.width; vy = sp; vx = (Math.random()-0.5)*0.5; }
-    else { y = canvas.height + 30; x = Math.random() * canvas.width; vy = -sp; vx = (Math.random()-0.5)*0.5; }
-
-    fishList.push({ x, y, vx, vy, ...type, dir: vx > 0 ? 1 : -1, wobble: Math.random() * 100 });
+    let x, y, vx, vy, sp = 0.5 + Math.random() * 1.5;
+    if (edge===0){x=-30;y=Math.random()*canvas.height;vx=sp;vy=(Math.random()-0.5)*0.5;}
+    else if(edge===1){x=canvas.width+30;y=Math.random()*canvas.height;vx=-sp;vy=(Math.random()-0.5)*0.5;}
+    else if(edge===2){y=-30;x=Math.random()*canvas.width;vy=sp;vx=(Math.random()-0.5)*0.5;}
+    else{y=canvas.height+30;x=Math.random()*canvas.width;vy=-sp;vx=(Math.random()-0.5)*0.5;}
+    fishList.push({ x,y,vx,vy,...type,dir:vx>0?1:-1,wobble:Math.random()*100 });
 }
-
 function spawnShark() {
-    if (!gameRunning) return;
+    if (!gameRunning || paused) return;
     let edge = Math.floor(Math.random() * 4);
     let x, y;
-    if (edge === 0) { x = -60; y = Math.random() * canvas.height; }
-    else if (edge === 1) { x = canvas.width + 60; y = Math.random() * canvas.height; }
-    else if (edge === 2) { y = -60; x = Math.random() * canvas.width; }
-    else { y = canvas.height + 60; x = Math.random() * canvas.width; }
-
-    let speed = 1.2 + level * 0.25 + Math.random() * 0.5;
-    let sharkSize = 35 + Math.random() * 15;
-
-    sharks.push({ x, y, size: sharkSize, speed, dir: 1 });
+    if(edge===0){x=-60;y=Math.random()*canvas.height;}
+    else if(edge===1){x=canvas.width+60;y=Math.random()*canvas.height;}
+    else if(edge===2){y=-60;x=Math.random()*canvas.width;}
+    else{y=canvas.height+60;x=Math.random()*canvas.width;}
+    sharks.push({ x,y,size:35+Math.random()*15,speed:1.2+level*0.25+Math.random()*0.5,dir:1 });
 }
 
 // ===== CONTROLS =====
@@ -556,44 +893,59 @@ let keys = {};
 let touchTarget = null;
 
 document.addEventListener("keydown", e => {
+    if (e.key === "Escape") { togglePause(); return; }
+    if (paused) return;
     keys[e.key] = true;
-    if (e.key === " ") player.inflated = true;
+    if (e.key === " " && player) player.inflated = true;
     e.preventDefault();
 });
 document.addEventListener("keyup", e => {
     keys[e.key] = false;
-    if (e.key === " ") player.inflated = false;
+    if (e.key === " " && player) player.inflated = false;
 });
 
-// Joystick-style touch: tap & drag to steer
-canvas.addEventListener("touchstart", e => {
-    e.preventDefault();
-    let t = e.touches[0];
-    touchTarget = { x: t.clientX, y: t.clientY };
-});
-canvas.addEventListener("touchmove", e => {
-    e.preventDefault();
-    let t = e.touches[0];
-    touchTarget = { x: t.clientX, y: t.clientY };
-});
-canvas.addEventListener("touchend", e => {
-    e.preventDefault();
-    touchTarget = null;
-});
+canvas.addEventListener("touchstart", e => { e.preventDefault(); if(paused)return; let t=e.touches[0]; touchTarget={x:t.clientX,y:t.clientY}; });
+canvas.addEventListener("touchmove", e => { e.preventDefault(); if(paused)return; let t=e.touches[0]; touchTarget={x:t.clientX,y:t.clientY}; });
+canvas.addEventListener("touchend", e => { e.preventDefault(); touchTarget=null; });
 
-// Inflate button (mobile)
 const infBtn = document.getElementById("inflate-btn");
-infBtn.addEventListener("touchstart", e => { e.preventDefault(); e.stopPropagation(); player.inflated = true; });
-infBtn.addEventListener("touchend", e => { e.preventDefault(); e.stopPropagation(); player.inflated = false; });
+infBtn.addEventListener("touchstart", e => { e.preventDefault(); e.stopPropagation(); if(player)player.inflated=true; });
+infBtn.addEventListener("touchend", e => { e.preventDefault(); e.stopPropagation(); if(player)player.inflated=false; });
+
+// ===== PAUSE =====
+function togglePause() {
+    if (!gameRunning) return;
+    if (paused) resumeGame();
+    else pauseGame();
+}
+function pauseGame() {
+    paused = true;
+    showOverlay("pause-screen");
+}
+function resumeGame() {
+    paused = false;
+    hideAllOverlays();
+    document.getElementById("hud").style.display = "flex";
+}
+function quitToLobby() {
+    gameRunning = false;
+    paused = false;
+    clearInterval(spawnFishInterval);
+    clearInterval(spawnSharkInterval);
+    if (isMobile) infBtn.style.display = "none";
+    document.getElementById("hud").style.display = "none";
+    // Save earned coins
+    gameData.coins += earnedCoins;
+    saveData();
+    document.getElementById("lobby-coins").textContent = gameData.coins;
+    showOverlay("lobby");
+}
 
 // ===== LEVELS =====
 function getMaxBossHp() { return 10 + level * 5; }
-
 function levelUp() {
     level++;
-    document.getElementById("hud-level").textContent = level;
     boss = null;
-    // bonus coins for level clear
     let bonus = level * 5;
     earnedCoins += bonus;
     showParticle(canvas.width / 2, canvas.height / 2, `שלב ${level}! +${bonus}🪙`);
@@ -606,78 +958,71 @@ function updateHUD() {
     document.getElementById("hud-score").textContent = score;
     document.getElementById("hud-level").textContent = level;
 }
-
 function showParticle(x, y, text) {
     let el = document.createElement("div");
     el.className = "coin-particle";
     el.textContent = text;
-    el.style.left = x - 30 + "px";
+    el.style.left = (x - 30) + "px";
     el.style.top = y + "px";
     document.body.appendChild(el);
     setTimeout(() => el.remove(), 800);
 }
 
-// ===== MAIN GAME LOOP =====
+// ===============================
+//        MAIN GAME LOOP
+// ===============================
 function gameLoop() {
     if (!gameRunning) return;
     requestAnimationFrame(gameLoop);
+    if (paused) return;
 
-    // Screen shake
+    const skin = getSkin();
+
     ctx.save();
     if (shakeTimer > 0) {
         shakeTimer--;
-        ctx.translate((Math.random() - 0.5) * 8, (Math.random() - 0.5) * 8);
+        ctx.translate((Math.random()-0.5)*8, (Math.random()-0.5)*8);
     }
-
     drawWater();
 
-    let dt = 1; // fixed step
-
-    // ===== MOVE PLAYER =====
-    let speed = 4.5;
+    // ===== MOVE PLAYER (slower speed: was 4.5, now 2.8) =====
+    let speed = 2.8;
     let ax = 0, ay = 0;
-    if (keys["ArrowUp"] || keys["w"]) ay -= 1;
-    if (keys["ArrowDown"] || keys["s"]) ay += 1;
-    if (keys["ArrowLeft"] || keys["a"]) ax -= 1;
-    if (keys["ArrowRight"] || keys["d"]) ax += 1;
+    if (keys["ArrowUp"]||keys["w"]) ay -= 1;
+    if (keys["ArrowDown"]||keys["s"]) ay += 1;
+    if (keys["ArrowLeft"]||keys["a"]) ax -= 1;
+    if (keys["ArrowRight"]||keys["d"]) ax += 1;
 
-    // Touch movement
     if (touchTarget) {
         let dx = touchTarget.x - player.x;
         let dy = touchTarget.y - player.y;
         let dist = Math.hypot(dx, dy);
-        if (dist > 10) {
-            ax = dx / dist;
-            ay = dy / dist;
-        }
+        if (dist > 10) { ax = dx/dist; ay = dy/dist; }
     }
 
     let mag = Math.hypot(ax, ay);
     if (mag > 0) { ax /= mag; ay /= mag; }
 
-    player.vx += ax * 0.6;
-    player.vy += ay * 0.6;
-    player.vx *= 0.88;
-    player.vy *= 0.88;
+    player.vx += ax * 0.5;
+    player.vy += ay * 0.5;
+    player.vx *= 0.89;
+    player.vy *= 0.89;
     player.x += player.vx * speed * 0.5;
     player.y += player.vy * speed * 0.5;
 
-    // Clamp to screen
     let ps = player.inflated ? player.size * 1.8 : player.size;
     player.x = Math.max(ps, Math.min(canvas.width - ps, player.x));
     player.y = Math.max(ps, Math.min(canvas.height - ps, player.y));
 
-    // Trail
+    // Trail (skin colored)
     player.trail.push({ x: player.x, y: player.y, life: 1 });
     if (player.trail.length > 15) player.trail.shift();
-
-    // Draw trail
     for (let t of player.trail) {
         t.life -= 0.07;
         if (t.life > 0) {
             ctx.beginPath();
             ctx.arc(t.x, t.y, ps * t.life * 0.5, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(255,200,0,${t.life * 0.1})`;
+            ctx.fillStyle = `rgba(${skin.trailColor},${t.life * 0.12})`;
             ctx.fill();
         }
     }
@@ -685,18 +1030,13 @@ function gameLoop() {
     // Inflate cooldown
     if (player.inflated) {
         player.inflateTimer++;
-        if (player.inflateTimer > 120) { // max 2 seconds
-            player.inflated = false;
-            player.inflateTimer = 0;
-        }
+        if (player.inflateTimer > 120) { player.inflated = false; player.inflateTimer = 0; }
     } else {
         if (player.inflateTimer > 0) player.inflateTimer -= 2;
         if (player.inflateTimer < 0) player.inflateTimer = 0;
     }
 
-    // Bubbles from player
     if (Math.random() < 0.15) spawnBubble(player.x, player.y - ps);
-
     drawPuffer(player.x, player.y, player.size, player.inflated);
 
     // ===== FISH =====
@@ -705,16 +1045,8 @@ function gameLoop() {
         f.x += f.vx;
         f.y += f.vy + Math.sin(f.wobble + Date.now() / 500) * 0.3;
         f.dir = f.vx > 0 ? 1 : -1;
-
-        // Remove if off-screen
-        if (f.x < -80 || f.x > canvas.width + 80 || f.y < -80 || f.y > canvas.height + 80) {
-            fishList.splice(i, 1);
-            continue;
-        }
-
+        if (f.x < -80 || f.x > canvas.width+80 || f.y < -80 || f.y > canvas.height+80) { fishList.splice(i,1); continue; }
         drawFishShape(f.x, f.y, f.size, f.color, f.glowColor, f.dir);
-
-        // Collision with player
         let dist = Math.hypot(player.x - f.x, player.y - f.y);
         if (dist < ps + f.size * 0.6) {
             earnedCoins += f.value;
@@ -730,102 +1062,62 @@ function gameLoop() {
     // ===== SHARKS =====
     for (let i = sharks.length - 1; i >= 0; i--) {
         let s = sharks[i];
-        let dx = player.x - s.x;
-        let dy = player.y - s.y;
+        let dx = player.x - s.x, dy = player.y - s.y;
         let dist = Math.hypot(dx, dy);
-
-        if (dist > 0) {
-            s.x += (dx / dist) * s.speed;
-            s.y += (dy / dist) * s.speed;
-        }
+        if (dist > 0) { s.x += (dx/dist)*s.speed; s.y += (dy/dist)*s.speed; }
         s.dir = dx > 0 ? 1 : -1;
-
         drawShark(s.x, s.y, s.size, s.dir);
-
-        // Hit player
         if (dist < ps + s.size * 0.5) {
             if (player.inflated) {
-                // Deflect shark!
                 sharks.splice(i, 1);
-                score += 2;
-                earnedCoins += 3;
+                score += 2; earnedCoins += 3;
                 shakeTimer = 6;
                 showParticle(s.x, s.y, "💥 +3🪙");
                 for (let b = 0; b < 5; b++) spawnBubble(s.x, s.y);
                 updateHUD();
-            } else {
-                die();
-                return;
-            }
+            } else { die(); return; }
         }
-
-        // Remove if way off-screen
-        if (s.x < -200 || s.x > canvas.width + 200 || s.y < -200 || s.y > canvas.height + 200) {
-            sharks.splice(i, 1);
-        }
+        if (s.x<-200||s.x>canvas.width+200||s.y<-200||s.y>canvas.height+200) sharks.splice(i,1);
     }
 
     // ===== BOSS =====
-    if (score > 0 && score % 15 === 0 && !boss && score > (level - 1) * 15) {
+    if (score > 0 && score % 15 === 0 && !boss && score > (level-1)*15) {
         let maxHp = getMaxBossHp();
-        boss = {
-            x: canvas.width / 2,
-            y: -80,
-            size: 60 + level * 8,
-            hp: maxHp,
-            maxHp: maxHp,
-            speed: 1 + level * 0.2,
-            dir: 1
-        };
+        boss = { x:canvas.width/2, y:-80, size:60+level*8, hp:maxHp, maxHp, speed:1+level*0.2, dir:1 };
     }
-
     if (boss) {
-        let dx = player.x - boss.x;
-        let dy = player.y - boss.y;
+        let dx = player.x-boss.x, dy = player.y-boss.y;
         let dist = Math.hypot(dx, dy);
-        if (dist > 0) {
-            boss.x += (dx / dist) * boss.speed;
-            boss.y += (dy / dist) * boss.speed;
-        }
+        if (dist > 0) { boss.x += (dx/dist)*boss.speed; boss.y += (dy/dist)*boss.speed; }
         boss.dir = dx > 0 ? 1 : -1;
-
         drawBoss(boss.x, boss.y, boss.size, boss.hp, boss.maxHp);
-
         if (dist < ps + boss.size * 0.5) {
             if (player.inflated) {
-                boss.hp -= 2;
-                shakeTimer = 4;
+                boss.hp -= 2; shakeTimer = 4;
                 showParticle(boss.x, boss.y - boss.size, `💥 ${boss.hp}/${boss.maxHp}`);
-                // Knockback
-                boss.x -= (dx / dist) * 30;
-                boss.y -= (dy / dist) * 30;
+                boss.x -= (dx/dist)*30; boss.y -= (dy/dist)*30;
                 if (boss.hp <= 0) {
-                    earnedCoins += 20 + level * 10;
-                    score += 5;
-                    shakeTimer = 12;
-                    showParticle(boss.x, boss.y, `🏆 בוס הובס! +${20 + level * 10}🪙`);
+                    let reward = 20 + level * 10;
+                    earnedCoins += reward; score += 5; shakeTimer = 12;
+                    showParticle(boss.x, boss.y, `🏆 בוס הובס! +${reward}🪙`);
                     for (let b = 0; b < 12; b++) spawnBubble(boss.x, boss.y);
                     levelUp();
                 }
                 updateHUD();
-            } else {
-                die();
-                return;
-            }
+            } else { die(); return; }
         }
     }
 
     updateBubbles();
     ctx.restore();
-
-    // Spawn control
     levelTimer++;
 }
 
-// ===== START / DIE / LOBBY =====
+// ===============================
+//     START / DIE / LOBBY
+// ===============================
 function startGame() {
-    document.getElementById("lobby").style.display = "none";
-    document.getElementById("gameover").style.display = "none";
+    hideAllOverlays();
     document.getElementById("hud").style.display = "flex";
     if (isMobile) infBtn.style.display = "flex";
 
@@ -833,15 +1125,12 @@ function startGame() {
     updateHUD();
     gameRunning = true;
 
-    // Clear old intervals
     clearInterval(spawnFishInterval);
     clearInterval(spawnSharkInterval);
     spawnFishInterval = setInterval(spawnFish, 800);
     spawnSharkInterval = setInterval(spawnShark, 4000);
 
-    // Pre-spawn some fish
     for (let i = 0; i < 6; i++) spawnFish();
-
     gameLoop();
 }
 
@@ -852,23 +1141,25 @@ function die() {
     if (isMobile) infBtn.style.display = "none";
     document.getElementById("hud").style.display = "none";
 
-    // Save coins
-    totalCoins += earnedCoins;
-    saveCoins(totalCoins);
+    gameData.coins += earnedCoins;
+    if (score > gameData.bestScore) gameData.bestScore = score;
+    if (level > gameData.bestLevel) gameData.bestLevel = level;
+    saveData();
 
-    // Show game-over
     document.getElementById("go-score").textContent = score;
     document.getElementById("go-level").textContent = level;
     document.getElementById("go-earned").textContent = earnedCoins;
-    document.getElementById("go-total").textContent = totalCoins;
-    document.getElementById("gameover").style.display = "flex";
+    document.getElementById("go-total").textContent = gameData.coins;
+    showOverlay("gameover");
 }
 
 function goLobby() {
-    document.getElementById("gameover").style.display = "none";
-    document.getElementById("lobby-coins").textContent = totalCoins;
-    document.getElementById("lobby").style.display = "flex";
+    document.getElementById("lobby-coins").textContent = gameData.coins;
+    showOverlay("lobby");
 }
+
+// Init lobby
+document.getElementById("lobby-coins").textContent = gameData.coins;
 </script>
 </body>
 </html>
