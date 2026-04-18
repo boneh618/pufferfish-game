@@ -218,6 +218,40 @@ canvas { display:block; }
     100% { transform: scale(1); opacity: 1; }
 }
 
+/* ===== HP & ENERGY BARS ===== */
+.hud-bar-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 50px;
+    padding: 5px 12px;
+}
+.hud-bar-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+}
+.hud-bar-track {
+    width: 80px;
+    height: 10px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+}
+.hud-bar-fill {
+    height: 100%;
+    border-radius: 6px;
+    transition: width 0.2s ease;
+}
+.hp-fill { background: linear-gradient(90deg, #ff4444, #ff6b6b); }
+.energy-fill { background: linear-gradient(90deg, #ffa500, #ffcc00); }
+.energy-full { background: linear-gradient(90deg, #4ade80, #22c55e); }
+
 /* ===== PARTICLES ===== */
 .coin-particle {
     position: fixed;
@@ -286,6 +320,22 @@ canvas { display:block; }
         <div class="hud-item hud-coins">🪙 <span id="hud-coins">0</span></div>
         <div class="hud-item hud-score">⭐ <span id="hud-score">0</span></div>
         <div class="hud-item hud-level">שלב <span id="hud-level">1</span></div>
+    </div>
+    <div style="position:fixed;top:48px;left:0;right:0;display:flex;justify-content:center;gap:12px;padding:0 14px;z-index:10;pointer-events:none;" id="bars-row">
+        <div class="hud-bar-container">
+            <span class="hud-bar-label">❤️</span>
+            <div class="hud-bar-track">
+                <div class="hud-bar-fill hp-fill" id="hp-bar" style="width:100%"></div>
+            </div>
+            <span class="hud-bar-label" id="hp-text" style="font-size:11px;color:#ff6b6b;">3/3</span>
+        </div>
+        <div class="hud-bar-container">
+            <span class="hud-bar-label">🐡</span>
+            <div class="hud-bar-track">
+                <div class="hud-bar-fill energy-fill" id="energy-bar" style="width:100%"></div>
+            </div>
+            <span class="hud-bar-label" id="energy-text" style="font-size:11px;color:#ffcc00;">מוכן</span>
+        </div>
     </div>
     <div class="hud-right">
         <div id="pause-btn" onclick="togglePause()">⏸</div>
@@ -541,6 +591,12 @@ let paused = false;
 let score, earnedCoins, level, levelTimer;
 let spawnFishInterval, spawnSharkInterval;
 let shakeTimer = 0;
+let playerHp = 3;
+const MAX_HP = 3;
+const MAX_INFLATE_ENERGY = 120;
+let inflateEnergy = MAX_INFLATE_ENERGY;
+let inflateRechargeDelay = 0;
+let invincibleTimer = 0;
 
 function initGame() {
     player = {
@@ -562,6 +618,10 @@ function initGame() {
     levelTimer = 0;
     shakeTimer = 0;
     paused = false;
+    playerHp = MAX_HP;
+    inflateEnergy = MAX_INFLATE_ENERGY;
+    inflateRechargeDelay = 0;
+    invincibleTimer = 0;
 }
 
 // ===== FISH TYPES =====
@@ -818,119 +878,191 @@ function drawBoss(x, y, size, hp, maxHp) {
     let t = Date.now() / 400;
     let sway = Math.sin(t) * 3;
 
-    // Angelfish body: tall diamond/disc shape
-    ctx.shadowColor = "#ff2200";
-    ctx.shadowBlur = 22;
+    // === ANGLERFISH ===
+
+    // Dark body – elongated, lumpy deep-sea shape
+    ctx.shadowColor = "#003366";
+    ctx.shadowBlur = 30;
     ctx.beginPath();
-    ctx.ellipse(0, sway, size * 0.7, size, 0, 0, Math.PI * 2);
-    ctx.fillStyle = "#cc1100";
+    ctx.ellipse(0, sway, size, size * 0.6, 0, 0, Math.PI * 2);
+    ctx.fillStyle = "#1a1a2e";
     ctx.fill();
     ctx.shadowBlur = 0;
 
-    // Vertical stripes (angelfish pattern)
-    ctx.globalAlpha = 0.25;
-    for (let i = -2; i <= 2; i++) {
+    // Darker belly shading
+    ctx.beginPath();
+    ctx.ellipse(0, sway + size * 0.15, size * 0.7, size * 0.35, 0, 0, Math.PI);
+    ctx.fillStyle = "rgba(10,10,30,0.5)";
+    ctx.fill();
+
+    // Bumpy texture
+    ctx.globalAlpha = 0.15;
+    for (let i = 0; i < 8; i++) {
+        let bx = (i - 4) * size * 0.18;
+        let by = sway + Math.sin(i * 1.5) * size * 0.2;
         ctx.beginPath();
-        ctx.ellipse(i * size * 0.18, sway, size * 0.06, size * 0.85, 0, 0, Math.PI * 2);
-        ctx.fillStyle = "#000";
+        ctx.arc(bx, by, size * 0.08, 0, Math.PI * 2);
+        ctx.fillStyle = "#334";
         ctx.fill();
     }
     ctx.globalAlpha = 1;
 
-    // Lighter belly area
+    // Tail fin – ragged deep-sea style
     ctx.beginPath();
-    ctx.ellipse(0, sway + size * 0.15, size * 0.45, size * 0.5, 0, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(255,120,80,0.35)";
-    ctx.fill();
-
-    // Tall dorsal fin (top) – signature angelfish triangular fin
-    ctx.beginPath();
-    ctx.moveTo(-size * 0.15, sway - size * 0.9);
-    ctx.quadraticCurveTo(size * 0.1, sway - size * 1.6, size * 0.35, sway - size * 0.85);
-    ctx.lineTo(0, sway - size * 0.7);
+    ctx.moveTo(-size * 0.85, sway);
+    ctx.quadraticCurveTo(-size * 1.3, sway - size * 0.5, -size * 1.5, sway - size * 0.35);
+    ctx.lineTo(-size * 1.1, sway);
+    ctx.lineTo(-size * 1.5, sway + size * 0.35);
+    ctx.quadraticCurveTo(-size * 1.3, sway + size * 0.5, -size * 0.85, sway);
     ctx.closePath();
-    ctx.fillStyle = "#aa0000";
-    ctx.fill();
-    // Fin edge detail
-    ctx.strokeStyle = "rgba(255,200,0,0.3)";
-    ctx.lineWidth = 1;
-    ctx.stroke();
-
-    // Long ventral fin (bottom) – angelfish style trailing fin
-    ctx.beginPath();
-    ctx.moveTo(-size * 0.1, sway + size * 0.9);
-    ctx.quadraticCurveTo(size * 0.05, sway + size * 1.5, size * 0.3, sway + size * 0.85);
-    ctx.lineTo(0, sway + size * 0.7);
-    ctx.closePath();
-    ctx.fillStyle = "#aa0000";
-    ctx.fill();
-    ctx.strokeStyle = "rgba(255,200,0,0.3)";
-    ctx.lineWidth = 1;
-    ctx.stroke();
-
-    // Tail fin – forked
-    ctx.beginPath();
-    ctx.moveTo(-size * 0.6, sway - size * 0.1);
-    ctx.quadraticCurveTo(-size * 1.2, sway - size * 0.6, -size * 1.3, sway - size * 0.5);
-    ctx.lineTo(-size * 0.7, sway);
-    ctx.lineTo(-size * 1.3, sway + size * 0.5);
-    ctx.quadraticCurveTo(-size * 1.2, sway + size * 0.6, -size * 0.6, sway + size * 0.1);
-    ctx.closePath();
-    ctx.fillStyle = "#bb2200";
+    ctx.fillStyle = "#151528";
     ctx.fill();
 
-    // Pectoral fin (small side fin)
-    let finWave = Math.sin(t * 2) * 0.15;
+    // Small pectoral fin
+    let finWave = Math.sin(t * 2) * 0.2;
     ctx.beginPath();
-    ctx.ellipse(size * 0.3, sway + size * 0.1, size * 0.2, size * 0.08,
-        finWave + 0.3, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(200,60,30,0.5)";
+    ctx.ellipse(-size * 0.2, sway + size * 0.4, size * 0.22, size * 0.08,
+        finWave + 0.5, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(30,30,60,0.6)";
     ctx.fill();
 
-    // Eye – large, menacing
+    // Dorsal spines (small jagged fins)
+    for (let i = 0; i < 4; i++) {
+        let sx = -size * 0.4 + i * size * 0.22;
+        let sh = size * 0.12 + Math.sin(t + i) * 3;
+        ctx.beginPath();
+        ctx.moveTo(sx, sway - size * 0.55);
+        ctx.lineTo(sx + size * 0.05, sway - size * 0.55 - sh);
+        ctx.lineTo(sx + size * 0.1, sway - size * 0.55);
+        ctx.closePath();
+        ctx.fillStyle = "#222240";
+        ctx.fill();
+    }
+
+    // ===== ILLICIUM (lure stalk) + ESCA (glowing lure) =====
+    let stalkBaseX = size * 0.5;
+    let stalkBaseY = sway - size * 0.5;
+    let lureSwing = Math.sin(t * 1.5) * 12;
+    let lureX = stalkBaseX + size * 0.3 + lureSwing;
+    let lureY = stalkBaseY - size * 0.6 + Math.cos(t * 1.2) * 5;
+
+    // Stalk (illicium)
     ctx.beginPath();
-    ctx.arc(size * 0.3, sway - size * 0.15, size * 0.16, 0, Math.PI * 2);
-    ctx.fillStyle = "#fff";
-    ctx.fill();
-    // Iris
-    ctx.beginPath();
-    ctx.arc(size * 0.33, sway - size * 0.15, size * 0.09, 0, Math.PI * 2);
-    ctx.fillStyle = "#ff0";
-    ctx.fill();
-    // Pupil (slit)
-    ctx.beginPath();
-    ctx.ellipse(size * 0.34, sway - size * 0.15, size * 0.03, size * 0.08, 0, 0, Math.PI * 2);
-    ctx.fillStyle = "#200";
-    ctx.fill();
-    // Angry brow
-    ctx.beginPath();
-    ctx.moveTo(size * 0.15, sway - size * 0.35);
-    ctx.lineTo(size * 0.45, sway - size * 0.28);
-    ctx.strokeStyle = "#600";
+    ctx.moveTo(stalkBaseX, stalkBaseY);
+    ctx.quadraticCurveTo(stalkBaseX + size * 0.4, stalkBaseY - size * 0.9, lureX, lureY);
+    ctx.strokeStyle = "#2a2a45";
     ctx.lineWidth = 2.5;
     ctx.stroke();
 
-    // Mouth
+    // Esca glow (outer)
+    let lureGlow = 0.4 + Math.sin(t * 3) * 0.2;
+    let lureRadius = size * 0.12 + Math.sin(t * 4) * 2;
     ctx.beginPath();
-    ctx.moveTo(size * 0.55, sway + size * 0.05);
-    ctx.lineTo(size * 0.65, sway);
-    ctx.lineTo(size * 0.55, sway - size * 0.05);
-    ctx.strokeStyle = "#800";
-    ctx.lineWidth = 2;
-    ctx.stroke();
+    ctx.arc(lureX, lureY, lureRadius * 3, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(100,200,255,${lureGlow * 0.15})`;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(lureX, lureY, lureRadius * 2, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(150,220,255,${lureGlow * 0.25})`;
+    ctx.fill();
+    // Esca bulb (inner bright)
+    ctx.shadowColor = "#66ccff";
+    ctx.shadowBlur = 20 + Math.sin(t * 3) * 8;
+    ctx.beginPath();
+    ctx.arc(lureX, lureY, lureRadius, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(180,240,255,${0.7 + Math.sin(t * 3) * 0.3})`;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    // Esca sparkle
+    ctx.beginPath();
+    ctx.arc(lureX - 2, lureY - 2, lureRadius * 0.3, 0, Math.PI * 2);
+    ctx.fillStyle = "#fff";
+    ctx.fill();
 
-    // Danger aura (pulsing)
-    let auraAlpha = 0.08 + Math.sin(t * 2) * 0.04;
+    // ===== HUGE MOUTH with teeth =====
+    // Lower jaw
     ctx.beginPath();
-    ctx.ellipse(0, sway, size * 0.9, size * 1.2, 0, 0, Math.PI * 2);
-    ctx.strokeStyle = `rgba(255,0,0,${auraAlpha})`;
-    ctx.lineWidth = 3;
-    ctx.stroke();
+    ctx.moveTo(size * 0.5, sway + size * 0.1);
+    ctx.quadraticCurveTo(size * 0.9, sway + size * 0.5, size * 0.7, sway + size * 0.55);
+    ctx.lineTo(size * 0.3, sway + size * 0.35);
+    ctx.closePath();
+    ctx.fillStyle = "#220010";
+    ctx.fill();
+    // Upper jaw
+    ctx.beginPath();
+    ctx.moveTo(size * 0.5, sway - size * 0.1);
+    ctx.quadraticCurveTo(size * 0.95, sway - size * 0.3, size * 0.7, sway - size * 0.45);
+    ctx.lineTo(size * 0.3, sway - size * 0.25);
+    ctx.closePath();
+    ctx.fillStyle = "#1a0010";
+    ctx.fill();
+    // Mouth interior
+    ctx.beginPath();
+    ctx.ellipse(size * 0.55, sway, size * 0.25, size * 0.2, 0, 0, Math.PI * 2);
+    ctx.fillStyle = "#300020";
+    ctx.fill();
+
+    // TEETH – sharp, jagged, translucent
+    ctx.fillStyle = "rgba(220,230,255,0.9)";
+    // Top teeth
+    for (let i = 0; i < 6; i++) {
+        let tx = size * 0.4 + i * size * 0.1;
+        let ty1 = sway - size * 0.1 - Math.sin(i * 0.8) * size * 0.08;
+        let tLen = size * 0.12 + (i % 2) * size * 0.06;
+        ctx.beginPath();
+        ctx.moveTo(tx - 2, ty1);
+        ctx.lineTo(tx + 1, ty1 + tLen);
+        ctx.lineTo(tx + 4, ty1);
+        ctx.closePath();
+        ctx.fill();
+    }
+    // Bottom teeth
+    for (let i = 0; i < 5; i++) {
+        let tx = size * 0.42 + i * size * 0.1;
+        let ty1 = sway + size * 0.1 + Math.sin(i * 0.9) * size * 0.06;
+        let tLen = size * 0.1 + (i % 2) * size * 0.05;
+        ctx.beginPath();
+        ctx.moveTo(tx - 2, ty1);
+        ctx.lineTo(tx + 1, ty1 - tLen);
+        ctx.lineTo(tx + 4, ty1);
+        ctx.closePath();
+        ctx.fill();
+    }
+
+    // Eye – small, deep-set, menacing
+    ctx.beginPath();
+    ctx.arc(size * 0.35, sway - size * 0.25, size * 0.1, 0, Math.PI * 2);
+    ctx.fillStyle = "#112";
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(size * 0.35, sway - size * 0.25, size * 0.07, 0, Math.PI * 2);
+    ctx.fillStyle = "#ff3300";
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(size * 0.36, sway - size * 0.25, size * 0.03, 0, Math.PI * 2);
+    ctx.fillStyle = "#000";
+    ctx.fill();
+    // Eye glint
+    ctx.beginPath();
+    ctx.arc(size * 0.33, sway - size * 0.27, size * 0.015, 0, Math.PI * 2);
+    ctx.fillStyle = "#fff";
+    ctx.fill();
+
+    // Deep-sea ambient particles around boss
+    for (let i = 0; i < 6; i++) {
+        let pa = i * 1.05 + t * 0.5;
+        let pr = size * 1.3 + Math.sin(t + i * 2) * 8;
+        let palpha = 0.15 + Math.sin(t * 2 + i) * 0.1;
+        ctx.beginPath();
+        ctx.arc(Math.cos(pa) * pr, sway + Math.sin(pa) * pr, 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(100,180,255,${palpha})`;
+        ctx.fill();
+    }
 
     // HP bar
-    let barW = size * 1.4, barH = 8;
-    let barY = sway - size * 1.1 - 14;
-    ctx.fillStyle = "rgba(0,0,0,0.5)";
+    let barW = size * 1.8, barH = 8;
+    let barY = sway - size * 0.75 - 20;
+    ctx.fillStyle = "rgba(0,0,0,0.6)";
     ctx.beginPath();
     ctx.roundRect(-barW/2, barY, barW, barH, 4);
     ctx.fill();
@@ -939,10 +1071,10 @@ function drawBoss(x, y, size, hp, maxHp) {
     ctx.roundRect(-barW/2, barY, barW * (hp / maxHp), barH, 4);
     ctx.fill();
     // Boss label
-    ctx.fillStyle = "rgba(255,255,255,0.5)";
-    ctx.font = "bold 10px sans-serif";
+    ctx.fillStyle = "rgba(255,255,255,0.6)";
+    ctx.font = "bold 11px sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText("BOSS", 0, barY - 4);
+    ctx.fillText("🎣 BOSS", 0, barY - 5);
 
     ctx.restore();
 }
@@ -1033,7 +1165,7 @@ canvas.addEventListener("touchmove", e => { e.preventDefault(); if(paused)return
 canvas.addEventListener("touchend", e => { e.preventDefault(); touchTarget=null; });
 
 const infBtn = document.getElementById("inflate-btn");
-infBtn.addEventListener("touchstart", e => { e.preventDefault(); e.stopPropagation(); if(player)player.inflated=true; });
+infBtn.addEventListener("touchstart", e => { e.preventDefault(); e.stopPropagation(); if(player && inflateEnergy > 0)player.inflated=true; });
 infBtn.addEventListener("touchend", e => { e.preventDefault(); e.stopPropagation(); if(player)player.inflated=false; });
 
 // ===== PAUSE =====
@@ -1114,6 +1246,21 @@ function showParticle(x, y, text) {
     setTimeout(() => el.remove(), 800);
 }
 
+function updateBars() {
+    // HP bar
+    let hpPct = (playerHp / MAX_HP) * 100;
+    document.getElementById("hp-bar").style.width = hpPct + "%";
+    document.getElementById("hp-text").textContent = playerHp + "/" + MAX_HP;
+    // Energy bar
+    let ePct = (inflateEnergy / MAX_INFLATE_ENERGY) * 100;
+    let eBar = document.getElementById("energy-bar");
+    eBar.style.width = ePct + "%";
+    eBar.className = "hud-bar-fill " + (ePct >= 100 ? "energy-full" : "energy-fill");
+    let eTxt = document.getElementById("energy-text");
+    if (ePct >= 100) { eTxt.textContent = "מוכן"; eTxt.style.color = "#4ade80"; }
+    else { eTxt.textContent = Math.round(ePct) + "%"; eTxt.style.color = "#ffcc00"; }
+}
+
 // ===============================
 //        MAIN GAME LOOP
 // ===============================
@@ -1173,17 +1320,29 @@ function gameLoop() {
         }
     }
 
-    // Inflate cooldown
+    // Invincibility flash after hit
+    if (invincibleTimer > 0) invincibleTimer--;
+
+    // Inflate energy system
     if (player.inflated) {
-        player.inflateTimer++;
-        if (player.inflateTimer > 120) { player.inflated = false; player.inflateTimer = 0; }
+        inflateEnergy--;
+        if (inflateEnergy <= 0) { player.inflated = false; inflateEnergy = 0; inflateRechargeDelay = 40; }
     } else {
-        if (player.inflateTimer > 0) player.inflateTimer -= 2;
-        if (player.inflateTimer < 0) player.inflateTimer = 0;
+        if (inflateRechargeDelay > 0) inflateRechargeDelay--;
+        else if (inflateEnergy < MAX_INFLATE_ENERGY) inflateEnergy += 1.5;
+        if (inflateEnergy > MAX_INFLATE_ENERGY) inflateEnergy = MAX_INFLATE_ENERGY;
     }
+    // Block inflate if no energy
+    if (inflateEnergy <= 0) player.inflated = false;
+    updateBars();
 
     if (Math.random() < 0.15) spawnBubble(player.x, player.y - ps);
+    // Invincibility blink effect
+    if (invincibleTimer > 0 && Math.floor(invincibleTimer / 4) % 2 === 0) {
+        ctx.globalAlpha = 0.3;
+    }
     drawPuffer(player.x, player.y, player.size, player.inflated);
+    ctx.globalAlpha = 1;
 
     // ===== FISH =====
     for (let i = fishList.length - 1; i >= 0; i--) {
@@ -1221,7 +1380,15 @@ function gameLoop() {
                 showParticle(s.x, s.y, "💥 +3🪙");
                 for (let b = 0; b < 5; b++) spawnBubble(s.x, s.y);
                 updateHUD();
-            } else { die(); return; }
+            } else if (invincibleTimer <= 0) {
+                playerHp--;
+                shakeTimer = 8;
+                showParticle(player.x, player.y - ps, `💔 ${playerHp}/${MAX_HP}`);
+                invincibleTimer = 60;
+                sharks.splice(i, 1);
+                updateBars();
+                if (playerHp <= 0) { die(); return; }
+            }
         }
         if (s.x<-200||s.x>canvas.width+200||s.y<-200||s.y>canvas.height+200) sharks.splice(i,1);
     }
@@ -1250,7 +1417,13 @@ function gameLoop() {
                     levelUp();
                 }
                 updateHUD();
-            } else { die(); return; }
+            } else if (invincibleTimer <= 0) {
+                // Boss deals full damage – instant kill
+                playerHp = 0;
+                shakeTimer = 12;
+                updateBars();
+                die(); return;
+            }
         }
     }
 
