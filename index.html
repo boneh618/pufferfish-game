@@ -77,6 +77,30 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
 #lobby h1 { font-size: 40px; margin-bottom: 2px; }
 #lobby .sub { color: rgba(255,255,255,0.5); font-size: 13px; margin-bottom: 16px; }
 #lobby .saved-coins { color: #ffd700; font-size: 18px; margin-bottom: 16px; }
+.speed-control {
+    min-width: 240px;
+    background: rgba(0,0,0,0.25);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+}
+.speed-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #c7d2fe;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+#speed-value {
+    color: #93c5fd;
+    font-weight: 700;
+}
+#speed-slider {
+    width: 100%;
+    accent-color: #60a5fa;
+}
 .btn {
     background: linear-gradient(135deg, #6366f1, #8b5cf6);
     color: white;
@@ -284,6 +308,25 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
 .energy-fill { background: linear-gradient(90deg, #ffa500, #ffcc00); }
 .energy-full { background: linear-gradient(90deg, #4ade80, #22c55e); }
 
+#bars-row {
+    position: fixed;
+    bottom: 12px;
+    left: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 10;
+    pointer-events: none;
+}
+
+@media (max-width: 900px) {
+    #bars-row {
+        top: 58px;
+        left: 12px;
+        bottom: auto;
+    }
+}
+
 /* ===== PARTICLES ===== */
 .coin-particle {
     position: fixed;
@@ -307,6 +350,13 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
     <h1>🐡 דג הבלון</h1>
     <p class="sub">אסוף דגים • היזהר מכרישים • הילחם בבוס</p>
     <p class="saved-coins">💰 <span id="lobby-coins">0</span> מטבעות</p>
+    <div class="speed-control">
+        <div class="speed-label">
+            <span>מהירות דג</span>
+            <span id="speed-value">2.8</span>
+        </div>
+        <input id="speed-slider" type="range" min="1.5" max="5" step="0.1" value="2.8">
+    </div>
     <button class="btn" onclick="startGame()">🎮 התחל משחק</button>
     <button class="btn btn-shop" onclick="openShop()">🛒 חנות סקינים</button>
 </div>
@@ -353,7 +403,7 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
         <div class="hud-item hud-score">⭐ <span id="hud-score">0</span></div>
         <div class="hud-item hud-level">שלב <span id="hud-level">1</span></div>
     </div>
-    <div style="position:fixed;bottom:12px;left:12px;display:flex;flex-direction:column;gap:6px;z-index:10;pointer-events:none;" id="bars-row">
+    <div id="bars-row">
         <div class="hud-bar-container">
             <span class="hud-bar-label">❤️</span>
             <div class="hud-bar-track">
@@ -406,13 +456,33 @@ function loadData() {
         let d = JSON.parse(localStorage.getItem("puff_save"));
         if (d && typeof d === "object") return d;
     } catch(e) {}
-    return { coins: 0, ownedSkins: ["classic"], equippedSkin: "classic", bestScore: 0, bestLevel: 0 };
+    return { coins: 0, ownedSkins: ["classic"], equippedSkin: "classic", bestScore: 0, bestLevel: 0, playerSpeed: 2.8 };
 }
 function saveData() {
     localStorage.setItem("puff_save", JSON.stringify(gameData));
 }
 
 let gameData = loadData();
+if (typeof gameData.playerSpeed !== "number" || Number.isNaN(gameData.playerSpeed)) {
+    gameData.playerSpeed = 2.8;
+}
+gameData.playerSpeed = Math.min(5, Math.max(1.5, gameData.playerSpeed));
+
+const speedSlider = document.getElementById("speed-slider");
+const speedValue = document.getElementById("speed-value");
+
+function updateSpeedUI() {
+    speedSlider.value = gameData.playerSpeed.toFixed(1);
+    speedValue.textContent = gameData.playerSpeed.toFixed(1);
+}
+
+speedSlider.addEventListener("input", e => {
+    gameData.playerSpeed = Number(e.target.value);
+    updateSpeedUI();
+    saveData();
+});
+
+updateSpeedUI();
 
 // ===============================
 //            SKINS
@@ -1628,8 +1698,8 @@ function gameLoop() {
     }
     drawWater();
 
-    // ===== MOVE PLAYER (slower speed: was 4.5, now 2.8) =====
-    let speed = 2.8;
+    // ===== MOVE PLAYER =====
+    let speed = gameData.playerSpeed;
     let ax = 0, ay = 0;
     if (keys["ArrowUp"]||keys["w"]) ay -= 1;
     if (keys["ArrowDown"]||keys["s"]) ay += 1;
