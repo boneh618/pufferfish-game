@@ -915,6 +915,35 @@ const fishTypes = [
     { color: "#ff6fff", glowColor: "rgba(255,111,255,0.3)", value: 10, size: 14 }
 ];
 
+const bossPhoto = new Image();
+let bossPhotoLoaded = false;
+
+function loadBossPhoto() {
+    const bossImageCandidates = [
+        "boss-photo.jpg",
+        "boss-photo.jpeg",
+        "boss-photo.png",
+        "boss.jpg",
+        "boss.jpeg",
+        "boss.png"
+    ];
+    let idx = 0;
+
+    const tryNext = () => {
+        if (idx >= bossImageCandidates.length) {
+            bossPhotoLoaded = false;
+            return;
+        }
+        bossPhoto.src = bossImageCandidates[idx++];
+    };
+
+    bossPhoto.onload = () => { bossPhotoLoaded = true; };
+    bossPhoto.onerror = () => tryNext();
+    tryNext();
+}
+
+loadBossPhoto();
+
 // ===============================
 //      DRAWING FUNCTIONS
 // ===============================
@@ -1324,6 +1353,52 @@ function drawBoss(x, y, size, hp, maxHp) {
 
     let t = Date.now() / 400;
     let sway = Math.sin(t) * 3;
+
+    if (bossPhotoLoaded) {
+        let radius = size * 0.72;
+
+        // Outer glow ring
+        ctx.beginPath();
+        ctx.arc(0, sway, radius + 10, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(80,140,255,0.16)";
+        ctx.fill();
+
+        // Clip boss image into a circle
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(0, sway, radius, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(bossPhoto, -radius, sway - radius, radius * 2, radius * 2);
+        ctx.restore();
+
+        // Circular border
+        ctx.beginPath();
+        ctx.arc(0, sway, radius, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(255,255,255,0.75)";
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        // HP bar
+        let barW = size * 1.8, barH = 8;
+        let barY = sway - size * 0.95 - 18;
+        ctx.fillStyle = "rgba(0,0,0,0.6)";
+        ctx.beginPath();
+        ctx.roundRect(-barW / 2, barY, barW, barH, 4);
+        ctx.fill();
+        ctx.fillStyle = hp > maxHp * 0.3 ? "#f44" : "#ff0";
+        ctx.beginPath();
+        ctx.roundRect(-barW / 2, barY, barW * (hp / maxHp), barH, 4);
+        ctx.fill();
+
+        ctx.fillStyle = "rgba(255,255,255,0.75)";
+        ctx.font = "bold 11px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("📸 BOSS", 0, barY - 5);
+
+        ctx.restore();
+        return;
+    }
 
     // === ANGLERFISH ===
 
