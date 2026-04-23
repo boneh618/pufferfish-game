@@ -327,6 +327,79 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
     }
 }
 
+/* ===== QUIZ POPUP ===== */
+#quiz-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,20,0.92);
+    backdrop-filter: blur(14px);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: 20px;
+    gap: 14px;
+}
+#quiz-overlay.show { display: flex; }
+#quiz-badge {
+    font-size: 40px;
+    animation: levelPop 0.4s ease both;
+}
+#quiz-title {
+    font-size: 15px;
+    color: rgba(255,255,255,0.5);
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+#quiz-question {
+    font-size: 17px;
+    font-weight: 700;
+    color: #fff;
+    text-align: center;
+    max-width: 520px;
+    line-height: 1.6;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 16px 20px;
+}
+.quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    max-width: 520px;
+}
+.quiz-opt {
+    background: rgba(255,255,255,0.07);
+    border: 1.5px solid rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 12px 18px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: right;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    font-family: inherit;
+    direction: rtl;
+}
+.quiz-opt:hover { background: rgba(99,102,241,0.25); border-color: #6366f1; }
+.quiz-opt:active { transform: scale(0.97); }
+.quiz-opt.correct { background: rgba(74,222,128,0.25); border-color: #4ade80; pointer-events: none; }
+.quiz-opt.wrong   { background: rgba(248,113,113,0.25); border-color: #f87171; pointer-events: none; }
+.quiz-opt.disabled { pointer-events: none; opacity: 0.5; }
+#quiz-feedback {
+    font-size: 18px;
+    font-weight: 800;
+    min-height: 28px;
+}
+#quiz-stake {
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
+}
+
 /* ===== PARTICLES ===== */
 .coin-particle {
     position: fixed;
@@ -386,6 +459,16 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
     <p class="level-reward">+<span id="lc-reward">0</span> 🪙 בונוס</p>
     <p class="level-msg" id="lc-msg">עברת את השלב! הבוס הבא יהיה קשה יותר...</p>
     <button class="btn" onclick="dismissLevelComplete()">🚀 המשך למשחק</button>
+</div>
+
+<!-- QUIZ POPUP -->
+<div id="quiz-overlay">
+    <div id="quiz-badge">🧠</div>
+    <div id="quiz-title">שאלת הידע</div>
+    <div id="quiz-question"></div>
+    <div class="quiz-options" id="quiz-options"></div>
+    <div id="quiz-feedback"></div>
+    <div id="quiz-stake">✅ תשובה נכונה = +10 🪙 &nbsp;|&nbsp; ❌ תשובה שגויה = מוות</div>
 </div>
 
 <!-- SHOP -->
@@ -1604,7 +1687,132 @@ function quitToLobby() {
     showOverlay("lobby");
 }
 
+// ===============================
+//         QUIZ SYSTEM
+// ===============================
+const QUIZ_QUESTIONS = [
+    {
+        q: "היכן בדיוק מתרחש תהליך הטלת הביצים והפרייתן אצל דג האבו-נפחא?",
+        opts: [
+            "במים עמוקים ושקטים, על גבי צמחייה ימית עבותה.",
+            "על קרקעית הים באזורי מים רדודים.",
+            "בתוך סדקים צרים בין סלעים מוגנים מטורפים.",
+            "סמוך לפני המים במקומות בהם הזרם חלש."
+        ],
+        correct: 1
+    },
+    {
+        q: "מהו המאפיין הגופני המאפשר לדג את יכולת ההתנפחות המהירה?",
+        opts: [
+            "מבנה שלד גמיש וקשקשים מתרחבים.",
+            "שכבת עור דקה במיוחד וחסרת שרירים.",
+            "גוף גמיש וצורה מעוגלת המאפשרים התרחבות בעת סכנה.",
+            "ריאות מיוחדות השואבות מים במהירות אל חלל הבטן."
+        ],
+        correct: 2
+    },
+    {
+        q: "מה נחשב למרכיב מזון קיים אך פחות עיקרי בתפריט של האבו-נפחא?",
+        opts: [
+            "תולעים ימיות המסתתרות בחול.",
+            "סרטנים קטנים וצדפות קשיחות.",
+            "חלזונות ימיים המצויים על הקרקעית.",
+            "אצות ים וצמחייה מזדמנת."
+        ],
+        correct: 3
+    },
+    {
+        q: "מהו טווח הטמפרטורות האופטימלי לקיום תנאי מחיה תקינים עבור הדג?",
+        opts: [
+            "בין 20°C ל-25°C במים מתוקים.",
+            "בין 23°C ל-28°C במים חמימים.",
+            "מעל 28°C באקלים טרופי בלבד.",
+            "בין 18°C ל-23°C באזורים מוגנים ושקטים."
+        ],
+        correct: 1
+    },
+    {
+        q: "מהי האסטרטגיה של הדגיגים הקטנים כדי לשרוד לאחר הבקיעה?",
+        opts: [
+            "שחייה מהירה אל עבר מים עמוקים וחשוכים יותר.",
+            "הסתתרות בין סלעים וצמחייה כדי להימנע מטורפים.",
+            "התנפחות מיידית כדי להיראות גדולים יותר מגיל צעיר.",
+            "הפרשת רעל לסביבתם הקרובה להרתעת דגים אחרים."
+        ],
+        correct: 1
+    },
+    {
+        q: "כיצד מגן הרעל הנמצא בגופו של האבו-נפחא על שרידותו?",
+        opts: [
+            "הוא משמש ככלי ציד לסינוור טרף מהיר.",
+            "הוא מופרש דרך העור רק כאשר הדג מרגיש מאוים.",
+            "הוא מהווה הגנה פנימית על גוף הדג מפני טורפים.",
+            "הוא משמש לסימון טריטוריה באזורי רבייה רדודים."
+        ],
+        correct: 2
+    },
+    {
+        q: "לפי השקופית העוסקת בפציעות, מדוע ספורטאים נוטים להחמיר פציעות ללא ידיעתם?",
+        opts: [
+            "בגלל חוסר יכולת פיזיולוגית להרגיל כאב בזמן מאמץ.",
+            "בגלל מחסור באמצעים רפואיים זמינים על המגרש.",
+            "כי אין דרך מיידית לדעת בזמן אמת אם הגוף נפגע באמת.",
+            "כי המכה נראית חמורה בהתחלה אך הכאב חולף מהר."
+        ],
+        correct: 2
+    }
+];
+
+let quizCallback = null;
+
+function showQuiz(onCorrect, onWrong) {
+    quizCallback = { onCorrect, onWrong };
+    const q = QUIZ_QUESTIONS[Math.floor(Math.random() * QUIZ_QUESTIONS.length)];
+
+    document.getElementById("quiz-question").textContent = q.q;
+    const container = document.getElementById("quiz-options");
+    container.innerHTML = "";
+    document.getElementById("quiz-feedback").textContent = "";
+
+    q.opts.forEach((opt, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "quiz-opt";
+        btn.textContent = `${idx + 1}. ${opt}`;
+        btn.onclick = () => handleQuizAnswer(idx, q.correct, container);
+        container.appendChild(btn);
+    });
+
+    document.getElementById("quiz-overlay").classList.add("show");
+}
+
+function handleQuizAnswer(chosen, correct, container) {
+    const btns = container.querySelectorAll(".quiz-opt");
+    btns.forEach((b, i) => {
+        b.classList.add("disabled");
+        if (i === correct) b.classList.add("correct");
+        else if (i === chosen) b.classList.add("wrong");
+    });
+
+    const feedback = document.getElementById("quiz-feedback");
+    if (chosen === correct) {
+        feedback.style.color = "#4ade80";
+        feedback.textContent = "✅ נכון! +10 🪙";
+        setTimeout(() => {
+            document.getElementById("quiz-overlay").classList.remove("show");
+            if (quizCallback) quizCallback.onCorrect();
+        }, 1200);
+    } else {
+        feedback.style.color = "#f87171";
+        feedback.textContent = "❌ טעות! אתה מת...";
+        setTimeout(() => {
+            document.getElementById("quiz-overlay").classList.remove("show");
+            if (quizCallback) quizCallback.onWrong();
+        }, 1500);
+    }
+}
+
 // ===== LEVELS =====
+
 function getMaxBossHp() { return 10 + level * 8; }
 
 const levelMessages = [
@@ -1628,10 +1836,26 @@ function levelUp() {
     clearInterval(spawnSharkInterval);
     spawnFishInterval = setInterval(spawnFish, Math.max(400, 800 - level * 40));
     spawnSharkInterval = setInterval(spawnShark, Math.max(1500, 4000 - level * 350));
-    // Show level complete screen
+    // Show quiz before level complete screen
     paused = true;
+    showQuiz(
+        // Correct answer
+        () => {
+            earnedCoins += 10;
+            updateHUD();
+            showLevelComplete();
+        },
+        // Wrong answer – player dies
+        () => {
+            paused = false;
+            die();
+        }
+    );
+}
+
+function showLevelComplete() {
     document.getElementById("lc-level").textContent = level;
-    document.getElementById("lc-reward").textContent = bonus;
+    document.getElementById("lc-reward").textContent = level * 5;
     document.getElementById("lc-msg").textContent = levelMessages[Math.min(level - 2, levelMessages.length - 1)];
     showOverlay("level-complete");
 }
