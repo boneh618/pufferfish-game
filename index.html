@@ -1194,9 +1194,41 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
     </div>
 
     <div class="admin-section">
-        <h3>🔧 פעולות מיוחדות</h3>
+        <h3>🎯 תן יכולת לשחקן</h3>
         <div class="admin-row">
-            <button class="btn btn-admin btn-admin-green" onclick="adminInfiniteCoins()">∞ מטבעות אינסופיים לי</button>
+            <input class="admin-input" id="admin-ability-name" placeholder="שם שחקן">
+            <select class="admin-input" id="admin-ability-select" style="max-width:150px;">
+                <option value="">-- בחר יכולת --</option>
+            </select>
+            <button class="btn btn-admin btn-admin-green" onclick="adminGiveAbility()">תן</button>
+        </div>
+    </div>
+
+    <div class="admin-section">
+        <h3>🎮 שנה שלב שחקן</h3>
+        <div class="admin-row">
+            <input class="admin-input" id="admin-level-name" placeholder="שם שחקן">
+            <input class="admin-input" type="number" id="admin-level-value" placeholder="שלב" style="max-width:80px;" min="1">
+            <button class="btn btn-admin btn-admin-green" onclick="adminSetLevel()">שנה</button>
+        </div>
+    </div>
+
+    <div class="admin-section">
+        <h3>🔍 צפה בפרטי שחקן</h3>
+        <div class="admin-row">
+            <input class="admin-input" id="admin-view-name" placeholder="שם שחקן">
+            <button class="btn btn-admin btn-admin-green" onclick="adminViewPlayer()">צפה</button>
+        </div>
+        <div id="admin-player-details" style="background:rgba(255,255,255,0.05);border-radius:8px;padding:8px;margin-top:8px;font-size:12px;color:rgba(255,255,255,0.7);display:none;"></div>
+    </div>
+
+    <div class="admin-section">
+        <h3>🔧 פעולות מיוחדות</h3>
+        <div class="admin-row" style="flex-wrap:wrap;gap:6px;">
+            <button class="btn btn-admin btn-admin-green" onclick="adminInfiniteCoins()">∞ מטבעות אינסופיים</button>
+            <button class="btn btn-admin btn-admin-green" onclick="adminUnlockAllAbilities()">⚡ פתח כל היכולות</button>
+            <button class="btn btn-admin btn-admin-green" onclick="adminMaxLevel()">🏆 שלב מקסימום</button>
+            <button class="btn btn-admin" onclick="adminClearMyData()">🗑 נקה הנתונים שלי</button>
             <button class="btn btn-admin" onclick="adminResetLeaderboard()">🗑 אפס לוח ניקוד</button>
         </div>
     </div>
@@ -1797,7 +1829,18 @@ function hideAllOverlays() {
 // ===============================
 //   USERNAME + LEADERBOARD + ADMIN
 // ===============================
-const PROFANITY = ["fuck","shit","ass","bitch","dick","cunt","whore","nigger","nigga","faggot","fag","bastard","damn","cock","pussy","slut","retard","idiot","stupid","moron","כוס","זין","זונה","בן זונה","מנייק","שרמוטה","נאלץ","מזדיין","מציץ","חרא","טמבל","אידיוט","מפגר","כסחה","בא לי","ערס","פרוצה","מניאק"];
+const PROFANITY = [
+    // English
+    "arse","arsehead","arsehole","ass","asshole","bastard","bitch","bloody","bollocks","brotherfucker","bugger","bullshit",
+    "chigga","childfucker","cock","cocksucker","crap","cunt","dammit","damn","damned","dickhead","dick","dumbass","dyke",
+    "fag","faggot","fatherfucker","fuck","fucked","fucker","fucking","goddammit","goddamn","goddamned","goddamnit","godsdamn",
+    "hell","horseshit","jackass","kike","motherfucker","nigga","nigger","nigra","pigfucker","piss","prick","pussy",
+    "shit","shite","sisterfuck","sisterfucker","slut","spastic","tranny","twat","wanker","whore","retard","idiot","stupid","moron",
+    // Hebrew
+    "כוס","זין","זונה","בןזונה","בנזונה","מנייק","שרמוטה","נאלץ","מזדיין","מציץ","חרא","טמבל","אידיוט","מפגר",
+    "כסחה","באלי","ערס","פרוצה","מניאק","חתיכתחרא","קורבן","שרמוט","זונות","כוסאמו","זיןאבא",
+    "מתניין","זיון","לזיין","להזדיין","מקורבן","זיונים"
+];
 function containsProfanity(name) {
     const lower = name.toLowerCase().replace(/\s+/g,"");
     return PROFANITY.some(w => lower.includes(w.toLowerCase().replace(/\s+/g,"")));
@@ -2014,6 +2057,16 @@ document.addEventListener("keydown", e => {
 function openAdmin() {
     if (!isAdminUnlocked()) return;
     refreshAdminPlayers();
+    // Populate ability dropdown
+    const abilitySelect = document.getElementById("admin-ability-select");
+    if (abilitySelect && abilitySelect.options.length === 1) {
+        ABILITIES.forEach(ab => {
+            const opt = document.createElement("option");
+            opt.value = ab.id;
+            opt.textContent = `${ab.emoji} ${ab.name}`;
+            abilitySelect.appendChild(opt);
+        });
+    }
     showOverlay("admin-panel");
 }
 function closeAdmin() { showOverlay("lobby"); }
@@ -2106,6 +2159,94 @@ function adminResetLeaderboard() {
     if (FIREBASE_URL) fbSet("players", null).catch(()=>{});
     adminLog("לוח הניקוד אופס!");
     refreshAdminPlayers();
+}
+function adminGiveAbility() {
+    const name = document.getElementById("admin-ability-name").value.trim();
+    const abilityId = document.getElementById("admin-ability-select").value;
+    if (!name || !abilityId) return;
+    const doGive = (players) => {
+        const p = players.find(pl => pl.name === name);
+        if (!p) { adminLog(`שחקן לא נמצא: ${name}`); return; }
+        if (!p.ownedAbilities) p.ownedAbilities = [];
+        if (!p.ownedAbilities.includes(abilityId)) {
+            p.ownedAbilities.push(abilityId);
+            savePlayers(players);
+            fbUpsertPlayer(p);
+            if (name === getMyUsername()) {
+                if (!gameData.ownedAbilities) gameData.ownedAbilities = [];
+                if (!gameData.ownedAbilities.includes(abilityId)) gameData.ownedAbilities.push(abilityId);
+                saveData();
+            }
+            const ab = ABILITIES.find(a => a.id === abilityId);
+            adminLog(`נתת יכולת "${ab ? ab.name : abilityId}" ל-${name}`);
+        } else {
+            adminLog(`${name} כבר יש את היכולת הזו`);
+        }
+        document.getElementById("admin-ability-name").value = "";
+        refreshAdminPlayers();
+    };
+    if (FIREBASE_URL) fbFetchPlayers().then(doGive).catch(() => doGive(getPlayers()));
+    else doGive(getPlayers());
+}
+function adminSetLevel() {
+    const name = document.getElementById("admin-level-name").value.trim();
+    const lvl = parseInt(document.getElementById("admin-level-value").value) || 1;
+    if (!name) return;
+    const doSet = (players) => {
+        const p = players.find(pl => pl.name === name);
+        if (!p) { adminLog(`שחקן לא נמצא: ${name}`); return; }
+        p.bestLevel = Math.max(lvl, p.bestLevel || 0);
+        savePlayers(players);
+        fbUpsertPlayer(p);
+        if (name === getMyUsername()) { gameData.bestLevel = p.bestLevel; saveData(); }
+        adminLog(`שינית שלב של ${name} ל-${lvl}`);
+        document.getElementById("admin-level-name").value = "";
+        document.getElementById("admin-level-value").value = "";
+        refreshAdminPlayers();
+    };
+    if (FIREBASE_URL) fbFetchPlayers().then(doSet).catch(() => doSet(getPlayers()));
+    else doSet(getPlayers());
+}
+function adminViewPlayer() {
+    const name = document.getElementById("admin-view-name").value.trim();
+    if (!name) return;
+    const detailsEl = document.getElementById("admin-player-details");
+    const doView = (players) => {
+        const p = players.find(pl => pl.name === name);
+        if (!p) { adminLog(`שחקן לא נמצא: ${name}`); detailsEl.style.display = "none"; return; }
+        detailsEl.style.display = "block";
+        detailsEl.innerHTML = `
+            <strong>👤 ${p.name}</strong><br>
+            🪙 מטבעות: ${(p.coins||0).toLocaleString()}<br>
+            ⭐ ניקוד מקסימום: ${(p.bestScore||0).toLocaleString()}<br>
+            🏆 שלב מקסימום: ${p.bestLevel||0}<br>
+            🎮 סקין: ${p.skinId||"classic"}<br>
+            ⚡ יכולות: ${(p.ownedAbilities||[]).length} נרכשו
+        `;
+    };
+    if (FIREBASE_URL) fbFetchPlayers().then(doView).catch(() => doView(getPlayers()));
+    else doView(getPlayers());
+}
+function adminUnlockAllAbilities() {
+    gameData.ownedAbilities = ABILITIES.map(a => a.id);
+    saveData();
+    syncMyStats();
+    adminLog("כל היכולות נפתחו!");
+}
+function adminMaxLevel() {
+    gameData.bestLevel = 999;
+    saveData();
+    syncMyStats();
+    adminLog("שלב מקסימום הוגדר ל-999!");
+}
+function adminClearMyData() {
+    if (!confirm("למחוק את כל הנתונים שלך? (מטבעות, סקינים, יכולות)")) return;
+    const defaultData = { coins: 0, ownedSkins: ["classic"], equippedSkin: "classic", bestScore: 0, bestLevel: 0, playerSpeed: 2.8, ownedBossSkins: ["anglerfish"], equippedBossSkin: "anglerfish", questionsEnabled: true, ownedSharkSkins: ["classic"], equippedSharkSkin: "classic", ownedAbilities: [], equippedAbilities: [] };
+    Object.assign(gameData, defaultData);
+    saveData();
+    syncMyStats();
+    document.getElementById("lobby-coins").textContent = gameData.coins;
+    adminLog("הנתונים שלך אופסו!");
 }
 
 // ===============================
