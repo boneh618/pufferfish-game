@@ -4032,6 +4032,7 @@ function startRebind(target) {
     const btn = document.getElementById("kb-" + target);
     if (btn) { btn.textContent = "..."; btn.classList.add("listening"); }
 }
+const GAME_KEYS = new Set([" ","ArrowUp","ArrowDown","ArrowLeft","ArrowRight","w","a","s","d","W","A","S","D"]);
 document.addEventListener("keydown", e => {
     if (rebindTarget) {
         e.preventDefault(); e.stopPropagation();
@@ -4571,6 +4572,7 @@ function gameLoop() {
 // ===============================
 function startGame() {
     hideAllOverlays();
+    if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
     document.getElementById("hud").style.display = "flex";
     if (isMobile) {
         infBtn.style.display = "flex";
