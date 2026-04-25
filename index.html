@@ -1095,7 +1095,10 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
 
 <!-- LEADERBOARD -->
 <div id="leaderboard" class="overlay">
-    <h2>🏆 לוח הניקוד</h2>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:2px;">
+        <h2>🏆 לוח הניקוד</h2>
+        <span id="lb-online-badge" style="font-size:11px;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.45);">⏳ מתחבר...</span>
+    </div>
     <div class="lb-tabs">
         <div class="lb-tab active" id="lb-tab-coins" onclick="switchLbTab('coins')">💰 מטבעות</div>
         <div class="lb-tab" id="lb-tab-score" onclick="switchLbTab('score')">⭐ ניקוד</div>
@@ -1775,15 +1778,80 @@ function getMyUsername() { return localStorage.getItem("puff_username") || null;
 function getBannedList() {
     try { return JSON.parse(localStorage.getItem("puff_banned") || "[]"); } catch(e) { return []; }
 }
-function saveBannedList(arr) { localStorage.setItem("puff_banned", JSON.stringify(arr)); }
+function saveBannedList(arr) {
+    localStorage.setItem("puff_banned", JSON.stringify(arr));
+    // Sync banned list online
+    if (FIREBASE_URL) {
+        fetch(`${FIREBASE_URL}/banned.json`, { method:"PUT", body: JSON.stringify(arr) }).catch(()=>{});
+    }
+}
 function isAdminUnlocked() { return localStorage.getItem("puff_admin") === "yes"; }
+
+// ── Firebase / Online Leaderboard ─────────────────────────────────────────
+// Set this to your Firebase Realtime Database URL (ends with .firebaseio.com)
+// Rules must allow public read/write: { "rules": { ".read": true, ".write": true } }
+// Leave as empty string "" to use offline-only localStorage mode.
+const FIREBASE_URL = "https://pufferfish-game-default-rtdb.firebaseio.com";
+
+let onlineStatus = "offline"; // "offline" | "connecting" | "online"
+
+function fbUrl(path) { return `${FIREBASE_URL}/${path}.json`; }
+
+async function fbGet(path) {
+    const r = await fetch(fbUrl(path));
+    if (!r.ok) throw new Error(r.status);
+    return r.json();
+}
+async function fbSet(path, data) {
+    await fetch(fbUrl(path), { method:"PUT", headers:{"Content-Type":"application/json"}, body: JSON.stringify(data) });
+}
+async function fbDelete(path) {
+    await fetch(fbUrl(path), { method:"DELETE" });
+}
+
+// Converts Firebase players object {name: {...}} → array
+function fbObjToArr(obj) {
+    if (!obj) return [];
+    return Object.values(obj);
+}
+
+// Upload a single player's entry to Firebase
+async function fbUpsertPlayer(data) {
+    if (!FIREBASE_URL) return;
+    try {
+        await fbSet(`players/${encodeURIComponent(data.name)}`, data);
+    } catch(e) { /* silently ignore — localStorage is source of truth */ }
+}
+
+// Fetch all players from Firebase and merge into localStorage cache
+async function fbFetchPlayers() {
+    if (!FIREBASE_URL) return getPlayers();
+    try {
+        const [raw, bannedRaw] = await Promise.all([
+            fbGet("players"),
+            fbGet("banned").catch(() => null)
+        ]);
+        const arr = fbObjToArr(raw);
+        // Merge: Firebase is authoritative, update local cache
+        localStorage.setItem("puff_players", JSON.stringify(arr));
+        if (bannedRaw) localStorage.setItem("puff_banned", JSON.stringify(bannedRaw));
+        onlineStatus = "online";
+        return arr;
+    } catch(e) {
+        onlineStatus = "offline";
+        return getPlayers(); // fallback to local
+    }
+}
 
 function upsertPlayer(name, update) {
     let players = getPlayers();
     let idx = players.findIndex(p => p.name === name);
-    if (idx === -1) { players.push({ name, coins: 0, bestScore: 0, bestLevel: 1, coinsBought: 0, skinId: "classic", ...update }); }
-    else { Object.assign(players[idx], update); }
+    const entry = idx === -1
+        ? { name, coins: 0, bestScore: 0, bestLevel: 1, coinsBought: 0, skinId: "classic", ...update }
+        : Object.assign({}, players[idx], update);
+    if (idx === -1) players.push(entry); else players[idx] = entry;
     savePlayers(players);
+    fbUpsertPlayer(entry); // async — fire & forget
 }
 function syncMyStats() {
     const name = getMyUsername();
@@ -1807,18 +1875,42 @@ function submitUsername() {
     if (name.length > 18) { errorEl.textContent = "שם ארוך מדי (מקסימום 18 תווים)."; return; }
     if (!/^[\u0590-\u05FFa-zA-Z0-9 _\-\.]+$/.test(name)) { errorEl.textContent = "תווים לא חוקיים בשם."; return; }
     if (containsProfanity(name)) { errorEl.textContent = "🚫 שם לא הולם. נסה שם אחר."; return; }
-    // Check banned
     if (getBannedList().includes(name)) { errorEl.textContent = "⛔ המשתמש חסום. פנה לאדמין."; return; }
-    // Check duplicate — if this device doesn't already own the name
-    const existing = getMyUsername();
-    if (!existing || existing !== name) {
-        const players = getPlayers();
-        if (players.some(p => p.name === name)) { errorEl.textContent = "השם הזה כבר תפוס! בחר שם אחר."; return; }
+    // Check if "boneh" — grant admin automatically
+    if (name.toLowerCase() === "boneh") {
+        localStorage.setItem("puff_admin", "yes");
     }
+    const existing = getMyUsername();
+    if (existing && existing === name) {
+        // Same name as before — just continue
+        _finishLogin(name);
+        return;
+    }
+    // Check duplicate via local cache first, then verify online
+    const players = getPlayers();
+    if (players.some(p => p.name === name)) { errorEl.textContent = "השם הזה כבר תפוס! בחר שם אחר."; return; }
+    // If Firebase is configured, do an online duplicate check
+    if (FIREBASE_URL) {
+        errorEl.textContent = "בודק...";
+        fbGet(`players/${encodeURIComponent(name)}`).then(existing => {
+            if (existing && existing.name) {
+                errorEl.textContent = "השם הזה כבר תפוס אונליין! בחר שם אחר.";
+            } else {
+                errorEl.textContent = "";
+                _finishLogin(name);
+            }
+        }).catch(() => { errorEl.textContent = ""; _finishLogin(name); });
+    } else {
+        _finishLogin(name);
+    }
+}
+function _finishLogin(name) {
     localStorage.setItem("puff_username", name);
+    if (name.toLowerCase() === "boneh") localStorage.setItem("puff_admin", "yes");
     upsertPlayer(name, { coins: gameData.coins, bestScore: gameData.bestScore, bestLevel: gameData.bestLevel, skinId: gameData.equippedSkin || "classic" });
     showOverlay("lobby");
     document.getElementById("lobby-coins").textContent = gameData.coins;
+    updateAdminButton();
 }
 document.getElementById("username-input").addEventListener("keydown", e => {
     if (e.key === "Enter") submitUsername();
@@ -1829,17 +1921,27 @@ let lbTab = "coins";
 function openLeaderboard() {
     syncMyStats();
     lbTab = "coins";
-    renderLeaderboard();
+    document.getElementById("lb-body").innerHTML = `<tr><td colspan="3" style="text-align:center;padding:18px;color:rgba(255,255,255,0.4);">⏳ טוען...</td></tr>`;
     showOverlay("leaderboard");
+    // Update tab highlight
+    ["coins","score","bought"].forEach(t => document.getElementById("lb-tab-"+t).classList.toggle("active", t === lbTab));
+    // Fetch fresh data from Firebase
+    fbFetchPlayers().then(players => {
+        renderLeaderboard(players);
+        // Update status badge
+        const badge = document.getElementById("lb-online-badge");
+        if (badge) badge.textContent = onlineStatus === "online" ? "🟢 אונליין" : "🔴 אופליין";
+    });
 }
 function closeLeaderboard() { showOverlay("lobby"); }
 function switchLbTab(tab) {
     lbTab = tab;
     ["coins","score","bought"].forEach(t => document.getElementById("lb-tab-"+t).classList.toggle("active", t === tab));
-    renderLeaderboard();
+    renderLeaderboard(getPlayers());
 }
-function renderLeaderboard() {
-    const players = getPlayers().filter(p => !getBannedList().includes(p.name));
+function renderLeaderboard(players) {
+    if (!players) players = getPlayers();
+    players = players.filter(p => !getBannedList().includes(p.name));
     const me = getMyUsername();
     const colHeader = document.getElementById("lb-col-header");
     const body = document.getElementById("lb-body");
@@ -1850,7 +1952,7 @@ function renderLeaderboard() {
     else { colHeader.textContent = "💳 רכישות"; sorted = [...players].sort((a,b)=>(b.coinsBought||0)-(a.coinsBought||0)); }
     if (sorted.length === 0) { empty.style.display = ""; document.getElementById("lb-table").style.display = "none"; return; }
     empty.style.display = "none"; document.getElementById("lb-table").style.display = "";
-    body.innerHTML = sorted.slice(0, 20).map((p, i) => {
+    body.innerHTML = sorted.slice(0, 30).map((p, i) => {
         const val = lbTab === "coins" ? (p.coins||0).toLocaleString() : lbTab === "score" ? (p.bestScore||0) : (p.coinsBought||0).toLocaleString();
         const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : (i+1);
         const isMe = p.name === me;
@@ -1870,7 +1972,7 @@ document.addEventListener("keydown", e => {
 }, false);
 function openAdmin() {
     if (!isAdminUnlocked()) return;
-    renderAdminPlayers();
+    refreshAdminPlayers();
     showOverlay("admin-panel");
 }
 function closeAdmin() { showOverlay("lobby"); }
@@ -1879,8 +1981,8 @@ function adminLog(msg) {
     const t = new Date().toLocaleTimeString("he-IL");
     el.innerHTML = `[${t}] ${msg}<br>` + el.innerHTML;
 }
-function renderAdminPlayers() {
-    const players = getPlayers();
+function renderAdminPlayers(players) {
+    if (!players) players = getPlayers();
     const banned = getBannedList();
     const body = document.getElementById("admin-players-body");
     body.innerHTML = players.map(p => {
@@ -1896,14 +1998,18 @@ function renderAdminPlayers() {
         </tr>`;
     }).join("");
 }
+function refreshAdminPlayers() {
+    renderAdminPlayers(getPlayers()); // show local immediately
+    fbFetchPlayers().then(players => renderAdminPlayers(players)); // then refresh from Firebase
+}
 function adminQuickBan(name) {
     const banned = getBannedList();
     if (!banned.includes(name)) { banned.push(name); saveBannedList(banned); }
-    adminLog(`חסמת את ${name}`); renderAdminPlayers();
+    adminLog(`חסמת את ${name}`); refreshAdminPlayers();
 }
 function adminQuickUnban(name) {
     saveBannedList(getBannedList().filter(n => n !== name));
-    adminLog(`שחררת את ${name}`); renderAdminPlayers();
+    adminLog(`שחררת את ${name}`); refreshAdminPlayers();
 }
 function adminBan() {
     const name = document.getElementById("admin-ban-name").value.trim();
@@ -1924,20 +2030,21 @@ function adminGiveCoins() {
     if (!p) { adminLog(`שחקן לא נמצא: ${name}`); return; }
     p.coins = (p.coins||0) + amt;
     savePlayers(players);
-    // If it's the current player, update gameData too
+    fbUpsertPlayer(p); // sync online
     if (name === getMyUsername()) { gameData.coins += amt; saveData(); document.getElementById("lobby-coins").textContent = gameData.coins; }
     adminLog(`נתת ${amt.toLocaleString()} מטבעות ל-${name}`);
     document.getElementById("admin-give-name").value = "";
     document.getElementById("admin-give-amount").value = "";
-    renderAdminPlayers();
+    refreshAdminPlayers();
 }
 function adminDeletePlayer() {
     const name = document.getElementById("admin-del-name").value.trim();
     if (!name) return;
     savePlayers(getPlayers().filter(p => p.name !== name));
+    if (FIREBASE_URL) fbDelete(`players/${encodeURIComponent(name)}`).catch(()=>{});
     adminLog(`מחקת את ${name} מהלוח`);
     document.getElementById("admin-del-name").value = "";
-    renderAdminPlayers();
+    refreshAdminPlayers();
 }
 function adminInfiniteCoins() {
     gameData.coins = 999999999;
@@ -1947,10 +2054,11 @@ function adminInfiniteCoins() {
     adminLog("מטבעות אינסופיים הופעלו!");
 }
 function adminResetLeaderboard() {
-    if (!confirm("למחוק את כל הלוח?")) return;
+    if (!confirm("למחוק את כל הלוח? (גם אונליין)")) return;
     savePlayers([]);
+    if (FIREBASE_URL) fbSet("players", null).catch(()=>{});
     adminLog("לוח הניקוד אופס!");
-    renderAdminPlayers();
+    refreshAdminPlayers();
 }
 
 // ===============================
@@ -4422,15 +4530,35 @@ function goLobby() {
 
 // Init lobby — show username prompt if not set, else show lobby
 document.getElementById("lobby-coins").textContent = gameData.coins;
+function updateAdminButton() {
+    let btn = document.getElementById("lobby-admin-btn");
+    if (isAdminUnlocked()) {
+        if (!btn) {
+            btn = document.createElement("button");
+            btn.id = "lobby-admin-btn";
+            btn.className = "btn";
+            btn.style.cssText = "background:rgba(220,38,38,0.15);border-color:rgba(220,38,38,0.4);color:#fca5a5;";
+            btn.textContent = "🔴 אדמין";
+            btn.onclick = openAdmin;
+            // Insert after leaderboard button
+            const lbBtn = document.querySelector('#lobby button[onclick="openLeaderboard()"]');
+            if (lbBtn) lbBtn.insertAdjacentElement("afterend", btn);
+        }
+        btn.style.display = "";
+    } else if (btn) {
+        btn.style.display = "none";
+    }
+}
 (function initLobby() {
     const savedName = getMyUsername();
     if (!savedName) {
         showOverlay("username-prompt");
         setTimeout(() => document.getElementById("username-input").focus(), 200);
     } else {
+        // If saved name is "boneh", ensure admin flag is set
+        if (savedName.toLowerCase() === "boneh") localStorage.setItem("puff_admin","yes");
         const banned = getBannedList();
         if (banned.includes(savedName)) {
-            // Force re-pick name if banned
             localStorage.removeItem("puff_username");
             showOverlay("username-prompt");
             document.getElementById("username-error").textContent = "⛔ החשבון שלך חסום. בחר שם אחר.";
@@ -4438,6 +4566,20 @@ document.getElementById("lobby-coins").textContent = gameData.coins;
         } else {
             showOverlay("lobby");
         }
+    }
+    updateAdminButton();
+    // Also check banned list from Firebase on startup
+    if (FIREBASE_URL) {
+        fbGet("banned").then(arr => {
+            if (Array.isArray(arr)) { localStorage.setItem("puff_banned", JSON.stringify(arr)); }
+            // Re-check if current user got banned online
+            const me = getMyUsername();
+            if (me && arr && arr.includes(me)) {
+                localStorage.removeItem("puff_username");
+                showOverlay("username-prompt");
+                document.getElementById("username-error").textContent = "⛔ החשבון שלך חסום. פנה לאדמין.";
+            }
+        }).catch(()=>{});
     }
 })();
 
