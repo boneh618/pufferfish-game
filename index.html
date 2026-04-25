@@ -19,15 +19,42 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
 /* ===== HUD ===== */
 .hud {
     position: fixed;
-    top: 0; left: 0; right: 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 14px;
-    z-index: 10;
+    inset: 0;
     pointer-events: none;
+    z-index: 10;
 }
-.hud-right, .hud-left { display:flex; gap:8px; align-items:center; }
+.hud-top-left {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+}
+.hud-top-right {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-end;
+}
+.hud-bottom-left {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+}
+.hud-bottom-right {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-end;
+}
 .hud-item {
     background: rgba(0,0,0,0.5);
     backdrop-filter: blur(8px);
@@ -759,25 +786,6 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
 .energy-fill { background: linear-gradient(90deg, #ffa500, #ffcc00); }
 .energy-full { background: linear-gradient(90deg, #4ade80, #22c55e); }
 
-#bars-row {
-    position: fixed;
-    bottom: 12px;
-    left: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    z-index: 10;
-    pointer-events: none;
-}
-
-@media (max-width: 900px) {
-    #bars-row {
-        top: 58px;
-        left: 12px;
-        bottom: auto;
-    }
-}
-
 /* ===== QUIZ POPUP ===== */
 #quiz-overlay {
     position: fixed; inset: 0;
@@ -912,14 +920,11 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
 
 /* ===== ABILITY HUD ===== */
 #ability-hud {
-    position: fixed;
-    bottom: 120px;
-    right: 20px;
     display: none;
     flex-direction: column;
     gap: 6px;
-    z-index: 20;
     pointer-events: none;
+    margin-bottom: 8px;
 }
 .ability-slot {
     background: rgba(0,0,0,0.6);
@@ -940,6 +945,36 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
 .ability-slot.cooldown { opacity: 0.5; }
 .ability-slot-icon { font-size: 18px; }
 .ability-slot-cd { font-size: 11px; color: #fbbf24; }
+
+/* ===== MOBILE RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .hud-top-left, .hud-top-right {
+        top: 8px;
+    }
+    .hud-top-left {
+        left: 8px;
+    }
+    .hud-top-right {
+        right: 8px;
+    }
+    .hud-bottom-left {
+        bottom: 100px;
+        left: 8px;
+    }
+    .hud-bottom-right {
+        bottom: 100px;
+        right: 8px;
+    }
+    .hud-item {
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+    #pause-btn {
+        width: 34px;
+        height: 34px;
+        font-size: 16px;
+    }
+}
 
 /* ===== POISON CLOUD ===== */
 @keyframes poisonPulse {
@@ -1227,9 +1262,6 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
     <button class="btn btn-secondary" onclick="closeSettings()">חזור</button>
 </div>
 
-<!-- ABILITY HUD (in-game) -->
-<div id="ability-hud"></div>
-
 <!-- SHOP -->
 <div id="shop" class="overlay">
     <h2>🛒 חנות סקינים</h2>
@@ -1245,12 +1277,15 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
 
 <!-- HUD -->
 <div class="hud" id="hud" style="display:none;">
-    <div class="hud-left">
+    <div class="hud-top-left">
         <div class="hud-item hud-coins">🪙 <span id="hud-coins">0</span></div>
         <div class="hud-item hud-score">⭐ <span id="hud-score">0</span></div>
-        <div class="hud-item hud-level">שלב <span id="hud-level">1</span></div>
     </div>
-    <div id="bars-row">
+    <div class="hud-top-right">
+        <div class="hud-item hud-level">שלב <span id="hud-level">1</span></div>
+        <div id="pause-btn" onclick="togglePause()">⏸</div>
+    </div>
+    <div class="hud-bottom-left">
         <div class="hud-bar-container">
             <span class="hud-bar-label">❤️</span>
             <div class="hud-bar-track">
@@ -1258,6 +1293,9 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
             </div>
             <span class="hud-bar-label" id="hp-text" style="font-size:11px;color:#ff6b6b;">3/3</span>
         </div>
+    </div>
+    <div class="hud-bottom-right">
+        <div id="ability-hud"></div>
         <div class="hud-bar-container">
             <span class="hud-bar-label">🐡</span>
             <div class="hud-bar-track">
@@ -1265,9 +1303,6 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
             </div>
             <span class="hud-bar-label" id="energy-text" style="font-size:11px;color:#ffcc00;">מוכן</span>
         </div>
-    </div>
-    <div class="hud-right">
-        <div id="pause-btn" onclick="togglePause()">⏸</div>
     </div>
 </div>
 
