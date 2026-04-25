@@ -1170,7 +1170,7 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
     <div class="admin-section">
         <h3>🪙 תן מטבעות לשחקן</h3>
         <div class="admin-row">
-            <input class="admin-input" id="admin-give-name" placeholder="שם שחקן">
+            <input class="admin-input" id="admin-give-name" placeholder="שם שחקן" list="player-names-list">
             <input class="admin-input" type="number" id="admin-give-amount" placeholder="כמות" style="max-width:100px;">
             <button class="btn btn-admin btn-admin-green" onclick="adminGiveCoins()">תן</button>
         </div>
@@ -1179,7 +1179,7 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
     <div class="admin-section">
         <h3>🚫 חסום / שחרר שחקן</h3>
         <div class="admin-row">
-            <input class="admin-input" id="admin-ban-name" placeholder="שם שחקן">
+            <input class="admin-input" id="admin-ban-name" placeholder="שם שחקן" list="player-names-list">
             <button class="btn btn-admin" onclick="adminBan()">חסום</button>
             <button class="btn btn-admin btn-admin-green" onclick="adminUnban()">שחרר</button>
         </div>
@@ -1188,7 +1188,7 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
     <div class="admin-section">
         <h3>🗑️ מחק שחקן מלוח הניקוד</h3>
         <div class="admin-row">
-            <input class="admin-input" id="admin-del-name" placeholder="שם שחקן">
+            <input class="admin-input" id="admin-del-name" placeholder="שם שחקן" list="player-names-list">
             <button class="btn btn-admin" onclick="adminDeletePlayer()">מחק</button>
         </div>
     </div>
@@ -1196,7 +1196,7 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
     <div class="admin-section">
         <h3>🎯 תן יכולת לשחקן</h3>
         <div class="admin-row">
-            <input class="admin-input" id="admin-ability-name" placeholder="שם שחקן">
+            <input class="admin-input" id="admin-ability-name" placeholder="שם שחקן" list="player-names-list">
             <select class="admin-input" id="admin-ability-select" style="max-width:150px;">
                 <option value="">-- בחר יכולת --</option>
             </select>
@@ -1207,7 +1207,7 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
     <div class="admin-section">
         <h3>🎮 שנה שלב שחקן</h3>
         <div class="admin-row">
-            <input class="admin-input" id="admin-level-name" placeholder="שם שחקן">
+            <input class="admin-input" id="admin-level-name" placeholder="שם שחקן" list="player-names-list">
             <input class="admin-input" type="number" id="admin-level-value" placeholder="שלב" style="max-width:80px;" min="1">
             <button class="btn btn-admin btn-admin-green" onclick="adminSetLevel()">שנה</button>
         </div>
@@ -1216,7 +1216,7 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
     <div class="admin-section">
         <h3>🔍 צפה בפרטי שחקן</h3>
         <div class="admin-row">
-            <input class="admin-input" id="admin-view-name" placeholder="שם שחקן">
+            <input class="admin-input" id="admin-view-name" placeholder="שם שחקן" list="player-names-list">
             <button class="btn btn-admin btn-admin-green" onclick="adminViewPlayer()">צפה</button>
         </div>
         <div id="admin-player-details" style="background:rgba(255,255,255,0.05);border-radius:8px;padding:8px;margin-top:8px;font-size:12px;color:rgba(255,255,255,0.7);display:none;"></div>
@@ -1236,6 +1236,9 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
     <div id="admin-log"></div>
     <button class="btn btn-secondary" style="margin-top:10px;" onclick="closeAdmin()">סגור</button>
 </div>
+
+<!-- DATALIST FOR PLAYER NAME AUTOCOMPLETE -->
+<datalist id="player-names-list"></datalist>
 
 <!-- SETTINGS -->
 <div id="settings" class="overlay">
@@ -2091,6 +2094,11 @@ function renderAdminPlayers(players) {
             }</td>
         </tr>`;
     }).join("");
+    // Update player names autocomplete list
+    const datalist = document.getElementById("player-names-list");
+    if (datalist) {
+        datalist.innerHTML = players.map(p => `<option value="${p.name}">${p.name}</option>`).join("");
+    }
 }
 function refreshAdminPlayers() {
     renderAdminPlayers(getPlayers()); // show local immediately
