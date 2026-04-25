@@ -123,6 +123,93 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
 .btn-shop {
     background: linear-gradient(135deg, #f59e0b, #d97706);
 }
+.btn-premium {
+    background: linear-gradient(135deg, #b45309, #fbbf24, #b45309);
+    background-size: 200% 100%;
+    animation: shimmerBtn 2s linear infinite;
+    color: #1a0a00;
+    font-weight: 900;
+    border: 2px solid #fbbf24;
+}
+@keyframes shimmerBtn {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ===== PREMIUM SHOP ===== */
+#premium-shop {
+    background: radial-gradient(ellipse at top, #2d1900 0%, #0d0700 100%);
+    overflow-y: auto;
+    padding: 20px;
+}
+#premium-shop h2 {
+    font-size: 28px;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b, #fbbf24);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 4px;
+}
+.premium-card {
+    background: linear-gradient(135deg, rgba(251,191,36,0.12), rgba(180,83,9,0.1));
+    border: 2px solid rgba(251,191,36,0.35);
+    border-radius: 20px;
+    padding: 24px 32px;
+    max-width: 340px;
+    width: 100%;
+    text-align: center;
+    margin: 12px 0;
+    position: relative;
+    overflow: hidden;
+}
+.premium-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(251,191,36,0.08), transparent);
+    pointer-events: none;
+}
+.premium-card .pc-amount {
+    font-size: 38px;
+    font-weight: 900;
+    color: #fbbf24;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+.premium-card .pc-label {
+    font-size: 15px;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 14px;
+}
+.premium-card .pc-price {
+    font-size: 22px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 16px;
+}
+.premium-badge {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #1a0a00;
+    font-size: 11px;
+    font-weight: 900;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+    display: inline-block;
+}
+#payment-success-msg {
+    background: rgba(74,222,128,0.15);
+    border: 1px solid rgba(74,222,128,0.3);
+    border-radius: 12px;
+    padding: 12px 20px;
+    color: #4ade80;
+    font-size: 15px;
+    font-weight: 700;
+    max-width: 320px;
+    text-align: center;
+    display: none;
+}
+#payment-success-msg.show { display: block; }
 
 /* ===== GAME OVER ===== */
 #gameover {
@@ -400,6 +487,77 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
     color: rgba(255,255,255,0.4);
 }
 
+/* ===== ABILITY SHOP ===== */
+#ability-shop {
+    background: linear-gradient(180deg, #0a001a 0%, #0f1030 100%);
+    overflow-y: auto;
+    padding: 20px;
+}
+#ability-shop h2 { font-size: 28px; margin-bottom: 4px; }
+#ability-shop .shop-coins { color: #ffd700; font-size: 16px; margin-bottom: 16px; }
+.ability-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+    max-width: 560px;
+    width: 100%;
+    margin-bottom: 20px;
+}
+.ability-card {
+    background: rgba(255,255,255,0.06);
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 14px 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.15s, border-color 0.2s;
+}
+.ability-card:active { transform: scale(0.95); }
+.ability-card.owned  { border-color: rgba(74,222,128,0.4); }
+.ability-card.equipped { border-color: #a78bfa; box-shadow: 0 0 16px rgba(167,139,250,0.3); }
+.ability-card.locked { opacity: 0.7; }
+.ability-icon { font-size: 32px; margin-bottom: 6px; }
+.ability-name { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 3px; }
+.ability-desc { font-size: 10px; color: rgba(255,255,255,0.45); margin-bottom: 5px; line-height: 1.3; }
+.ability-key  { font-size: 11px; color: #a78bfa; font-weight: 700; margin-bottom: 4px; }
+
+/* ===== ABILITY HUD ===== */
+#ability-hud {
+    position: fixed;
+    bottom: 120px;
+    right: 20px;
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 20;
+    pointer-events: none;
+}
+.ability-slot {
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(6px);
+    border: 2px solid rgba(167,139,250,0.3);
+    border-radius: 12px;
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    min-width: 120px;
+}
+.ability-slot.ready { border-color: #a78bfa; }
+.ability-slot.active { border-color: #fbbf24; background: rgba(251,191,36,0.15); }
+.ability-slot.cooldown { opacity: 0.5; }
+.ability-slot-icon { font-size: 18px; }
+.ability-slot-cd { font-size: 11px; color: #fbbf24; }
+
+/* ===== POISON CLOUD ===== */
+@keyframes poisonPulse {
+    0%,100% { opacity: 0.55; }
+    50% { opacity: 0.85; }
+}
+
 /* ===== PARTICLES ===== */
 .coin-particle {
     position: fixed;
@@ -430,8 +588,20 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
         </div>
         <input id="speed-slider" type="range" min="1.5" max="5" step="0.1" value="2.8">
     </div>
+    <div class="speed-control">
+        <div class="speed-label">
+            <span>שאלות בין שלבים</span>
+            <span id="quiz-toggle-status" style="color:#4ade80;font-weight:700;">פעיל ✓</span>
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;color:#c7d2fe;font-size:13px;">
+            <input type="checkbox" id="quiz-toggle" checked style="width:20px;height:20px;accent-color:#6366f1;cursor:pointer;">
+            הצג שאלות בין שלבים
+        </label>
+    </div>
     <button class="btn" onclick="startGame()">🎮 התחל משחק</button>
     <button class="btn btn-shop" onclick="openShop()">🛒 חנות סקינים</button>
+    <button class="btn" style="background:linear-gradient(135deg,#7c3aed,#a78bfa);" onclick="openAbilityShop()">⚡ חנות יכולות</button>
+    <button class="btn btn-premium" onclick="openPremiumShop()">💎 חנות פרימיום</button>
 </div>
 
 <!-- GAME OVER -->
@@ -471,11 +641,46 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
     <div id="quiz-stake">✅ תשובה נכונה = +10 🪙 &nbsp;|&nbsp; ❌ תשובה שגויה = מוות</div>
 </div>
 
+<!-- PREMIUM SHOP -->
+<div id="premium-shop" class="overlay">
+    <h2>💎 חנות פרימיום</h2>
+    <p style="color:rgba(255,255,255,0.45);font-size:13px;margin-bottom:16px;">קנה FishBucks עם כסף אמיתי</p>
+    <div id="payment-success-msg">✅ תשלום הצליח! ה-FishBucks נוספו לחשבון שלך!</div>
+    <div class="premium-card">
+        <div class="premium-badge">🔥 ערך מטורף</div>
+        <div class="pc-amount">1,000,000</div>
+        <div class="pc-label">🪙 FishBucks</div>
+        <div class="pc-price">₪10 בלבד</div>
+        <button class="btn btn-premium" onclick="startPayment1M()">💳 לתשלום</button>
+    </div>
+    <p style="color:rgba(255,255,255,0.25);font-size:11px;max-width:300px;text-align:center;line-height:1.6;">
+        התשלום מאובטח דרך Stripe. לאחר התשלום תועבר חזרה אוטומטית.
+    </p>
+    <button class="btn btn-secondary" style="margin-top:8px;" onclick="closePremiumShop()">חזור</button>
+</div>
+
+<!-- ABILITY SHOP -->
+<div id="ability-shop" class="overlay">
+    <h2>⚡ חנות יכולות</h2>
+    <p class="shop-coins">💰 <span id="ability-shop-coins">0</span> מטבעות</p>
+    <div class="ability-grid" id="ability-grid"></div>
+    <button class="btn btn-secondary" onclick="closeAbilityShop()">חזור</button>
+</div>
+
+<!-- ABILITY HUD (in-game) -->
+<div id="ability-hud"></div>
+
 <!-- SHOP -->
 <div id="shop" class="overlay">
     <h2>🛒 חנות סקינים</h2>
     <p class="shop-coins">💰 <span id="shop-coins">0</span> מטבעות</p>
     <div class="skin-grid" id="skin-grid"></div>
+    <h3 style="color:#60a5fa;margin:12px 0 6px;font-size:16px;">🎣 סקין בוס</h3>
+    <p style="color:rgba(255,255,255,0.4);font-size:12px;margin-bottom:8px;">קנה מראה חדשה לבוס</p>
+    <div class="skin-grid" id="boss-skin-grid"></div>
+    <h3 style="color:#f87171;margin:12px 0 6px;font-size:16px;">🦈 סקין כריש</h3>
+    <p style="color:rgba(255,255,255,0.4);font-size:12px;margin-bottom:8px;">שנה את מראה הכרישים</p>
+    <div class="skin-grid" id="shark-skin-grid"></div>
     <button class="btn btn-secondary" onclick="closeShop()">חזור</button>
 </div>
 
@@ -537,9 +742,18 @@ window.addEventListener("resize", resize);
 function loadData() {
     try {
         let d = JSON.parse(localStorage.getItem("puff_save"));
-        if (d && typeof d === "object") return d;
+        if (d && typeof d === "object") {
+            if (!d.ownedBossSkins) d.ownedBossSkins = ["anglerfish"];
+            if (!d.equippedBossSkin) d.equippedBossSkin = "anglerfish";
+            if (typeof d.questionsEnabled !== "boolean") d.questionsEnabled = true;
+            if (!d.ownedSharkSkins) d.ownedSharkSkins = ["classic"];
+            if (!d.equippedSharkSkin) d.equippedSharkSkin = "classic";
+            if (!d.ownedAbilities) d.ownedAbilities = [];
+            if (!d.equippedAbilities) d.equippedAbilities = [];
+            return d;
+        }
     } catch(e) {}
-    return { coins: 0, ownedSkins: ["classic"], equippedSkin: "classic", bestScore: 0, bestLevel: 0, playerSpeed: 2.8 };
+    return { coins: 0, ownedSkins: ["classic"], equippedSkin: "classic", bestScore: 0, bestLevel: 0, playerSpeed: 2.8, ownedBossSkins: ["anglerfish"], equippedBossSkin: "anglerfish", questionsEnabled: true, ownedSharkSkins: ["classic"], equippedSharkSkin: "classic", ownedAbilities: [], equippedAbilities: [] };
 }
 function saveData() {
     localStorage.setItem("puff_save", JSON.stringify(gameData));
@@ -566,6 +780,27 @@ speedSlider.addEventListener("input", e => {
 });
 
 updateSpeedUI();
+
+// Quiz toggle
+const quizToggle = document.getElementById("quiz-toggle");
+const quizToggleStatus = document.getElementById("quiz-toggle-status");
+function updateQuizToggleUI() {
+    if (gameData.questionsEnabled) {
+        quizToggleStatus.textContent = "פעיל ✓";
+        quizToggleStatus.style.color = "#4ade80";
+        quizToggle.checked = true;
+    } else {
+        quizToggleStatus.textContent = "כבוי ✗";
+        quizToggleStatus.style.color = "#f87171";
+        quizToggle.checked = false;
+    }
+}
+quizToggle.addEventListener("change", e => {
+    gameData.questionsEnabled = e.target.checked;
+    updateQuizToggleUI();
+    saveData();
+});
+updateQuizToggleUI();
 
 // ===============================
 //            SKINS
@@ -845,12 +1080,96 @@ function renderShop() {
         };
         grid.appendChild(card);
     });
+
+    // Boss skins section
+    const bossGrid = document.getElementById("boss-skin-grid");
+    bossGrid.innerHTML = "";
+    BOSS_SKINS.forEach(skin => {
+        const owned = gameData.ownedBossSkins.includes(skin.id);
+        const equipped = gameData.equippedBossSkin === skin.id;
+        const canBuy = gameData.coins >= skin.price;
+
+        const card = document.createElement("div");
+        card.className = "skin-card" + (equipped ? " equipped" : owned ? " owned" : " locked");
+
+        let statusHTML = "";
+        if (equipped) statusHTML = `<div class="skin-status">✔ מצויד</div>`;
+        else if (owned) statusHTML = `<div class="skin-status" style="color:#60a5fa">לחץ לציוד</div>`;
+        else statusHTML = `<div class="skin-price">${skin.price === 0 ? "חינם" : skin.price + " 🪙"}</div>`;
+
+        const imgEl = bossImages[skin.id]
+            ? `<img src="${bossImages[skin.id].src}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;">`
+            : `<span style="font-size:28px;">${skin.emoji}</span>`;
+
+        card.innerHTML = `
+            <div class="skin-preview" style="background:rgba(0,20,60,0.5);">
+                ${imgEl}
+            </div>
+            <div class="skin-name">${skin.name}</div>
+            ${statusHTML}
+        `;
+
+        card.onclick = () => {
+            if (equipped) return;
+            if (owned) {
+                gameData.equippedBossSkin = skin.id;
+                saveData();
+                renderShop();
+            } else if (canBuy) {
+                gameData.coins -= skin.price;
+                gameData.ownedBossSkins.push(skin.id);
+                gameData.equippedBossSkin = skin.id;
+                saveData();
+                document.getElementById("shop-coins").textContent = gameData.coins;
+                renderShop();
+            }
+        };
+        bossGrid.appendChild(card);
+    });
+
+    // Shark skins section
+    const sharkGrid = document.getElementById("shark-skin-grid");
+    sharkGrid.innerHTML = "";
+    SHARK_SKINS.forEach(skin => {
+        const owned = (gameData.ownedSharkSkins || ["classic"]).includes(skin.id);
+        const equipped = (gameData.equippedSharkSkin || "classic") === skin.id;
+        const canBuy = gameData.coins >= skin.price;
+        const card = document.createElement("div");
+        card.className = "skin-card" + (equipped ? " equipped" : owned ? " owned" : " locked");
+        let statusHTML = "";
+        if (equipped) statusHTML = `<div class="skin-status">✔ מצויד</div>`;
+        else if (owned) statusHTML = `<div class="skin-status" style="color:#60a5fa">לחץ לציוד</div>`;
+        else statusHTML = `<div class="skin-price">${skin.price === 0 ? "חינם" : skin.price + " 🪙"}</div>`;
+        card.innerHTML = `
+            <div class="skin-preview" style="background:${skin.bodyColor};">
+                <span style="font-size:28px;">🦈</span>
+            </div>
+            <div class="skin-name">${skin.name}</div>
+            ${statusHTML}
+        `;
+        card.onclick = () => {
+            if (equipped) return;
+            if (owned) {
+                gameData.equippedSharkSkin = skin.id;
+                saveData(); renderShop();
+            } else if (canBuy) {
+                gameData.coins -= skin.price;
+                if (!gameData.ownedSharkSkins) gameData.ownedSharkSkins = ["classic"];
+                gameData.ownedSharkSkins.push(skin.id);
+                gameData.equippedSharkSkin = skin.id;
+                saveData();
+                document.getElementById("shop-coins").textContent = gameData.coins;
+                renderShop();
+            }
+        };
+        sharkGrid.appendChild(card);
+    });
 }
 
 // ===============================
 //        OVERLAY MANAGER
 // ===============================
-const ALL_OVERLAYS = ["lobby","gameover","pause-screen","shop","level-complete"];
+const ALL_OVERLAYS = ["lobby","gameover","pause-screen","shop","level-complete","premium-shop","ability-shop"];
 function showOverlay(id) {
     ALL_OVERLAYS.forEach(oid => {
         const el = document.getElementById(oid);
@@ -904,6 +1223,10 @@ function initGame() {
     inflateEnergy = MAX_INFLATE_ENERGY;
     inflateRechargeDelay = 0;
     invincibleTimer = 0;
+    poisonClouds = [];
+    abilityEffects = {};
+    cloneFish = null;
+    lastAbilityFrames = {};
 }
 
 // ===== FISH TYPES =====
@@ -915,34 +1238,293 @@ const fishTypes = [
     { color: "#ff6fff", glowColor: "rgba(255,111,255,0.3)", value: 10, size: 14 }
 ];
 
-const bossPhoto = new Image();
-let bossPhotoLoaded = false;
+// ===============================
+//         BOSS SKINS
+// ===============================
+const BOSS_SKINS = [
+    { id: "anglerfish", name: "דג פנס",      price: 0,       emoji: "🎣" },
+    { id: "shark",      name: "כריש ענק",    price: 200,     emoji: "🦈" },
+    { id: "kraken",     name: "קראקן",        price: 400,     emoji: "🐙" },
+    { id: "dragon",     name: "דרקון ים",    price: 600,     emoji: "🐉" },
+    { id: "nautilus",   name: "נאוטילוס",    price: 800,     emoji: "🐚" },
+    { id: "leviathan",  name: "לויתן",       price: 1200,    emoji: "🐳" },
+    { id: "undead",     name: "דג רקב",      price: 1500,    emoji: "💀" },
+    { id: "mech",       name: "מכאני",       price: 2000,    emoji: "🤖" },
+    { id: "ben",        name: "בן פרניק",    price: 1000000, emoji: "👑" },
+    { id: "roi_s",      name: "רועי שמחי",   price: 1000000, emoji: "🌟" },
+    { id: "roi_r",      name: "רועי ראובן",  price: 1000000, emoji: "🔥" },
+    { id: "yoyo",       name: "יויו",         price: 1000000, emoji: "💎" },
+];
 
-function loadBossPhoto() {
-    const bossImageCandidates = [
-        "boss-photo.jpg",
-        "boss-photo.jpeg",
-        "boss-photo.png",
-        "boss.jpg",
-        "boss.jpeg",
-        "boss.png"
-    ];
-    let idx = 0;
+// ===============================
+//         SHARK SKINS
+// ===============================
+const SHARK_SKINS = [
+    { id: "classic",  name: "כריש קלאסי",  price: 0,    bodyColor: "#667",  bellyColor: "#aab", eyeColor: "#c00",  finColor: "#556" },
+    { id: "lemon",    name: "כריש לימון",  price: 150,  bodyColor: "#c8a835", bellyColor: "#e8d070", eyeColor: "#884400", finColor: "#b09020" },
+    { id: "bull",     name: "כריש שור",    price: 300,  bodyColor: "#7a5535", bellyColor: "#c0956a", eyeColor: "#ff4400", finColor: "#664422" },
+    { id: "ghost",    name: "כריש רוח",    price: 500,  bodyColor: "rgba(200,220,255,0.4)", bellyColor: "rgba(240,245,255,0.3)", eyeColor: "#88aaff", finColor: "rgba(180,200,240,0.35)" },
+    { id: "magma",    name: "כריש מגמה",   price: 700,  bodyColor: "#3a1505", bellyColor: "#8a3010", eyeColor: "#ff6600", finColor: "#2a0f02" },
+    { id: "cyber",    name: "כריש סייבר",  price: 1000, bodyColor: "#0a1a2a", bellyColor: "#0a3a5a", eyeColor: "#00ffff", finColor: "#051020" },
+];
 
-    const tryNext = () => {
-        if (idx >= bossImageCandidates.length) {
-            bossPhotoLoaded = false;
-            return;
-        }
-        bossPhoto.src = bossImageCandidates[idx++];
-    };
-
-    bossPhoto.onload = () => { bossPhotoLoaded = true; };
-    bossPhoto.onerror = () => tryNext();
-    tryNext();
+function getEquippedSharkSkin() {
+    return SHARK_SKINS.find(s => s.id === (gameData.equippedSharkSkin || "classic")) || SHARK_SKINS[0];
 }
 
-loadBossPhoto();
+const ABILITIES = [
+    { id: "poison_cloud",  name: "ענן רעל",      desc: "הנח ענן רעל – כרישים בתוכו מאבדים אנרגיה לאט", emoji: "☠️",  price: 300,  cooldown: 360, key: "q" },
+    { id: "speed_boost",   name: "האצה",          desc: "הכפל את מהירותך למשך 5 שניות",                   emoji: "⚡",  price: 500,  cooldown: 420, key: "e" },
+    { id: "shield",        name: "מגן",           desc: "חסינות מלאה למשך 4 שניות",                       emoji: "🛡️", price: 800,  cooldown: 480, key: "r" },
+    { id: "magnet",        name: "מגנט מטבעות",   desc: "שואב מטבעות אליך למשך 6 שניות",                  emoji: "🧲",  price: 400,  cooldown: 300, key: "f" },
+    { id: "time_slow",     name: "האטת זמן",      desc: "האט כרישים ב-50% למשך 4 שניות",                  emoji: "⏳",  price: 1000, cooldown: 600, key: "q" },
+    { id: "double_coins",  name: "כפל מטבעות",   desc: "ערך המטבעות מוכפל ל-10 שניות",                   emoji: "💰",  price: 600,  cooldown: 540, key: "e" },
+    { id: "shockwave",     name: "גל הלם",        desc: "דחף את כל הכרישים ממך בבת אחת",                  emoji: "💥",  price: 1200, cooldown: 600, key: "r" },
+    { id: "clone_fish",    name: "שיבוט",          desc: "מתחזה מסיח את תשומת הלב הכרישים ל-5 שניות",     emoji: "🐠",  price: 900,  cooldown: 480, key: "f" },
+];
+
+// Slot map: 4 slots → abilities at index 0..3 in equippedAbilities
+const ABILITY_KEYS = ["q","e","r","f"];
+
+let poisonClouds = []; // {x, y, r, life, timer}
+let abilityEffects = {}; // {id: {active: bool, timer: int}}
+let cloneFish = null; // {x, y, life}
+let lastAbilityFrames = {}; // {id: frameLastActivated}
+
+function openAbilityShop() {
+    showOverlay("ability-shop");
+    renderAbilityShop();
+}
+function closeAbilityShop() { hideOverlay("ability-shop"); showOverlay("lobby"); }
+
+function renderAbilityShop() {
+    const grid = document.getElementById("ability-grid");
+    if (!grid) return;
+    grid.innerHTML = "";
+    const owned = gameData.ownedAbilities || [];
+    const equipped = gameData.equippedAbilities || [];
+    ABILITIES.forEach((ab, idx) => {
+        const isOwned = owned.includes(ab.id);
+        const slotIdx = equipped.indexOf(ab.id);
+        const isEquipped = slotIdx !== -1;
+        const canBuy = gameData.coins >= ab.price;
+        const card = document.createElement("div");
+        card.className = "ability-card" + (isEquipped ? " equipped" : isOwned ? " owned" : "");
+        let statusBtn = "";
+        if (isEquipped) statusBtn = `<div class="ability-key">מצויד (${ab.key.toUpperCase()})</div><button onclick="unequipAbility('${ab.id}')">הסר</button>`;
+        else if (isOwned) statusBtn = `<button onclick="equipAbility('${ab.id}')">⚡ צייד</button>`;
+        else statusBtn = `<button onclick="buyAbility('${ab.id}')" ${canBuy ? "" : "disabled"} style="opacity:${canBuy?1:0.4}">${ab.price}🪙 רכוש</button>`;
+        card.innerHTML = `
+            <div class="ability-icon">${ab.emoji}</div>
+            <div class="ability-name">${ab.name}</div>
+            <div class="ability-desc">${ab.desc}</div>
+            ${statusBtn}
+        `;
+        grid.appendChild(card);
+    });
+    const coinsEl = document.getElementById("ability-shop-coins");
+    if (coinsEl) coinsEl.textContent = gameData.coins;
+}
+
+function buyAbility(id) {
+    const ab = ABILITIES.find(a => a.id === id);
+    if (!ab || gameData.coins < ab.price) return;
+    gameData.coins -= ab.price;
+    if (!gameData.ownedAbilities) gameData.ownedAbilities = [];
+    gameData.ownedAbilities.push(id);
+    saveData();
+    renderAbilityShop();
+}
+function equipAbility(id) {
+    if (!gameData.equippedAbilities) gameData.equippedAbilities = [];
+    if (gameData.equippedAbilities.includes(id)) return;
+    if (gameData.equippedAbilities.length >= 4) {
+        gameData.equippedAbilities.shift(); // remove oldest
+    }
+    gameData.equippedAbilities.push(id);
+    saveData();
+    renderAbilityShop();
+}
+function unequipAbility(id) {
+    if (!gameData.equippedAbilities) return;
+    gameData.equippedAbilities = gameData.equippedAbilities.filter(x => x !== id);
+    saveData();
+    renderAbilityShop();
+}
+
+function activateAbility(id) {
+    if (!gameState.playing) return;
+    const equipped = gameData.equippedAbilities || [];
+    if (!equipped.includes(id)) return;
+    const ab = ABILITIES.find(a => a.id === id);
+    if (!ab) return;
+    const now = frameCount;
+    if ((now - (lastAbilityFrames[id] || -9999)) < ab.cooldown) return; // still cooling
+    lastAbilityFrames[id] = now;
+    if (id === "poison_cloud") {
+        poisonClouds.push({ x: player.x, y: player.y, r: 65, life: 240, timer: 240 });
+    } else if (id === "speed_boost") {
+        abilityEffects["speed_boost"] = { active: true, timer: 300 };
+    } else if (id === "shield") {
+        abilityEffects["shield"] = { active: true, timer: 240 };
+    } else if (id === "magnet") {
+        abilityEffects["magnet"] = { active: true, timer: 360 };
+    } else if (id === "time_slow") {
+        abilityEffects["time_slow"] = { active: true, timer: 240 };
+    } else if (id === "double_coins") {
+        abilityEffects["double_coins"] = { active: true, timer: 600 };
+    } else if (id === "shockwave") {
+        sharks.forEach(s => {
+            let dx = s.x - player.x, dy = s.y - player.y;
+            let dist = Math.hypot(dx, dy) || 1;
+            s.x += (dx / dist) * 180;
+            s.y += (dy / dist) * 180;
+        });
+    } else if (id === "clone_fish") {
+        cloneFish = { x: player.x + 80, y: player.y, life: 300 };
+    }
+}
+
+function updateAbilities() {
+    // Tick active effects
+    for (let eid in abilityEffects) {
+        if (abilityEffects[eid].active) {
+            abilityEffects[eid].timer--;
+            if (abilityEffects[eid].timer <= 0) abilityEffects[eid].active = false;
+        }
+    }
+    // Update poison clouds
+    for (let i = poisonClouds.length - 1; i >= 0; i--) {
+        const cloud = poisonClouds[i];
+        cloud.life--;
+        if (cloud.life <= 0) { poisonClouds.splice(i, 1); continue; }
+        // Damage sharks in cloud every 60 frames
+        if (frameCount % 60 === 0) {
+            sharks.forEach(s => {
+                if (Math.hypot(s.x - cloud.x, s.y - cloud.y) < cloud.r + s.size) {
+                    s.hp = (s.hp || 3) - 1;
+                }
+            });
+        }
+    }
+    // Remove dead sharks from poison
+    for (let i = sharks.length - 1; i >= 0; i--) {
+        if ((sharks[i].hp !== undefined) && sharks[i].hp <= 0) {
+            particles.push(...createParticles(sharks[i].x, sharks[i].y, "#44ff44", 6));
+            sharks.splice(i, 1);
+        }
+    }
+    // Clone fish lure
+    if (cloneFish) {
+        cloneFish.life--;
+        if (cloneFish.life <= 0) { cloneFish = null; return; }
+        // Attract sharks to clone
+        if (abilityEffects["clone_fish"]?.active || cloneFish) {
+            sharks.forEach(s => {
+                let dx = cloneFish.x - s.x, dy = cloneFish.y - s.y;
+                let dist = Math.hypot(dx, dy) || 1;
+                s.x += (dx / dist) * 0.8;
+                s.y += (dy / dist) * 0.8;
+            });
+        }
+    }
+    // Time slow effect on sharks
+    // (applied in shark movement via abilityEffects check)
+}
+
+function drawPoisonClouds() {
+    poisonClouds.forEach(cloud => {
+        let alpha = cloud.life / cloud.timer;
+        ctx.save();
+        let grad = ctx.createRadialGradient(cloud.x, cloud.y, 0, cloud.x, cloud.y, cloud.r);
+        grad.addColorStop(0, `rgba(80,200,80,${alpha * 0.55})`);
+        grad.addColorStop(0.7, `rgba(40,160,40,${alpha * 0.3})`);
+        grad.addColorStop(1, `rgba(20,120,20,0)`);
+        ctx.beginPath();
+        ctx.arc(cloud.x, cloud.y, cloud.r, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+        // Bubbles
+        for (let b = 0; b < 4; b++) {
+            let bx = cloud.x + Math.cos(Date.now()/400 + b * 1.57) * cloud.r * 0.5;
+            let by = cloud.y + Math.sin(Date.now()/400 + b * 1.57) * cloud.r * 0.5;
+            ctx.beginPath();
+            ctx.arc(bx, by, 4, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(100,255,100,${alpha * 0.4})`;
+            ctx.fill();
+        }
+        ctx.restore();
+    });
+}
+
+function drawCloneFish() {
+    if (!cloneFish) return;
+    let alpha = cloneFish.life / 300;
+    ctx.save();
+    ctx.globalAlpha = alpha * 0.7;
+    ctx.beginPath();
+    ctx.arc(cloneFish.x, cloneFish.y, 18, 0, Math.PI * 2);
+    ctx.fillStyle = "#ff8c00";
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(cloneFish.x - 18, cloneFish.y);
+    ctx.lineTo(cloneFish.x - 30, cloneFish.y - 10);
+    ctx.lineTo(cloneFish.x - 30, cloneFish.y + 10);
+    ctx.fillStyle = "#d45500";
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.restore();
+}
+
+function renderAbilityHUD() {
+    const equipped = gameData.equippedAbilities || [];
+    const hudEl = document.getElementById("ability-hud");
+    if (!hudEl) return;
+    if (!gameState.playing) { hudEl.style.display = "none"; return; }
+    hudEl.style.display = "flex";
+    hudEl.innerHTML = "";
+    ABILITY_KEYS.forEach((key, i) => {
+        const id = equipped[i];
+        const ab = id ? ABILITIES.find(a => a.id === id) : null;
+        const now = frameCount;
+        const lastUsed = id ? (lastAbilityFrames[id] || -9999) : -9999;
+        const ab_obj = ab ? ABILITIES.find(a => a.id === id) : null;
+        const cooldown = ab_obj ? ab_obj.cooldown : 1;
+        const elapsed = now - lastUsed;
+        const ready = elapsed >= cooldown;
+        const pct = Math.min(1, elapsed / cooldown);
+        const slot = document.createElement("div");
+        slot.className = "ability-slot" + (ab ? (ready ? " ready" : " cooldown") : "");
+        slot.title = ab ? ab.name : "";
+        slot.innerHTML = ab
+            ? `<span style="font-size:18px">${ab.emoji}</span>
+               <span style="font-size:9px;position:absolute;bottom:1px;left:50%;transform:translateX(-50%);color:#fff">${key.toUpperCase()}</span>
+               ${!ready ? `<div style="position:absolute;bottom:0;left:0;height:${(1-pct)*100}%;width:100%;background:rgba(0,0,0,0.5);border-radius:8px"></div>` : ""}`
+            : `<span style="color:rgba(255,255,255,0.2);font-size:10px">${key.toUpperCase()}</span>`;
+        hudEl.appendChild(slot);
+    });
+}
+
+const bossImages = {};
+function loadBossImages() {
+    BOSS_SKINS.forEach(skin => {
+        const img = new Image();
+        const candidates = [`boss-${skin.id}.jpg`, `boss-${skin.id}.jpeg`, `boss-${skin.id}.png`];
+        let idx = 0;
+        const tryNext = () => {
+            if (idx >= candidates.length) return;
+            img.src = candidates[idx++];
+        };
+        img.onload = () => { bossImages[skin.id] = img; };
+        img.onerror = () => tryNext();
+        tryNext();
+    });
+}
+loadBossImages();
+
+function getEquippedBossSkin() {
+    return BOSS_SKINS.find(s => s.id === gameData.equippedBossSkin) || BOSS_SKINS[0];
+}
 
 // ===============================
 //      DRAWING FUNCTIONS
@@ -978,20 +1560,21 @@ function drawFishShape(x, y, size, color, glowColor, dir) {
     ctx.restore();
 }
 
-function drawShark(x, y, size, dir) {
+function drawShark(x, y, size, dir, skinOverride) {
+    const sharkSkin = skinOverride || getEquippedSharkSkin();
     ctx.save();
     ctx.translate(x, y);
     ctx.scale(dir, 1);
     ctx.beginPath();
     ctx.ellipse(0, 0, size, size * 0.4, 0, 0, Math.PI * 2);
-    ctx.fillStyle = "#667";
+    ctx.fillStyle = sharkSkin.bodyColor;
     ctx.fill();
     ctx.beginPath();
     ctx.moveTo(-size * 0.1, -size * 0.35);
     ctx.lineTo(size * 0.2, -size * 0.9);
     ctx.lineTo(size * 0.4, -size * 0.35);
     ctx.closePath();
-    ctx.fillStyle = "#556";
+    ctx.fillStyle = sharkSkin.finColor;
     ctx.fill();
     ctx.beginPath();
     ctx.moveTo(-size * 0.8, 0);
@@ -999,11 +1582,11 @@ function drawShark(x, y, size, dir) {
     ctx.lineTo(-size * 1.1, 0);
     ctx.lineTo(-size * 1.4, size * 0.5);
     ctx.closePath();
-    ctx.fillStyle = "#556";
+    ctx.fillStyle = sharkSkin.finColor;
     ctx.fill();
     ctx.beginPath();
     ctx.ellipse(0, size * 0.1, size * 0.7, size * 0.2, 0, 0, Math.PI);
-    ctx.fillStyle = "#aab";
+    ctx.fillStyle = sharkSkin.bellyColor;
     ctx.fill();
     ctx.beginPath();
     ctx.arc(size * 0.5, -size * 0.05, size * 0.1, 0, Math.PI * 2);
@@ -1011,7 +1594,7 @@ function drawShark(x, y, size, dir) {
     ctx.fill();
     ctx.beginPath();
     ctx.arc(size * 0.53, -size * 0.05, size * 0.05, 0, Math.PI * 2);
-    ctx.fillStyle = "#c00";
+    ctx.fillStyle = sharkSkin.eyeColor;
     ctx.fill();
     ctx.beginPath();
     ctx.moveTo(size * 0.7, size * 0.05);
@@ -1022,6 +1605,25 @@ function drawShark(x, y, size, dir) {
     }
     ctx.fillStyle = "#fff";
     ctx.fill();
+    // Cyber special: neon glow outline
+    if (sharkSkin.id === "cyber") {
+        ctx.beginPath();
+        ctx.ellipse(0, 0, size + 3, size * 0.4 + 3, 0, 0, Math.PI * 2);
+        ctx.strokeStyle = "#00ffff";
+        ctx.lineWidth = 1.5;
+        ctx.shadowColor = "#00ffff";
+        ctx.shadowBlur = 10;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+    }
+    // Ghost special: fade effect
+    if (sharkSkin.id === "ghost") {
+        ctx.beginPath();
+        ctx.ellipse(0, 0, size * 1.1, size * 0.5, 0, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(180,200,255,0.2)";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+    }
     ctx.restore();
 }
 
@@ -1354,8 +1956,9 @@ function drawBoss(x, y, size, hp, maxHp) {
     let t = Date.now() / 400;
     let sway = Math.sin(t) * 3;
 
-    if (bossPhotoLoaded) {
-        let radius = size * 0.72;
+    const equippedBossSkin = getEquippedBossSkin();
+    const bossImg = bossImages[equippedBossSkin.id];
+    if (bossImg) {        let radius = size * 0.72;
 
         // Outer glow ring
         ctx.beginPath();
@@ -1369,7 +1972,7 @@ function drawBoss(x, y, size, hp, maxHp) {
         ctx.arc(0, sway, radius, 0, Math.PI * 2);
         ctx.closePath();
         ctx.clip();
-        ctx.drawImage(bossPhoto, -radius, sway - radius, radius * 2, radius * 2);
+        ctx.drawImage(bossImg, -radius, sway - radius, radius * 2, radius * 2);
         ctx.restore();
 
         // Circular border
@@ -1394,13 +1997,20 @@ function drawBoss(x, y, size, hp, maxHp) {
         ctx.fillStyle = "rgba(255,255,255,0.75)";
         ctx.font = "bold 11px sans-serif";
         ctx.textAlign = "center";
-        ctx.fillText("📸 BOSS", 0, barY - 5);
+        ctx.fillText(`${equippedBossSkin.emoji} BOSS`, 0, barY - 5);
 
         ctx.restore();
         return;
     }
 
-    // === ANGLERFISH ===
+    // === DRAWN BOSS SKINS (no image) ===
+    const sid = equippedBossSkin.id;
+    if (sid === "nautilus")  { ctx.restore(); drawBossNautilus(x, y, size, hp, maxHp, t); return; }
+    if (sid === "leviathan") { ctx.restore(); drawBossLeviathan(x, y, size, hp, maxHp, t); return; }
+    if (sid === "undead")    { ctx.restore(); drawBossUndead(x, y, size, hp, maxHp, t); return; }
+    if (sid === "mech")      { ctx.restore(); drawBossMech(x, y, size, hp, maxHp, t); return; }
+
+    // === ANGLERFISH (default) ===
 
     // Dark body – elongated, lumpy deep-sea shape
     ctx.shadowColor = "#003366";
@@ -1601,6 +2211,237 @@ function drawBoss(x, y, size, hp, maxHp) {
     ctx.restore();
 }
 
+function drawBossNautilus(x, y, size, hp, maxHp, t) {
+    ctx.save();
+    ctx.translate(x, y);
+    let sway = Math.sin(t) * 3;
+    // Shell spiral
+    ctx.shadowColor = "#f0a0ff";
+    ctx.shadowBlur = 20;
+    for (let i = 0; i < 5; i++) {
+        let r = size * (0.9 - i * 0.14);
+        ctx.beginPath();
+        ctx.arc(0, sway, r, 0, Math.PI * 2);
+        ctx.strokeStyle = `hsl(${280 + i*15}, 70%, ${40 + i*8}%)`;
+        ctx.lineWidth = size * 0.07;
+        ctx.stroke();
+    }
+    ctx.shadowBlur = 0;
+    // Tentacles
+    for (let i = 0; i < 8; i++) {
+        let a = i * (Math.PI * 2 / 8) + t * 0.3;
+        let len = size * 0.7 + Math.sin(t * 2 + i) * 10;
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(a) * size * 0.4, sway + Math.sin(a) * size * 0.4);
+        ctx.quadraticCurveTo(
+            Math.cos(a + 0.3) * len, sway + Math.sin(a + 0.3) * len,
+            Math.cos(a) * (len + 15), sway + Math.sin(a) * (len + 15)
+        );
+        ctx.strokeStyle = `rgba(200,100,255,0.5)`;
+        ctx.lineWidth = 3;
+        ctx.stroke();
+    }
+    // Eye
+    ctx.beginPath();
+    ctx.arc(size * 0.2, sway - size * 0.1, size * 0.12, 0, Math.PI * 2);
+    ctx.fillStyle = "#fff";
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(size * 0.22, sway - size * 0.1, size * 0.07, 0, Math.PI * 2);
+    ctx.fillStyle = "#8800ff";
+    ctx.fill();
+    _drawBossHpBar(size, hp, maxHp, sway, "🐚");
+    ctx.restore();
+}
+
+function drawBossLeviathan(x, y, size, hp, maxHp, t) {
+    ctx.save();
+    ctx.translate(x, y);
+    let sway = Math.sin(t) * 4;
+    // Massive body
+    ctx.shadowColor = "#0055aa";
+    ctx.shadowBlur = 35;
+    ctx.beginPath();
+    ctx.ellipse(0, sway, size * 1.1, size * 0.55, 0, 0, Math.PI * 2);
+    ctx.fillStyle = "#0a2040";
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    // Barnacles
+    for (let i = 0; i < 10; i++) {
+        let bx = (i - 5) * size * 0.18;
+        let by = sway - size * 0.4 + Math.sin(i * 1.2) * size * 0.1;
+        ctx.beginPath();
+        ctx.arc(bx, by, size * 0.06, 0, Math.PI * 2);
+        ctx.fillStyle = "#1a5070";
+        ctx.fill();
+    }
+    // Whale-like tail
+    ctx.beginPath();
+    ctx.moveTo(-size, sway);
+    ctx.quadraticCurveTo(-size * 1.4, sway - size * 0.4, -size * 1.6, sway - size * 0.2);
+    ctx.lineTo(-size * 1.1, sway);
+    ctx.lineTo(-size * 1.6, sway + size * 0.2);
+    ctx.quadraticCurveTo(-size * 1.4, sway + size * 0.4, -size, sway);
+    ctx.fillStyle = "#081830";
+    ctx.fill();
+    // Eyes (two glowing)
+    for (let s of [-1, 1]) {
+        ctx.beginPath();
+        ctx.arc(size * 0.6, sway + s * size * 0.2, size * 0.09, 0, Math.PI * 2);
+        ctx.fillStyle = "#00aaff";
+        ctx.shadowColor = "#00aaff";
+        ctx.shadowBlur = 12;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+    }
+    // Water spray
+    for (let i = 0; i < 5; i++) {
+        let sx = (i - 2) * size * 0.12;
+        let sy = sway - size * 0.55 - Math.abs(Math.sin(t * 2 + i)) * 20;
+        ctx.beginPath();
+        ctx.ellipse(sx, sy, 3, 8, 0, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(100,200,255,0.4)";
+        ctx.fill();
+    }
+    _drawBossHpBar(size * 1.1, hp, maxHp, sway, "🐳");
+    ctx.restore();
+}
+
+function drawBossUndead(x, y, size, hp, maxHp, t) {
+    ctx.save();
+    ctx.translate(x, y);
+    let sway = Math.sin(t) * 2;
+    // Decayed body
+    ctx.shadowColor = "#44ff44";
+    ctx.shadowBlur = 18;
+    ctx.beginPath();
+    ctx.ellipse(0, sway, size, size * 0.55, 0, 0, Math.PI * 2);
+    ctx.fillStyle = "#152010";
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    // Exposed ribs
+    for (let i = 0; i < 6; i++) {
+        let rx = (i - 2.5) * size * 0.28;
+        ctx.beginPath();
+        ctx.moveTo(rx, sway - size * 0.2);
+        ctx.quadraticCurveTo(rx + size * 0.07, sway, rx, sway + size * 0.2);
+        ctx.strokeStyle = "rgba(200,220,150,0.6)";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+    }
+    // Glowing green eyes
+    for (let s of [-1, 1]) {
+        ctx.beginPath();
+        ctx.arc(s * size * 0.3, sway - size * 0.15, size * 0.1, 0, Math.PI * 2);
+        ctx.fillStyle = "#000";
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(s * size * 0.3, sway - size * 0.15, size * 0.06, 0, Math.PI * 2);
+        ctx.fillStyle = "#44ff44";
+        ctx.shadowColor = "#44ff44";
+        ctx.shadowBlur = 12;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+    }
+    // Dripping slime
+    for (let i = 0; i < 4; i++) {
+        let dx = (i - 1.5) * size * 0.35;
+        let dripLen = sway + size * 0.55 + Math.abs(Math.sin(t * 1.5 + i)) * 15;
+        ctx.beginPath();
+        ctx.moveTo(dx, sway + size * 0.55);
+        ctx.lineTo(dx + 2, dripLen);
+        ctx.strokeStyle = "rgba(50,200,50,0.5)";
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(dx + 2, dripLen, 3, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(50,200,50,0.4)";
+        ctx.fill();
+    }
+    // Rotten teeth
+    ctx.fillStyle = "rgba(200,220,150,0.7)";
+    for (let i = 0; i < 5; i++) {
+        let tx = size * 0.35 + i * size * 0.1;
+        ctx.beginPath();
+        ctx.moveTo(tx - 2, sway - size * 0.05);
+        ctx.lineTo(tx + 1, sway + size * 0.12);
+        ctx.lineTo(tx + 4, sway - size * 0.05);
+        ctx.closePath();
+        ctx.fill();
+    }
+    _drawBossHpBar(size, hp, maxHp, sway, "💀");
+    ctx.restore();
+}
+
+function drawBossMech(x, y, size, hp, maxHp, t) {
+    ctx.save();
+    ctx.translate(x, y);
+    let sway = Math.sin(t * 0.5) * 2;
+    // Metal body
+    ctx.shadowColor = "#00ffff";
+    ctx.shadowBlur = 15;
+    ctx.beginPath();
+    ctx.roundRect(-size, sway - size * 0.45, size * 2, size * 0.9, size * 0.15);
+    ctx.fillStyle = "#1a2535";
+    ctx.fill();
+    // Panel lines
+    for (let i = 0; i < 4; i++) {
+        ctx.beginPath();
+        ctx.moveTo(-size * 0.7 + i * size * 0.45, sway - size * 0.4);
+        ctx.lineTo(-size * 0.7 + i * size * 0.45, sway + size * 0.4);
+        ctx.strokeStyle = "rgba(0,200,255,0.25)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    }
+    ctx.shadowBlur = 0;
+    // Mechanical arm / cannon
+    ctx.fillStyle = "#2a3a4a";
+    ctx.beginPath();
+    ctx.roundRect(size * 0.7, sway - size * 0.15, size * 0.55, size * 0.3, 4);
+    ctx.fill();
+    ctx.fillStyle = "#0a1520";
+    ctx.beginPath();
+    ctx.arc(size * 1.25, sway, size * 0.12, 0, Math.PI * 2);
+    ctx.fill();
+    // Scan line animation
+    let scanY = sway - size * 0.35 + (Date.now() / 20 % (size * 0.7));
+    ctx.beginPath();
+    ctx.moveTo(-size, sway - size * 0.45 + scanY % (size * 0.9));
+    ctx.lineTo(size, sway - size * 0.45 + scanY % (size * 0.9));
+    ctx.strokeStyle = "rgba(0,255,255,0.12)";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+    // Eyes (LED style)
+    for (let s of [-1, 1]) {
+        ctx.beginPath();
+        ctx.roundRect(s * size * 0.35 - size * 0.1, sway - size * 0.12, size * 0.2, size * 0.14, 3);
+        ctx.fillStyle = "#00ffff";
+        ctx.shadowColor = "#00ffff";
+        ctx.shadowBlur = 10;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+    }
+    _drawBossHpBar(size, hp, maxHp, sway, "🤖");
+    ctx.restore();
+}
+
+function _drawBossHpBar(size, hp, maxHp, sway, label) {
+    let barW = size * 1.8, barH = 8;
+    let barY = sway - size * 0.85 - 18;
+    ctx.fillStyle = "rgba(0,0,0,0.6)";
+    ctx.beginPath();
+    ctx.roundRect(-barW/2, barY, barW, barH, 4);
+    ctx.fill();
+    ctx.fillStyle = hp > maxHp * 0.3 ? "#f44" : "#ff0";
+    ctx.beginPath();
+    ctx.roundRect(-barW/2, barY, barW * (hp / maxHp), barH, 4);
+    ctx.fill();
+    ctx.fillStyle = "rgba(255,255,255,0.6)";
+    ctx.font = "bold 11px sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(`${label} BOSS`, 0, barY - 5);
+}
+
 // ===== WATER BACKGROUND =====
 let waterOffset = 0;
 function drawWater() {
@@ -1663,7 +2504,7 @@ function spawnShark() {
     else if(edge===1){x=canvas.width+60;y=Math.random()*canvas.height;}
     else if(edge===2){y=-60;x=Math.random()*canvas.width;}
     else{y=canvas.height+60;x=Math.random()*canvas.width;}
-    sharks.push({ x,y,size:35+Math.random()*15+level*2,speed:1.2+level*0.35+Math.random()*0.6,dir:1 });
+    sharks.push({ x,y,size:35+Math.random()*15+level*2,speed:1.2+level*0.35+Math.random()*0.6,dir:1, skinId: gameData.equippedSharkSkin||"classic", hp:3 });
 }
 
 // ===== CONTROLS =====
@@ -1675,6 +2516,14 @@ document.addEventListener("keydown", e => {
     if (paused) return;
     keys[e.key] = true;
     if (e.key === " " && player) player.inflated = true;
+    // Ability keys Q/E/R/F
+    const abilityKeyMap = { q: 0, e: 1, r: 2, f: 3 };
+    const lk = e.key.toLowerCase();
+    if (lk in abilityKeyMap) {
+        const idx = abilityKeyMap[lk];
+        const equippedId = (gameData.equippedAbilities || [])[idx];
+        if (equippedId) activateAbility(equippedId);
+    }
     e.preventDefault();
 });
 document.addEventListener("keyup", e => {
@@ -1766,76 +2615,21 @@ function quitToLobby() {
 //         QUIZ SYSTEM
 // ===============================
 const QUIZ_QUESTIONS = [
-    {
-        q: "היכן בדיוק מתרחש תהליך הטלת הביצים והפרייתן אצל דג האבו-נפחא?",
-        opts: [
-            "במים עמוקים ושקטים, על גבי צמחייה ימית עבותה.",
-            "על קרקעית הים באזורי מים רדודים.",
-            "בתוך סדקים צרים בין סלעים מוגנים מטורפים.",
-            "סמוך לפני המים במקומות בהם הזרם חלש."
-        ],
-        correct: 1
-    },
-    {
-        q: "מהו המאפיין הגופני המאפשר לדג את יכולת ההתנפחות המהירה?",
-        opts: [
-            "מבנה שלד גמיש וקשקשים מתרחבים.",
-            "שכבת עור דקה במיוחד וחסרת שרירים.",
-            "גוף גמיש וצורה מעוגלת המאפשרים התרחבות בעת סכנה.",
-            "ריאות מיוחדות השואבות מים במהירות אל חלל הבטן."
-        ],
-        correct: 2
-    },
-    {
-        q: "מה נחשב למרכיב מזון קיים אך פחות עיקרי בתפריט של האבו-נפחא?",
-        opts: [
-            "תולעים ימיות המסתתרות בחול.",
-            "סרטנים קטנים וצדפות קשיחות.",
-            "חלזונות ימיים המצויים על הקרקעית.",
-            "אצות ים וצמחייה מזדמנת."
-        ],
-        correct: 3
-    },
-    {
-        q: "מהו טווח הטמפרטורות האופטימלי לקיום תנאי מחיה תקינים עבור הדג?",
-        opts: [
-            "בין 20°C ל-25°C במים מתוקים.",
-            "בין 23°C ל-28°C במים חמימים.",
-            "מעל 28°C באקלים טרופי בלבד.",
-            "בין 18°C ל-23°C באזורים מוגנים ושקטים."
-        ],
-        correct: 1
-    },
-    {
-        q: "מהי האסטרטגיה של הדגיגים הקטנים כדי לשרוד לאחר הבקיעה?",
-        opts: [
-            "שחייה מהירה אל עבר מים עמוקים וחשוכים יותר.",
-            "הסתתרות בין סלעים וצמחייה כדי להימנע מטורפים.",
-            "התנפחות מיידית כדי להיראות גדולים יותר מגיל צעיר.",
-            "הפרשת רעל לסביבתם הקרובה להרתעת דגים אחרים."
-        ],
-        correct: 1
-    },
-    {
-        q: "כיצד מגן הרעל הנמצא בגופו של האבו-נפחא על שרידותו?",
-        opts: [
-            "הוא משמש ככלי ציד לסינוור טרף מהיר.",
-            "הוא מופרש דרך העור רק כאשר הדג מרגיש מאוים.",
-            "הוא מהווה הגנה פנימית על גוף הדג מפני טורפים.",
-            "הוא משמש לסימון טריטוריה באזורי רבייה רדודים."
-        ],
-        correct: 2
-    },
-    {
-        q: "לפי השקופית העוסקת בפציעות, מדוע ספורטאים נוטים להחמיר פציעות ללא ידיעתם?",
-        opts: [
-            "בגלל חוסר יכולת פיזיולוגית להרגיל כאב בזמן מאמץ.",
-            "בגלל מחסור באמצעים רפואיים זמינים על המגרש.",
-            "כי אין דרך מיידית לדעת בזמן אמת אם הגוף נפגע באמת.",
-            "כי המכה נראית חמורה בהתחלה אך הכאב חולף מהר."
-        ],
-        correct: 2
-    }
+    { q: "כמה זה 2 + 2?", opts: ["3", "4", "5", "6"], correct: 1 },
+    { q: "מה צבע השמיים ביום?", opts: ["ירוק", "כחול", "אדום", "צהוב"], correct: 1 },
+    { q: "איזה חיה חיה בים?", opts: ["פיל", "נמר", "דולפין", "חמור"], correct: 2 },
+    { q: "כמה זה 10 - 3?", opts: ["6", "8", "7", "9"], correct: 2 },
+    { q: "כמה רגליים יש לכלב?", opts: ["2", "6", "8", "4"], correct: 3 },
+    { q: "מה גדול יותר - לוויתן או דג?", opts: ["דג", "הם שווים", "לוויתן", "אותו גודל"], correct: 2 },
+    { q: "כמה זה 5 × 2?", opts: ["8", "12", "10", "7"], correct: 2 },
+    { q: "איזה מהם פרי?", opts: ["גזר", "תפוח", "בצל", "חסה"], correct: 1 },
+    { q: "כמה שניות יש בדקה?", opts: ["30", "100", "60", "45"], correct: 2 },
+    { q: "מה הפוך של 'גדול'?", opts: ["חם", "מהיר", "קטן", "כבד"], correct: 2 },
+    { q: "כמה זה 3 + 5?", opts: ["7", "9", "8", "6"], correct: 2 },
+    { q: "איזה מהם דג?", opts: ["כלב ים", "כריש", "דולפין", "לוויתן"], correct: 1 },
+    { q: "כמה זה 4 × 4?", opts: ["12", "16", "14", "18"], correct: 1 },
+    { q: "מה יש יותר - בשמיים או בים?", opts: ["כוכבים", "דגים", "עננים", "אבנים"], correct: 1 },
+    { q: "כמה זה 20 ÷ 4?", opts: ["4", "6", "5", "3"], correct: 2 },
 ];
 
 let quizCallback = null;
@@ -1911,21 +2705,25 @@ function levelUp() {
     clearInterval(spawnSharkInterval);
     spawnFishInterval = setInterval(spawnFish, Math.max(400, 800 - level * 40));
     spawnSharkInterval = setInterval(spawnShark, Math.max(1500, 4000 - level * 350));
-    // Show quiz before level complete screen
-    paused = true;
-    showQuiz(
-        // Correct answer
-        () => {
-            earnedCoins += 10;
-            updateHUD();
-            showLevelComplete();
-        },
-        // Wrong answer – player dies
-        () => {
-            paused = false;
-            die();
-        }
-    );
+    // Show quiz before level complete screen (if enabled)
+    if (gameData.questionsEnabled) {
+        paused = true;
+        showQuiz(
+            // Correct answer
+            () => {
+                earnedCoins += 10;
+                updateHUD();
+                showLevelComplete();
+            },
+            // Wrong answer – player dies
+            () => {
+                paused = false;
+                die();
+            }
+        );
+    } else {
+        showLevelComplete();
+    }
 }
 
 function showLevelComplete() {
@@ -1983,10 +2781,12 @@ function updateBars() {
 // ===============================
 //        MAIN GAME LOOP
 // ===============================
+let frameCount = 0;
 function gameLoop() {
     if (!gameRunning) return;
     requestAnimationFrame(gameLoop);
     if (paused) return;
+    frameCount++;
 
     const skin = getSkin();
 
@@ -2072,7 +2872,7 @@ function gameLoop() {
         drawFishShape(f.x, f.y, f.size, f.color, f.glowColor, f.dir);
         let dist = Math.hypot(player.x - f.x, player.y - f.y);
         if (dist < ps + f.size * 0.6) {
-            earnedCoins += f.value;
+            earnedCoins += f.value * (abilityEffects["double_coins"]?.active ? 2 : 1);
             score++;
             fishList.splice(i, 1);
             showParticle(f.x, f.y, `+${f.value}🪙`);
@@ -2085,11 +2885,16 @@ function gameLoop() {
     // ===== SHARKS =====
     for (let i = sharks.length - 1; i >= 0; i--) {
         let s = sharks[i];
-        let dx = player.x - s.x, dy = player.y - s.y;
+        let targetX = player.x, targetY = player.y;
+        // Clone fish lure overrides target
+        if (cloneFish) { targetX = cloneFish.x; targetY = cloneFish.y; }
+        let dx = targetX - s.x, dy = targetY - s.y;
         let dist = Math.hypot(dx, dy);
-        if (dist > 0) { s.x += (dx/dist)*s.speed; s.y += (dy/dist)*s.speed; }
+        let spd = s.speed * (abilityEffects["time_slow"]?.active ? 0.5 : 1);
+        if (dist > 0) { s.x += (dx/dist)*spd; s.y += (dy/dist)*spd; }
         s.dir = dx > 0 ? 1 : -1;
-        drawShark(s.x, s.y, s.size, s.dir);
+        const ssk = SHARK_SKINS.find(sk => sk.id === s.skinId) || SHARK_SKINS[0];
+        drawShark(s.x, s.y, s.size, s.dir, ssk);
         if (dist < ps + s.size * 0.5) {
             if (player.inflated) {
                 sharks.splice(i, 1);
@@ -2098,7 +2903,7 @@ function gameLoop() {
                 showParticle(s.x, s.y, "💥 +3🪙");
                 for (let b = 0; b < 5; b++) spawnBubble(s.x, s.y);
                 updateHUD();
-            } else if (invincibleTimer <= 0) {
+            } else if (invincibleTimer <= 0 && !abilityEffects["shield"]?.active) {
                 playerHp--;
                 shakeTimer = 8;
                 showParticle(player.x, player.y - ps, `💔 ${playerHp}/${MAX_HP}`);
@@ -2146,7 +2951,31 @@ function gameLoop() {
     }
 
     updateBubbles();
+    updateAbilities();
+    drawPoisonClouds();
+    drawCloneFish();
+    // Shield glow
+    if (abilityEffects["shield"]?.active) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(player.x, player.y, player.size + 12, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(100,180,255,0.6)";
+        ctx.lineWidth = 4;
+        ctx.shadowColor = "#60a5fa";
+        ctx.shadowBlur = 12;
+        ctx.stroke();
+        ctx.restore();
+    }
+    // Magnet effect: attract collectibles
+    if (abilityEffects["magnet"]?.active) {
+        fishList.forEach(f => {
+            let dx = player.x - f.x, dy = player.y - f.y;
+            let d = Math.hypot(dx, dy);
+            if (d > 0) { f.x += (dx/d)*3; f.y += (dy/d)*3; }
+        });
+    }
     ctx.restore();
+    renderAbilityHUD();
     levelTimer++;
 }
 
@@ -2203,6 +3032,71 @@ function goLobby() {
 
 // Init lobby
 document.getElementById("lobby-coins").textContent = gameData.coins;
+
+// ===============================
+//       PREMIUM SHOP / PAYMENT
+// ===============================
+// HOW TO SET UP STRIPE PAYMENT:
+// 1. Go to https://dashboard.stripe.com and create a free account.
+// 2. Create a Product (₪10, one-time) → go to "Payment Links" and create a link.
+// 3. In the Payment Link settings set the "Success URL" to:
+//       YOUR_GAME_URL?fishbucks_paid=1
+//    (e.g. if you open the file locally: http://127.0.0.1:5500/index.html?fishbucks_paid=1)
+// 4. Paste your payment link URL below replacing PASTE_YOUR_STRIPE_LINK_HERE.
+const STRIPE_PAYMENT_LINK_1M = "PASTE_YOUR_STRIPE_LINK_HERE";
+
+function openPremiumShop() {
+    document.getElementById("payment-success-msg").classList.remove("show");
+    showOverlay("premium-shop");
+}
+function closePremiumShop() {
+    showOverlay("lobby");
+    document.getElementById("lobby-coins").textContent = gameData.coins;
+}
+
+function startPayment1M() {
+    if (STRIPE_PAYMENT_LINK_1M === "PASTE_YOUR_STRIPE_LINK_HERE") {
+        alert("⚠️ קישור התשלום לא הוגדר עדיין.\nראה הוראות בקוד (STRIPE_PAYMENT_LINK_1M).");
+        return;
+    }
+    // Store a pending purchase token so we can grant coins on return
+    const token = Date.now().toString(36) + Math.random().toString(36).slice(2);
+    localStorage.setItem("puff_pending_pay", JSON.stringify({
+        token,
+        ts: Date.now(),
+        amount: 1000000
+    }));
+    window.location.href = STRIPE_PAYMENT_LINK_1M;
+}
+
+function checkPaymentReturn() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("fishbucks_paid") !== "1") return;
+    // Clean URL immediately
+    history.replaceState({}, document.title, window.location.pathname);
+
+    const raw = localStorage.getItem("puff_pending_pay");
+    if (!raw) return;
+    let pending;
+    try { pending = JSON.parse(raw); } catch(e) { return; }
+
+    // Accept only if purchase was initiated within the last 60 minutes
+    if (!pending || Date.now() - pending.ts > 60 * 60 * 1000) {
+        localStorage.removeItem("puff_pending_pay");
+        return;
+    }
+
+    gameData.coins += pending.amount;
+    saveData();
+    localStorage.removeItem("puff_pending_pay");
+
+    // Show success in premium shop
+    document.getElementById("lobby-coins").textContent = gameData.coins;
+    document.getElementById("payment-success-msg").classList.add("show");
+    showOverlay("premium-shop");
+}
+
+checkPaymentReturn();
 </script>
 </body>
 </html>
