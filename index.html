@@ -342,6 +342,123 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
 .skin-price { font-size: 11px; color: #ffd700; }
 .skin-status { font-size: 11px; color: #4ade80; }
 
+/* ===== USERNAME PROMPT ===== */
+#username-prompt {
+    background: linear-gradient(180deg, #000d22 0%, #002045 100%);
+    z-index: 200;
+}
+#username-prompt h2 { font-size: 28px; margin-bottom: 6px; }
+#username-prompt p { color: rgba(255,255,255,0.55); font-size: 13px; margin-bottom: 18px; }
+#username-input {
+    width: 260px; max-width: 90vw;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 2px solid rgba(99,102,241,0.4);
+    background: rgba(255,255,255,0.07);
+    color: #fff;
+    font-size: 16px;
+    text-align: center;
+    outline: none;
+    font-family: inherit;
+}
+#username-input:focus { border-color: #818cf8; }
+#username-error { color: #f87171; font-size: 13px; min-height: 18px; margin: 2px 0; }
+
+/* ===== LEADERBOARD ===== */
+#leaderboard {
+    background: linear-gradient(180deg, #000d22 0%, #001a3a 100%);
+    overflow-y: auto;
+    justify-content: flex-start;
+    padding: 20px 16px 32px;
+}
+#leaderboard h2 { font-size: 24px; margin-bottom: 4px; }
+.lb-tabs {
+    display: flex; gap: 8px; margin-bottom: 14px; width: 100%; max-width: 520px;
+}
+.lb-tab {
+    flex: 1; padding: 8px 0; border-radius: 10px;
+    border: 2px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+    color: rgba(255,255,255,0.55); font-size: 12px; font-weight: 700;
+    cursor: pointer; transition: all 0.15s; text-align: center;
+}
+.lb-tab.active { border-color: #818cf8; background: rgba(99,102,241,0.2); color: #c7d2fe; }
+.lb-table {
+    width: 100%; max-width: 520px;
+    border-collapse: collapse;
+}
+.lb-table th {
+    font-size: 11px; color: rgba(255,255,255,0.45); font-weight: 700;
+    text-align: right; padding: 4px 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.lb-table td {
+    font-size: 13px; padding: 8px 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: rgba(255,255,255,0.85);
+}
+.lb-table tr:first-child td { color: #ffd700; font-weight: 700; }
+.lb-table tr:nth-child(2) td { color: #c0c0c0; }
+.lb-table tr:nth-child(3) td { color: #cd7f32; }
+.lb-rank { text-align: center; font-weight: 700; }
+.lb-you { background: rgba(99,102,241,0.12); }
+#lb-empty { color: rgba(255,255,255,0.35); font-size: 13px; margin: 24px 0; text-align: center; }
+
+/* ===== ADMIN PANEL ===== */
+#admin-panel {
+    background: linear-gradient(180deg, #1a0005 0%, #300010 100%);
+    overflow-y: auto;
+    justify-content: flex-start;
+    padding: 20px 16px 32px;
+    border: 3px solid rgba(220,38,38,0.4);
+}
+#admin-panel h2 { font-size: 22px; color: #f87171; margin-bottom: 4px; }
+#admin-panel .admin-sub { font-size: 12px; color: rgba(255,255,255,0.4); margin-bottom: 16px; }
+.admin-section {
+    width: 100%; max-width: 520px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(220,38,38,0.2);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+}
+.admin-section h3 { font-size: 13px; color: #fca5a5; margin: 0 0 10px; text-transform: uppercase; letter-spacing: 1px; }
+.admin-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+.admin-input {
+    flex: 1; min-width: 130px;
+    padding: 7px 10px;
+    border-radius: 8px; border: 1px solid rgba(220,38,38,0.3);
+    background: rgba(255,255,255,0.06); color: #fff;
+    font-size: 13px; font-family: inherit; outline: none;
+}
+.admin-input:focus { border-color: #f87171; }
+.btn-admin { background: rgba(220,38,38,0.25); border-color: rgba(220,38,38,0.5); color: #fca5a5; font-size: 12px; padding: 6px 14px; }
+.btn-admin:hover { background: rgba(220,38,38,0.45); }
+.btn-admin-green { background: rgba(34,197,94,0.2); border-color: rgba(34,197,94,0.4); color: #86efac; }
+.btn-admin-green:hover { background: rgba(34,197,94,0.38); }
+#admin-log {
+    background: rgba(0,0,0,0.4);
+    border-radius: 8px; padding: 8px 10px;
+    font-size: 11px; color: #fca5a5; font-family: monospace;
+    max-height: 120px; overflow-y: auto;
+    margin-top: 4px; width: 100%; max-width: 520px;
+}
+.admin-players-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.admin-players-table th { color: rgba(255,255,255,0.4); text-align: right; padding: 3px 6px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+.admin-players-table td { padding: 5px 6px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.badge-banned { background: rgba(220,38,38,0.3); color: #fca5a5; border-radius: 4px; padding: 1px 5px; font-size: 10px; }
+
+/* ===== CHEATER OVERLAY ===== */
+#cheater-screen {
+    background: rgba(0,0,0,0.97);
+    z-index: 300;
+    flex-direction: column;
+    gap: 14px;
+}
+#cheater-screen h1 { font-size: 42px; color: #f87171; animation: levelPop 0.4s ease both; }
+#cheater-screen p { color: rgba(255,255,255,0.6); font-size: 16px; text-align: center; max-width: 340px; }
+#cheater-screen .cheater-timer { font-size: 36px; font-weight: 900; color: #fcd34d; }
+
 /* ===== SETTINGS ===== */
 #settings {
     background: linear-gradient(180deg, #06001a 0%, #0d0d35 100%);
@@ -874,6 +991,7 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
     <button class="btn btn-shop" onclick="openShop()">🛒 חנות סקינים</button>
     <button class="btn btn-ability" onclick="openAbilityShop()">⚡ חנות יכולות</button>
     <button class="btn btn-premium" onclick="openPremiumShop()">💎 FishBucks</button>
+    <button class="btn" onclick="openLeaderboard()" style="background:rgba(251,191,36,0.15);border-color:rgba(251,191,36,0.4);color:#fde68a;">🏆 לוח הניקוד</button>
     <button class="btn btn-secondary" onclick="openSettings()" style="background:rgba(100,116,139,0.15);border-color:rgba(100,116,139,0.35);">⚙️ הגדרות</button>
 </div>
 
@@ -964,6 +1082,89 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
     <p class="shop-coins">💰 <span id="ability-shop-coins">0</span> מטבעות</p>
     <div class="ability-grid" id="ability-grid"></div>
     <button class="btn btn-secondary" onclick="closeAbilityShop()">חזור</button>
+</div>
+
+<!-- USERNAME PROMPT -->
+<div id="username-prompt" class="overlay">
+    <h2>🐡 ברוכים הבאים!</h2>
+    <p>בחר שם משתמש שיופיע בלוח הניקוד</p>
+    <input id="username-input" type="text" maxlength="18" placeholder="שם משתמש..." autocomplete="off" spellcheck="false">
+    <div id="username-error"></div>
+    <button class="btn" onclick="submitUsername()">🚀 כניסה למשחק</button>
+</div>
+
+<!-- LEADERBOARD -->
+<div id="leaderboard" class="overlay">
+    <h2>🏆 לוח הניקוד</h2>
+    <div class="lb-tabs">
+        <div class="lb-tab active" id="lb-tab-coins" onclick="switchLbTab('coins')">💰 מטבעות</div>
+        <div class="lb-tab" id="lb-tab-score" onclick="switchLbTab('score')">⭐ ניקוד</div>
+        <div class="lb-tab" id="lb-tab-bought" onclick="switchLbTab('bought')">💳 רכישות</div>
+    </div>
+    <div id="lb-empty" style="display:none;">אין שחקנים עדיין</div>
+    <table class="lb-table" id="lb-table"><thead><tr>
+        <th class="lb-rank">#</th><th>שחקן</th><th id="lb-col-header">💰</th>
+    </tr></thead><tbody id="lb-body"></tbody></table>
+    <button class="btn btn-secondary" style="margin-top:14px;" onclick="closeLeaderboard()">חזור</button>
+</div>
+
+<!-- CHEATER SCREEN -->
+<div id="cheater-screen" class="overlay" style="display:none;position:fixed;">
+    <h1>🚨 נתפסת!</h1>
+    <p id="cheater-msg">זוהתה פעילות חשודה. אתה מנותק.</p>
+    <div class="cheater-timer" id="cheater-countdown">5</div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="admin-panel" class="overlay">
+    <h2>🔴 פאנל אדמין</h2>
+    <div class="admin-sub">גישה מוגבלת — שמור בסוד!</div>
+
+    <div class="admin-section">
+        <h3>👥 שחקנים</h3>
+        <div id="admin-players-container">
+            <table class="admin-players-table"><thead><tr>
+                <th>שם</th><th>מטבעות</th><th>סטטוס</th><th>פעולה</th>
+            </tr></thead><tbody id="admin-players-body"></tbody></table>
+        </div>
+    </div>
+
+    <div class="admin-section">
+        <h3>🪙 תן מטבעות לשחקן</h3>
+        <div class="admin-row">
+            <input class="admin-input" id="admin-give-name" placeholder="שם שחקן">
+            <input class="admin-input" type="number" id="admin-give-amount" placeholder="כמות" style="max-width:100px;">
+            <button class="btn btn-admin btn-admin-green" onclick="adminGiveCoins()">תן</button>
+        </div>
+    </div>
+
+    <div class="admin-section">
+        <h3>🚫 חסום / שחרר שחקן</h3>
+        <div class="admin-row">
+            <input class="admin-input" id="admin-ban-name" placeholder="שם שחקן">
+            <button class="btn btn-admin" onclick="adminBan()">חסום</button>
+            <button class="btn btn-admin btn-admin-green" onclick="adminUnban()">שחרר</button>
+        </div>
+    </div>
+
+    <div class="admin-section">
+        <h3>🗑️ מחק שחקן מלוח הניקוד</h3>
+        <div class="admin-row">
+            <input class="admin-input" id="admin-del-name" placeholder="שם שחקן">
+            <button class="btn btn-admin" onclick="adminDeletePlayer()">מחק</button>
+        </div>
+    </div>
+
+    <div class="admin-section">
+        <h3>🔧 פעולות מיוחדות</h3>
+        <div class="admin-row">
+            <button class="btn btn-admin btn-admin-green" onclick="adminInfiniteCoins()">∞ מטבעות אינסופיים לי</button>
+            <button class="btn btn-admin" onclick="adminResetLeaderboard()">🗑 אפס לוח ניקוד</button>
+        </div>
+    </div>
+
+    <div id="admin-log"></div>
+    <button class="btn btn-secondary" style="margin-top:10px;" onclick="closeAdmin()">סגור</button>
 </div>
 
 <!-- SETTINGS -->
@@ -1538,22 +1739,288 @@ function renderShop() {
 // ===============================
 //        OVERLAY MANAGER
 // ===============================
-const ALL_OVERLAYS = ["lobby","gameover","pause-screen","shop","level-complete","premium-shop","ability-shop","settings"];
+const ALL_OVERLAYS = ["lobby","gameover","pause-screen","shop","level-complete","premium-shop","ability-shop","settings","username-prompt","leaderboard","admin-panel"];
 function showOverlay(id) {
     ALL_OVERLAYS.forEach(oid => {
         const el = document.getElementById(oid);
         if (oid === id) el.classList.add("show");
         else el.classList.remove("show");
     });
+    // Also hide cheater screen (it uses style.display directly)
+    document.getElementById("cheater-screen").style.display = "none";
 }
 function hideAllOverlays() {
     ALL_OVERLAYS.forEach(oid => {
         document.getElementById(oid).classList.remove("show");
     });
+    document.getElementById("cheater-screen").style.display = "none";
 }
 
 // ===============================
 //         GAME STATE
+// ===============================
+//   USERNAME + LEADERBOARD + ADMIN
+// ===============================
+const PROFANITY = ["fuck","shit","ass","bitch","dick","cunt","whore","nigger","nigga","faggot","fag","bastard","damn","cock","pussy","slut","retard","idiot","stupid","moron","כוס","זין","זונה","בן זונה","מנייק","שרמוטה","נאלץ","מזדיין","מציץ","חרא","טמבל","אידיוט","מפגר","כסחה","בא לי","ערס","פרוצה","מניאק"];
+function containsProfanity(name) {
+    const lower = name.toLowerCase().replace(/\s+/g,"");
+    return PROFANITY.some(w => lower.includes(w.toLowerCase().replace(/\s+/g,"")));
+}
+
+function getPlayers() {
+    try { return JSON.parse(localStorage.getItem("puff_players") || "[]"); } catch(e) { return []; }
+}
+function savePlayers(arr) { localStorage.setItem("puff_players", JSON.stringify(arr)); }
+function getMyUsername() { return localStorage.getItem("puff_username") || null; }
+function getBannedList() {
+    try { return JSON.parse(localStorage.getItem("puff_banned") || "[]"); } catch(e) { return []; }
+}
+function saveBannedList(arr) { localStorage.setItem("puff_banned", JSON.stringify(arr)); }
+function isAdminUnlocked() { return localStorage.getItem("puff_admin") === "yes"; }
+
+function upsertPlayer(name, update) {
+    let players = getPlayers();
+    let idx = players.findIndex(p => p.name === name);
+    if (idx === -1) { players.push({ name, coins: 0, bestScore: 0, bestLevel: 1, coinsBought: 0, skinId: "classic", ...update }); }
+    else { Object.assign(players[idx], update); }
+    savePlayers(players);
+}
+function syncMyStats() {
+    const name = getMyUsername();
+    if (!name) return;
+    upsertPlayer(name, {
+        coins: gameData.coins,
+        bestScore: gameData.bestScore,
+        bestLevel: gameData.bestLevel,
+        skinId: gameData.equippedSkin || "classic"
+    });
+}
+
+// --- Username submission ---
+function submitUsername() {
+    const input = document.getElementById("username-input");
+    const errorEl = document.getElementById("username-error");
+    let name = input.value.trim();
+    errorEl.textContent = "";
+    if (!name) { errorEl.textContent = "נא להזין שם."; return; }
+    if (name.length < 2) { errorEl.textContent = "שם קצר מדי (מינימום 2 תווים)."; return; }
+    if (name.length > 18) { errorEl.textContent = "שם ארוך מדי (מקסימום 18 תווים)."; return; }
+    if (!/^[\u0590-\u05FFa-zA-Z0-9 _\-\.]+$/.test(name)) { errorEl.textContent = "תווים לא חוקיים בשם."; return; }
+    if (containsProfanity(name)) { errorEl.textContent = "🚫 שם לא הולם. נסה שם אחר."; return; }
+    // Check banned
+    if (getBannedList().includes(name)) { errorEl.textContent = "⛔ המשתמש חסום. פנה לאדמין."; return; }
+    // Check duplicate — if this device doesn't already own the name
+    const existing = getMyUsername();
+    if (!existing || existing !== name) {
+        const players = getPlayers();
+        if (players.some(p => p.name === name)) { errorEl.textContent = "השם הזה כבר תפוס! בחר שם אחר."; return; }
+    }
+    localStorage.setItem("puff_username", name);
+    upsertPlayer(name, { coins: gameData.coins, bestScore: gameData.bestScore, bestLevel: gameData.bestLevel, skinId: gameData.equippedSkin || "classic" });
+    showOverlay("lobby");
+    document.getElementById("lobby-coins").textContent = gameData.coins;
+}
+document.getElementById("username-input").addEventListener("keydown", e => {
+    if (e.key === "Enter") submitUsername();
+});
+
+// --- Leaderboard ---
+let lbTab = "coins";
+function openLeaderboard() {
+    syncMyStats();
+    lbTab = "coins";
+    renderLeaderboard();
+    showOverlay("leaderboard");
+}
+function closeLeaderboard() { showOverlay("lobby"); }
+function switchLbTab(tab) {
+    lbTab = tab;
+    ["coins","score","bought"].forEach(t => document.getElementById("lb-tab-"+t).classList.toggle("active", t === tab));
+    renderLeaderboard();
+}
+function renderLeaderboard() {
+    const players = getPlayers().filter(p => !getBannedList().includes(p.name));
+    const me = getMyUsername();
+    const colHeader = document.getElementById("lb-col-header");
+    const body = document.getElementById("lb-body");
+    const empty = document.getElementById("lb-empty");
+    let sorted;
+    if (lbTab === "coins") { colHeader.textContent = "💰 מטבעות"; sorted = [...players].sort((a,b)=>(b.coins||0)-(a.coins||0)); }
+    else if (lbTab === "score") { colHeader.textContent = "⭐ ניקוד"; sorted = [...players].sort((a,b)=>(b.bestScore||0)-(a.bestScore||0)); }
+    else { colHeader.textContent = "💳 רכישות"; sorted = [...players].sort((a,b)=>(b.coinsBought||0)-(a.coinsBought||0)); }
+    if (sorted.length === 0) { empty.style.display = ""; document.getElementById("lb-table").style.display = "none"; return; }
+    empty.style.display = "none"; document.getElementById("lb-table").style.display = "";
+    body.innerHTML = sorted.slice(0, 20).map((p, i) => {
+        const val = lbTab === "coins" ? (p.coins||0).toLocaleString() : lbTab === "score" ? (p.bestScore||0) : (p.coinsBought||0).toLocaleString();
+        const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : (i+1);
+        const isMe = p.name === me;
+        return `<tr class="${isMe ? "lb-you" : ""}"><td class="lb-rank">${medal}</td><td>${p.name}${isMe ? " 👈" : ""}</td><td>${val}</td></tr>`;
+    }).join("");
+}
+
+// --- Admin Panel ---
+const ADMIN_PASSWORD = "puff_admin_2026";
+let adminTyped = "";
+document.addEventListener("keydown", e => {
+    if (!gameRunning) {
+        adminTyped += e.key;
+        if (adminTyped.length > ADMIN_PASSWORD.length) adminTyped = adminTyped.slice(-ADMIN_PASSWORD.length);
+        if (adminTyped === ADMIN_PASSWORD) { localStorage.setItem("puff_admin","yes"); openAdmin(); adminTyped = ""; }
+    }
+}, false);
+function openAdmin() {
+    if (!isAdminUnlocked()) return;
+    renderAdminPlayers();
+    showOverlay("admin-panel");
+}
+function closeAdmin() { showOverlay("lobby"); }
+function adminLog(msg) {
+    const el = document.getElementById("admin-log");
+    const t = new Date().toLocaleTimeString("he-IL");
+    el.innerHTML = `[${t}] ${msg}<br>` + el.innerHTML;
+}
+function renderAdminPlayers() {
+    const players = getPlayers();
+    const banned = getBannedList();
+    const body = document.getElementById("admin-players-body");
+    body.innerHTML = players.map(p => {
+        const isBanned = banned.includes(p.name);
+        return `<tr>
+            <td>${p.name}</td>
+            <td>${(p.coins||0).toLocaleString()}</td>
+            <td>${isBanned ? '<span class="badge-banned">חסום</span>' : '✅'}</td>
+            <td>${isBanned
+                ? `<button class="btn btn-admin btn-admin-green" style="padding:2px 8px;font-size:10px;" onclick="adminQuickUnban('${p.name}')">שחרר</button>`
+                : `<button class="btn btn-admin" style="padding:2px 8px;font-size:10px;" onclick="adminQuickBan('${p.name}')">חסום</button>`
+            }</td>
+        </tr>`;
+    }).join("");
+}
+function adminQuickBan(name) {
+    const banned = getBannedList();
+    if (!banned.includes(name)) { banned.push(name); saveBannedList(banned); }
+    adminLog(`חסמת את ${name}`); renderAdminPlayers();
+}
+function adminQuickUnban(name) {
+    saveBannedList(getBannedList().filter(n => n !== name));
+    adminLog(`שחררת את ${name}`); renderAdminPlayers();
+}
+function adminBan() {
+    const name = document.getElementById("admin-ban-name").value.trim();
+    if (!name) return;
+    adminQuickBan(name); document.getElementById("admin-ban-name").value = "";
+}
+function adminUnban() {
+    const name = document.getElementById("admin-ban-name").value.trim();
+    if (!name) return;
+    adminQuickUnban(name); document.getElementById("admin-ban-name").value = "";
+}
+function adminGiveCoins() {
+    const name = document.getElementById("admin-give-name").value.trim();
+    const amt = parseInt(document.getElementById("admin-give-amount").value) || 0;
+    if (!name || !amt) return;
+    const players = getPlayers();
+    const p = players.find(pl => pl.name === name);
+    if (!p) { adminLog(`שחקן לא נמצא: ${name}`); return; }
+    p.coins = (p.coins||0) + amt;
+    savePlayers(players);
+    // If it's the current player, update gameData too
+    if (name === getMyUsername()) { gameData.coins += amt; saveData(); document.getElementById("lobby-coins").textContent = gameData.coins; }
+    adminLog(`נתת ${amt.toLocaleString()} מטבעות ל-${name}`);
+    document.getElementById("admin-give-name").value = "";
+    document.getElementById("admin-give-amount").value = "";
+    renderAdminPlayers();
+}
+function adminDeletePlayer() {
+    const name = document.getElementById("admin-del-name").value.trim();
+    if (!name) return;
+    savePlayers(getPlayers().filter(p => p.name !== name));
+    adminLog(`מחקת את ${name} מהלוח`);
+    document.getElementById("admin-del-name").value = "";
+    renderAdminPlayers();
+}
+function adminInfiniteCoins() {
+    gameData.coins = 999999999;
+    saveData();
+    syncMyStats();
+    document.getElementById("lobby-coins").textContent = gameData.coins;
+    adminLog("מטבעות אינסופיים הופעלו!");
+}
+function adminResetLeaderboard() {
+    if (!confirm("למחוק את כל הלוח?")) return;
+    savePlayers([]);
+    adminLog("לוח הניקוד אופס!");
+    renderAdminPlayers();
+}
+
+// ===============================
+//   ANTI-CHEAT SYSTEM
+// ===============================
+let anticheat = {
+    lastX: 0, lastY: 0,
+    idleFrames: 0,
+    inflateCount: 0,
+    inflateWindow: 0,
+    lastInflated: false,
+    warned: false
+};
+const IDLE_KICK_FRAMES = 60 * 8;   // 8 seconds without moving
+const INFLATE_SPAM_LIMIT = 14;      // 14 inflates in 3 seconds
+const INFLATE_SPAM_WINDOW = 180;    // 3 seconds in frames
+
+function checkAnticheat() {
+    if (!gameRunning || paused || !player) return;
+    const dx = Math.abs(player.x - anticheat.lastX);
+    const dy = Math.abs(player.y - anticheat.lastY);
+    if (dx + dy < 1.5) { anticheat.idleFrames++; } else { anticheat.idleFrames = 0; }
+    anticheat.lastX = player.x; anticheat.lastY = player.y;
+    // Track inflate spam
+    anticheat.inflateWindow++;
+    if (player.inflated && !anticheat.lastInflated) anticheat.inflateCount++;
+    anticheat.lastInflated = player.inflated;
+    if (anticheat.inflateWindow >= INFLATE_SPAM_WINDOW) {
+        if (anticheat.inflateCount >= INFLATE_SPAM_LIMIT) kickCheater("זוהתה לחיצה חוזרת מהירה על כפתור ההתנפחות");
+        anticheat.inflateCount = 0; anticheat.inflateWindow = 0;
+    }
+    if (anticheat.idleFrames >= IDLE_KICK_FRAMES) kickCheater("עמדת במקום יותר מדי זמן");
+}
+function resetAnticheat() {
+    anticheat.idleFrames = 0; anticheat.inflateCount = 0;
+    anticheat.inflateWindow = 0; anticheat.lastInflated = false; anticheat.warned = false;
+}
+function kickCheater(reason) {
+    if (!gameRunning) return;
+    gameRunning = false; paused = false;
+    clearInterval(spawnFishInterval); clearInterval(spawnSharkInterval);
+    document.getElementById("hud").style.display = "none";
+    if (isMobile) { infBtn.style.display = "none"; joystickZone.style.display = "none"; document.getElementById("mobile-ability-btns").style.display = "none"; }
+    const screen = document.getElementById("cheater-screen");
+    document.getElementById("cheater-msg").textContent = `⚠️ ${reason} — עלייך לנסות שוב!`;
+    screen.style.display = "flex";
+    let countdown = 5;
+    document.getElementById("cheater-countdown").textContent = countdown;
+    const iv = setInterval(() => {
+        countdown--;
+        document.getElementById("cheater-countdown").textContent = countdown;
+        if (countdown <= 0) {
+            clearInterval(iv);
+            screen.style.display = "none";
+            // Reset game state and return to lobby
+            earnedCoins = 0;
+            showOverlay("lobby");
+            document.getElementById("lobby-coins").textContent = gameData.coins;
+        }
+    }, 1000);
+}
+
+// ===============================
+//   GAME LOOP / DIFFICULTY
+// ===============================
+// Difficulty helper — used in spawn intervals and boss stats
+function getDifficultyMult() {
+    return 1 + (level - 1) * 0.18;
+}
+
 // ===============================
 let player, fishList, sharks, boss, bubbles;
 let gameRunning = false;
@@ -1596,6 +2063,7 @@ function initGame() {
     abilityEffects = {};
     cloneFish = null;
     lastAbilityFrames = {};
+    resetAnticheat();
 }
 
 // ===== FISH TYPES =====
@@ -1780,7 +2248,11 @@ function updateAbilities() {
     // Remove dead sharks from poison
     for (let i = sharks.length - 1; i >= 0; i--) {
         if ((sharks[i].hp !== undefined) && sharks[i].hp <= 0) {
-            particles.push(...createParticles(sharks[i].x, sharks[i].y, "#44ff44", 6));
+            const sx = sharks[i].x, sy = sharks[i].y;
+            showParticle(sx, sy, "☠️ +3🪙");
+            earnedCoins += 3;
+            score += 3;
+            updateHUD();
             sharks.splice(i, 1);
         }
     }
@@ -3278,13 +3750,22 @@ function spawnFish() {
 }
 function spawnShark() {
     if (!gameRunning || paused) return;
-    let edge = Math.floor(Math.random() * 4);
-    let x, y;
-    if(edge===0){x=-60;y=Math.random()*canvas.height;}
-    else if(edge===1){x=canvas.width+60;y=Math.random()*canvas.height;}
-    else if(edge===2){y=-60;x=Math.random()*canvas.width;}
-    else{y=canvas.height+60;x=Math.random()*canvas.width;}
-    sharks.push({ x,y,size:35+Math.random()*15+level*2,speed:1.2+level*0.35+Math.random()*0.6,dir:1, skinId: gameData.equippedSharkSkin||"classic", hp:3 });
+    // How many sharks to spawn at once — increases with level
+    const spawnCount = level >= 12 ? 3 : level >= 6 ? 2 : 1;
+    for (let n = 0; n < spawnCount; n++) {
+        let edge = Math.floor(Math.random() * 4);
+        let x, y;
+        if(edge===0){x=-60;y=Math.random()*canvas.height;}
+        else if(edge===1){x=canvas.width+60;y=Math.random()*canvas.height;}
+        else if(edge===2){y=-60;x=Math.random()*canvas.width;}
+        else{y=canvas.height+60;x=Math.random()*canvas.width;}
+        // Harder speed + size scaling
+        const spd = 1.2 + level * 0.55 + Math.random() * 0.8;
+        const sz = 35 + Math.random() * 15 + level * 4;
+        // Higher levels: sharks have more hp
+        const sharkHp = level >= 8 ? 5 : level >= 4 ? 4 : 3;
+        sharks.push({ x, y, size: sz, speed: spd, dir: 1, skinId: gameData.equippedSharkSkin||"classic", hp: sharkHp });
+    }
 }
 
 // ===== CONTROLS =====
@@ -3586,8 +4067,8 @@ function levelUp() {
     // Update spawn rates for new level difficulty
     clearInterval(spawnFishInterval);
     clearInterval(spawnSharkInterval);
-    spawnFishInterval = setInterval(spawnFish, Math.max(400, 800 - level * 40));
-    spawnSharkInterval = setInterval(spawnShark, Math.max(1500, 4000 - level * 350));
+    spawnFishInterval = setInterval(spawnFish, Math.max(280, 800 - level * 48));
+    spawnSharkInterval = setInterval(spawnShark, Math.max(900, 4000 - level * 420));
     // Show quiz before level complete screen (if enabled)
     if (gameData.questionsEnabled) {
         paused = true;
@@ -3671,6 +4152,7 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
     if (paused) return;
     frameCount++;
+    checkAnticheat();
 
     const skin = getSkin();
 
@@ -3902,8 +4384,8 @@ function startGame() {
 
     clearInterval(spawnFishInterval);
     clearInterval(spawnSharkInterval);
-    spawnFishInterval = setInterval(spawnFish, Math.max(400, 800 - level * 40));
-    spawnSharkInterval = setInterval(spawnShark, Math.max(1500, 4000 - level * 350));
+    spawnFishInterval = setInterval(spawnFish, Math.max(280, 800 - level * 48));
+    spawnSharkInterval = setInterval(spawnShark, Math.max(900, 4000 - level * 420));
 
     for (let i = 0; i < 6; i++) spawnFish();
     gameLoop();
@@ -3924,6 +4406,7 @@ function die() {
     if (score > gameData.bestScore) gameData.bestScore = score;
     if (level > gameData.bestLevel) gameData.bestLevel = level;
     saveData();
+    syncMyStats();   // update leaderboard entry
 
     document.getElementById("go-score").textContent = score;
     document.getElementById("go-level").textContent = level;
@@ -3937,8 +4420,26 @@ function goLobby() {
     showOverlay("lobby");
 }
 
-// Init lobby
+// Init lobby — show username prompt if not set, else show lobby
 document.getElementById("lobby-coins").textContent = gameData.coins;
+(function initLobby() {
+    const savedName = getMyUsername();
+    if (!savedName) {
+        showOverlay("username-prompt");
+        setTimeout(() => document.getElementById("username-input").focus(), 200);
+    } else {
+        const banned = getBannedList();
+        if (banned.includes(savedName)) {
+            // Force re-pick name if banned
+            localStorage.removeItem("puff_username");
+            showOverlay("username-prompt");
+            document.getElementById("username-error").textContent = "⛔ החשבון שלך חסום. בחר שם אחר.";
+            setTimeout(() => document.getElementById("username-input").focus(), 200);
+        } else {
+            showOverlay("lobby");
+        }
+    }
+})();
 
 // ===============================
 //       PREMIUM SHOP / PAYMENT
