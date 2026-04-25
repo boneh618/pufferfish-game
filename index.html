@@ -1190,6 +1190,19 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
         </div>
     </div>
 
+    <!-- USERNAME CHANGE -->
+    <div class="settings-section">
+        <h3>👤 שם משתמש</h3>
+        <div class="keybind-row">
+            <div class="keybind-label">שם נוכחי<small id="settings-current-name"></small></div>
+        </div>
+        <div class="admin-row" style="margin-top:6px;">
+            <input class="admin-input" id="settings-username-input" maxlength="18" placeholder="שם חדש..." autocomplete="off" spellcheck="false">
+            <button class="btn" style="padding:7px 14px;font-size:13px;" onclick="changeUsername()">שנה</button>
+        </div>
+        <div id="settings-username-error" style="color:#f87171;font-size:12px;min-height:16px;margin-top:4px;"></div>
+    </div>
+
     <!-- INFLATE KEY -->
     <div class="settings-section">
         <h3>🐡 כפתור התנפחות</h3>
@@ -2218,14 +2231,14 @@ function getEquippedSharkSkin() {
 }
 
 const ABILITIES = [
-    { id: "poison_cloud",  name: "ענן רעל",      desc: "הנח ענן רעל – כרישים בתוכו מאבדים אנרגיה לאט", emoji: "☠️",  price: 300,  cooldown: 360, key: "q" },
-    { id: "speed_boost",   name: "האצה",          desc: "הכפל את מהירותך למשך 5 שניות",                   emoji: "⚡",  price: 500,  cooldown: 420, key: "e" },
-    { id: "shield",        name: "מגן",           desc: "חסינות מלאה למשך 4 שניות",                       emoji: "🛡️", price: 800,  cooldown: 480, key: "r" },
-    { id: "magnet",        name: "מגנט מטבעות",   desc: "שואב מטבעות אליך למשך 6 שניות",                  emoji: "🧲",  price: 400,  cooldown: 300, key: "f" },
-    { id: "time_slow",     name: "האטת זמן",      desc: "האט כרישים ב-50% למשך 4 שניות",                  emoji: "⏳",  price: 1000, cooldown: 600, key: "q" },
-    { id: "double_coins",  name: "כפל מטבעות",   desc: "ערך המטבעות מוכפל ל-10 שניות",                   emoji: "💰",  price: 600,  cooldown: 540, key: "e" },
-    { id: "shockwave",     name: "גל הלם",        desc: "דחף את כל הכרישים ממך בבת אחת",                  emoji: "💥",  price: 1200, cooldown: 600, key: "r" },
-    { id: "clone_fish",    name: "שיבוט",          desc: "מתחזה מסיח את תשומת הלב הכרישים ל-5 שניות",     emoji: "🐠",  price: 900,  cooldown: 480, key: "f" },
+    { id: "poison_cloud",  name: "ענן רעל",      desc: "הנח ענן רעל – כרישים בתוכו מאבדים אנרגיה לאט", emoji: "☠️",  price: 300,  cooldown: 600,  key: "q" },
+    { id: "magnet",        name: "מגנט מטבעות",   desc: "שואב מטבעות אליך למשך 6 שניות",                  emoji: "🧲",  price: 400,  cooldown: 540,  key: "f" },
+    { id: "speed_boost",   name: "האצה",          desc: "הכפל את מהירותך למשך 5 שניות",                   emoji: "⚡",  price: 500,  cooldown: 660,  key: "e" },
+    { id: "double_coins",  name: "כפל מטבעות",   desc: "ערך המטבעות מוכפל ל-10 שניות",                   emoji: "💰",  price: 600,  cooldown: 780,  key: "e" },
+    { id: "shield",        name: "מגן",           desc: "חסינות מלאה למשך 4 שניות",                       emoji: "🛡️", price: 800,  cooldown: 720,  key: "r" },
+    { id: "clone_fish",    name: "שיבוט",          desc: "מתחזה מסיח את תשומת הלב הכרישים ל-5 שניות",     emoji: "🐠",  price: 900,  cooldown: 780,  key: "f" },
+    { id: "time_slow",     name: "האטת זמן",      desc: "האט כרישים ב-50% למשך 4 שניות",                  emoji: "⏳",  price: 1000, cooldown: 900,  key: "q" },
+    { id: "shockwave",     name: "גל הלם",        desc: "דחף את כל הכרישים ממך בבת אחת",                  emoji: "💥",  price: 1200, cooldown: 900,  key: "r" },
 ];
 
 // Slot map: 4 slots → abilities at index 0..3 in equippedAbilities
@@ -2318,7 +2331,7 @@ function activateAbility(id) {
     } else if (id === "time_slow") {
         abilityEffects["time_slow"] = { active: true, timer: 240 };
     } else if (id === "double_coins") {
-        abilityEffects["double_coins"] = { active: true, timer: 600 };
+        abilityEffects["double_coins"] = { active: true, timer: 600 }; // 10 seconds at 60fps
     } else if (id === "shockwave") {
         sharks.forEach(s => {
             let dx = s.x - player.x, dy = s.y - player.y;
@@ -2336,7 +2349,10 @@ function updateAbilities() {
     for (let eid in abilityEffects) {
         if (abilityEffects[eid].active) {
             abilityEffects[eid].timer--;
-            if (abilityEffects[eid].timer <= 0) abilityEffects[eid].active = false;
+            if (abilityEffects[eid].timer <= 0) {
+                abilityEffects[eid].active = false;
+                abilityEffects[eid].timer = 0;
+            }
         }
     }
     // Update poison clouds
@@ -3920,6 +3936,13 @@ function refreshSettingsUI() {
     ["wasd","arrows","mouse"].forEach(m => {
         document.getElementById("mm-" + m).classList.toggle("active", moveMode === m);
     });
+    // Show current username
+    const nameEl = document.getElementById("settings-current-name");
+    if (nameEl) nameEl.textContent = getMyUsername() || "לא הוגדר";
+    const inp = document.getElementById("settings-username-input");
+    if (inp) inp.value = "";
+    const errEl = document.getElementById("settings-username-error");
+    if (errEl) errEl.textContent = "";
 }
 function formatKey(k) {
     if (k === " ") return "Space";
@@ -3928,6 +3951,45 @@ function formatKey(k) {
     if (k === "ArrowLeft") return "←";
     if (k === "ArrowRight") return "→";
     return k.toUpperCase();
+}
+function changeUsername() {
+    const inp = document.getElementById("settings-username-input");
+    const errEl = document.getElementById("settings-username-error");
+    const newName = inp.value.trim();
+    errEl.textContent = "";
+    if (!newName) { errEl.textContent = "נא להזין שם."; return; }
+    if (newName.length < 2) { errEl.textContent = "שם קצר מדי (מינימום 2)."; return; }
+    if (newName.length > 18) { errEl.textContent = "שם ארוך מדי (מקסימום 18)."; return; }
+    if (!/^[\u0590-\u05FFa-zA-Z0-9 _\-\.]+$/.test(newName)) { errEl.textContent = "תווים לא חוקיים."; return; }
+    if (containsProfanity(newName)) { errEl.textContent = "🚫 שם לא הולם. נסה שם אחר."; return; }
+    if (getBannedList().includes(newName)) { errEl.textContent = "⛔ שם זה חסום."; return; }
+    const oldName = getMyUsername();
+    if (newName === oldName) { errEl.textContent = "זה כבר השם שלך!"; return; }
+    // Check duplicate locally
+    if (getPlayers().some(p => p.name === newName)) { errEl.textContent = "השם תפוס! בחר שם אחר."; return; }
+    // Online duplicate check
+    errEl.textContent = "בודק...";
+    const doRename = () => {
+        // Remove old entry from local + Firebase
+        savePlayers(getPlayers().filter(p => p.name !== oldName));
+        if (FIREBASE_URL && oldName) fbDelete(`players/${encodeURIComponent(oldName)}`).catch(()=>{});
+        localStorage.setItem("puff_username", newName);
+        if (newName.toLowerCase() === "boneh") localStorage.setItem("puff_admin","yes");
+        upsertPlayer(newName, { coins: gameData.coins, bestScore: gameData.bestScore, bestLevel: gameData.bestLevel, skinId: gameData.equippedSkin || "classic" });
+        errEl.style.color = "#86efac";
+        errEl.textContent = "✔ שם שונה ל: " + newName;
+        inp.value = "";
+        document.getElementById("settings-current-name").textContent = newName;
+        updateAdminButton();
+    };
+    if (FIREBASE_URL) {
+        fbGet(`players/${encodeURIComponent(newName)}`).then(ex => {
+            if (ex && ex.name) { errEl.style.color = "#f87171"; errEl.textContent = "השם תפוס אונלאין!"; }
+            else { errEl.style.color = ""; doRename(); }
+        }).catch(() => { errEl.style.color = ""; doRename(); });
+    } else {
+        doRename();
+    }
 }
 function setMoveMode(m) {
     moveMode = m;
