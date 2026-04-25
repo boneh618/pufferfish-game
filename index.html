@@ -3956,6 +3956,7 @@ function changeUsername() {
     const inp = document.getElementById("settings-username-input");
     const errEl = document.getElementById("settings-username-error");
     const newName = inp.value.trim();
+    errEl.style.color = "#f87171";
     errEl.textContent = "";
     if (!newName) { errEl.textContent = "נא להזין שם."; return; }
     if (newName.length < 2) { errEl.textContent = "שם קצר מדי (מינימום 2)."; return; }
@@ -3967,8 +3968,7 @@ function changeUsername() {
     if (newName === oldName) { errEl.textContent = "זה כבר השם שלך!"; return; }
     // Check duplicate locally
     if (getPlayers().some(p => p.name === newName)) { errEl.textContent = "השם תפוס! בחר שם אחר."; return; }
-    // Online duplicate check
-    errEl.textContent = "בודק...";
+
     const doRename = () => {
         // Remove old entry from local + Firebase
         savePlayers(getPlayers().filter(p => p.name !== oldName));
@@ -3977,16 +3977,27 @@ function changeUsername() {
         if (newName.toLowerCase() === "boneh") localStorage.setItem("puff_admin","yes");
         upsertPlayer(newName, { coins: gameData.coins, bestScore: gameData.bestScore, bestLevel: gameData.bestLevel, skinId: gameData.equippedSkin || "classic" });
         errEl.style.color = "#86efac";
-        errEl.textContent = "✔ שם שונה ל: " + newName;
+        errEl.textContent = "✔ שם שונה בהצלחה: " + newName;
         inp.value = "";
-        document.getElementById("settings-current-name").textContent = newName;
+        const nameEl = document.getElementById("settings-current-name");
+        if (nameEl) nameEl.textContent = newName;
         updateAdminButton();
     };
+
+    // Only do online duplicate check if Firebase is reachable
     if (FIREBASE_URL) {
-        fbGet(`players/${encodeURIComponent(newName)}`).then(ex => {
-            if (ex && ex.name) { errEl.style.color = "#f87171"; errEl.textContent = "השם תפוס אונלאין!"; }
-            else { errEl.style.color = ""; doRename(); }
-        }).catch(() => { errEl.style.color = ""; doRename(); });
+        errEl.style.color = "rgba(255,255,255,0.5)";
+        errEl.textContent = "בודק...";
+        fbGet(`players/${encodeURIComponent(newName)}`)
+            .then(ex => {
+                if (ex && ex.name) {
+                    errEl.style.color = "#f87171";
+                    errEl.textContent = "השם תפוס אונליין! בחר שם אחר.";
+                } else {
+                    doRename();
+                }
+            })
+            .catch(() => doRename()); // Firebase unreachable → proceed anyway
     } else {
         doRename();
     }
