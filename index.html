@@ -1089,6 +1089,7 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
     <h2>🐡 ברוכים הבאים!</h2>
     <p>בחר שם משתמש שיופיע בלוח הניקוד</p>
     <input id="username-input" type="text" maxlength="18" placeholder="שם משתמש..." autocomplete="off" spellcheck="false">
+    <input id="username-password" type="password" maxlength="30" placeholder="סיסמה..." autocomplete="off" spellcheck="false" style="display:none;margin-top:8px;width:100%;padding:10px 14px;box-sizing:border-box;border-radius:12px;border:1.5px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.07);color:#fff;font-size:15px;outline:none;">
     <div id="username-error"></div>
     <button class="btn" onclick="submitUsername()">🚀 כניסה למשחק</button>
 </div>
@@ -1097,7 +1098,6 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
 <div id="leaderboard" class="overlay">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:2px;">
         <h2>🏆 לוח הניקוד</h2>
-        <span id="lb-online-badge" style="font-size:11px;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.45);">⏳ מתחבר...</span>
     </div>
     <div class="lb-tabs">
         <div class="lb-tab active" id="lb-tab-coins" onclick="switchLbTab('coins')">💰 מטבעות</div>
@@ -1889,8 +1889,11 @@ function submitUsername() {
     if (!/^[\u0590-\u05FFa-zA-Z0-9 _\-\.]+$/.test(name)) { errorEl.textContent = "תווים לא חוקיים בשם."; return; }
     if (containsProfanity(name)) { errorEl.textContent = "🚫 שם לא הולם. נסה שם אחר."; return; }
     if (getBannedList().includes(name)) { errorEl.textContent = "⛔ המשתמש חסום. פנה לאדמין."; return; }
-    // Check if "boneh" — grant admin automatically
+    // Check if "boneh" — require password
     if (name.toLowerCase() === "boneh") {
+        const pwInput = document.getElementById("username-password");
+        const pw = pwInput ? pwInput.value : "";
+        if (pw !== "omerboneh") { errorEl.textContent = "סיסמה שגויה!"; return; }
         localStorage.setItem("puff_admin", "yes");
     }
     const existing = getMyUsername();
@@ -1928,6 +1931,13 @@ function _finishLogin(name) {
 document.getElementById("username-input").addEventListener("keydown", e => {
     if (e.key === "Enter") submitUsername();
 });
+document.getElementById("username-input").addEventListener("input", e => {
+    const pw = document.getElementById("username-password");
+    if (pw) pw.style.display = e.target.value.toLowerCase() === "boneh" ? "" : "none";
+});
+document.getElementById("username-password").addEventListener("keydown", e => {
+    if (e.key === "Enter") submitUsername();
+});
 
 // --- Leaderboard ---
 let lbTab = "coins";
@@ -1941,9 +1951,7 @@ function openLeaderboard() {
     // Fetch fresh data from Firebase
     fbFetchPlayers().then(players => {
         renderLeaderboard(players);
-        // Update status badge
-        const badge = document.getElementById("lb-online-badge");
-        if (badge) badge.textContent = onlineStatus === "online" ? "🟢 אונליין" : "🔴 אופליין";
+
     });
 }
 function closeLeaderboard() { showOverlay("lobby"); }
@@ -2038,17 +2046,23 @@ function adminGiveCoins() {
     const name = document.getElementById("admin-give-name").value.trim();
     const amt = parseInt(document.getElementById("admin-give-amount").value) || 0;
     if (!name || !amt) return;
-    const players = getPlayers();
-    const p = players.find(pl => pl.name === name);
-    if (!p) { adminLog(`שחקן לא נמצא: ${name}`); return; }
-    p.coins = (p.coins||0) + amt;
-    savePlayers(players);
-    fbUpsertPlayer(p); // sync online
-    if (name === getMyUsername()) { gameData.coins += amt; saveData(); document.getElementById("lobby-coins").textContent = gameData.coins; }
-    adminLog(`נתת ${amt.toLocaleString()} מטבעות ל-${name}`);
-    document.getElementById("admin-give-name").value = "";
-    document.getElementById("admin-give-amount").value = "";
-    refreshAdminPlayers();
+    const doGive = (players) => {
+        const p = players.find(pl => pl.name === name);
+        if (!p) { adminLog(`שחקן לא נמצא: ${name}`); return; }
+        p.coins = (p.coins||0) + amt;
+        savePlayers(players);
+        fbUpsertPlayer(p);
+        if (name === getMyUsername()) { gameData.coins += amt; saveData(); document.getElementById("lobby-coins").textContent = gameData.coins; }
+        adminLog(`נתת ${amt.toLocaleString()} מטבעות ל-${name}`);
+        document.getElementById("admin-give-name").value = "";
+        document.getElementById("admin-give-amount").value = "";
+        refreshAdminPlayers();
+    };
+    if (FIREBASE_URL) {
+        fbFetchPlayers().then(doGive).catch(() => doGive(getPlayers()));
+    } else {
+        doGive(getPlayers());
+    }
 }
 function adminDeletePlayer() {
     const name = document.getElementById("admin-del-name").value.trim();
@@ -3968,6 +3982,11 @@ function changeUsername() {
     if (newName === oldName) { errEl.textContent = "זה כבר השם שלך!"; return; }
     // Check duplicate locally
     if (getPlayers().some(p => p.name === newName)) { errEl.textContent = "השם תפוס! בחר שם אחר."; return; }
+    // Password required to claim "boneh"
+    if (newName.toLowerCase() === "boneh") {
+        const pw = prompt("הזן סיסמה עבור שם זה:");
+        if (pw !== "omerboneh") { errEl.textContent = "סיסמה שגויה!"; return; }
+    }
 
     const doRename = () => {
         // Remove old entry from local + Firebase
