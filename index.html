@@ -1215,24 +1215,12 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
         </div>
     </div>
 
-    <!-- ABILITY KEYS -->
+    <!-- ABILITY KEY -->
     <div class="settings-section">
-        <h3>⚡ מקשי יכולות</h3>
+        <h3>⚡ מקש יכולת</h3>
         <div class="keybind-row">
-            <div class="keybind-label">יכולת 1 <small>חריץ Q</small></div>
+            <div class="keybind-label">הפעלת יכולת</div>
             <div class="keybind-btn" id="kb-ab0" onclick="startRebind('ab0')"></div>
-        </div>
-        <div class="keybind-row">
-            <div class="keybind-label">יכולת 2 <small>חריץ E</small></div>
-            <div class="keybind-btn" id="kb-ab1" onclick="startRebind('ab1')"></div>
-        </div>
-        <div class="keybind-row">
-            <div class="keybind-label">יכולת 3 <small>חריץ R</small></div>
-            <div class="keybind-btn" id="kb-ab2" onclick="startRebind('ab2')"></div>
-        </div>
-        <div class="keybind-row">
-            <div class="keybind-label">יכולת 4 <small>חריץ F</small></div>
-            <div class="keybind-btn" id="kb-ab3" onclick="startRebind('ab3')"></div>
         </div>
     </div>
 
@@ -1289,9 +1277,6 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
 <!-- MOBILE ABILITY BUTTONS -->
 <div id="mobile-ability-btns">
     <div class="mob-ability-btn empty" id="mab-0" ontouchstart="mabTouch(0,event)"><span class="mab-icon">❔</span><span class="mab-key">Q</span></div>
-    <div class="mob-ability-btn empty" id="mab-1" ontouchstart="mabTouch(1,event)"><span class="mab-icon">❔</span><span class="mab-key">E</span></div>
-    <div class="mob-ability-btn empty" id="mab-2" ontouchstart="mabTouch(2,event)"><span class="mab-icon">❔</span><span class="mab-key">R</span></div>
-    <div class="mob-ability-btn empty" id="mab-3" ontouchstart="mabTouch(3,event)"><span class="mab-icon">❔</span><span class="mab-key">F</span></div>
 </div>
 
 <!-- VIRTUAL JOYSTICK -->
@@ -2245,14 +2230,14 @@ function getEquippedSharkSkin() {
 }
 
 const ABILITIES = [
-    { id: "poison_cloud",  name: "ענן רעל",      desc: "הנח ענן רעל – כרישים בתוכו מאבדים אנרגיה לאט", emoji: "☠️",  price: 300,  cooldown: 1200,  key: "q" },
-    { id: "magnet",        name: "מגנט מטבעות",   desc: "שואב מטבעות אליך למשך 6 שניות",                  emoji: "🧲",  price: 400,  cooldown: 1080,  key: "f" },
-    { id: "speed_boost",   name: "האצה",          desc: "הכפל את מהירותך למשך 5 שניות",                   emoji: "⚡",  price: 500,  cooldown: 1320,  key: "e" },
-    { id: "double_coins",  name: "כפל מטבעות",   desc: "ערך המטבעות מוכפל ל-10 שניות",                   emoji: "💰",  price: 600,  cooldown: 1560,  key: "e" },
-    { id: "shield",        name: "מגן",           desc: "חסינות מלאה למשך 4 שניות",                       emoji: "🛡️", price: 800,  cooldown: 1440,  key: "r" },
-    { id: "clone_fish",    name: "שיבוט",          desc: "מתחזה מסיח את תשומת הלב הכרישים ל-5 שניות",     emoji: "🐠",  price: 900,  cooldown: 1560,  key: "f" },
-    { id: "time_slow",     name: "האטת זמן",      desc: "האט כרישים ב-50% למשך 4 שניות",                  emoji: "⏳",  price: 1000, cooldown: 1800,  key: "q" },
-    { id: "shockwave",     name: "גל הלם",        desc: "דחף את כל הכרישים ממך בבת אחת",                  emoji: "💥",  price: 1200, cooldown: 1800,  key: "r" },
+    { id: "poison_cloud",  name: "ענן רעל",      desc: "הנח ענן רעל – כרישים בתוכו מאבדים אנרגיה לאט", emoji: "☠️",  price: 300,  cooldown: 1800,  key: "q" },
+    { id: "magnet",        name: "מגנט מטבעות",   desc: "שואב מטבעות אליך למשך 6 שניות",                  emoji: "🧲",  price: 400,  cooldown: 1800,  key: "f" },
+    { id: "speed_boost",   name: "האצה",          desc: "הכפל את מהירותך למשך 5 שניות",                   emoji: "⚡",  price: 500,  cooldown: 1800,  key: "e" },
+    { id: "double_coins",  name: "כפל מטבעות",   desc: "ערך המטבעות מוכפל ל-10 שניות",                   emoji: "💰",  price: 600,  cooldown: 1800,  key: "e" },
+    { id: "shield",        name: "מגן",           desc: "חסינות מלאה למשך 4 שניות",                       emoji: "🛡️", price: 800,  cooldown: 1800,  key: "r" },
+    { id: "clone_fish",    name: "שיבוט",          desc: "מתחזה מסיח את תשומת הלב הכרישים ל-5 שניות",     emoji: "🐠",  price: 900,  cooldown: 1800,  key: "f" },
+    { id: "time_slow",     name: "האטת זמן",      desc: "האט כרישים ב-50% למשך 4 שניות",                  emoji: "⏳",  price: 1000, cooldown: 2100,  key: "q" },
+    { id: "shockwave",     name: "גל הלם",        desc: "דחף את כל הכרישים ממך בבת אחת",                  emoji: "💥",  price: 1200, cooldown: 2100,  key: "r" },
 ];
 
 // Single slot: only 1 ability can be equipped at a time
@@ -2470,58 +2455,46 @@ function renderAbilityHUD() {
     if (!gameRunning) { hudEl.style.display = "none"; return; }
     hudEl.style.display = "flex";
     hudEl.innerHTML = "";
-    ABILITY_KEYS.forEach((key, i) => {
-        const id = equipped[i];
-        const ab = id ? ABILITIES.find(a => a.id === id) : null;
+    // Show only the first equipped ability
+    const id = equipped[0];
+    const ab = id ? ABILITIES.find(a => a.id === id) : null;
+    if (ab) {
         const now = frameCount;
         const lastUsed = id ? (lastAbilityFrames[id] || -9999) : -9999;
-        const cooldown = ab ? ab.cooldown : 1;
+        const cooldown = ab.cooldown;
         const elapsed = now - lastUsed;
         const ready = elapsed >= cooldown;
-        const pct = Math.min(1, elapsed / cooldown);
-        const cdSecs = ab && !ready ? Math.ceil((cooldown - elapsed) / 60) : 0;
+        const cdSecs = !ready ? Math.ceil((cooldown - elapsed) / 60) : 0;
 
         // Desktop HUD slot
         const slot = document.createElement("div");
-        slot.className = "ability-slot" + (ab ? (ready ? " ready" : " cooldown") : "");
-        slot.title = ab ? ab.name : "";
-        if (ab) {
-            slot.innerHTML = `<span style="font-size:18px">${ab.emoji}</span>
-                <span style="flex:1;font-size:11px">${ab.name}</span>
-                <span style="font-size:10px;color:${ready?"#4ade80":"#fbbf24"};font-weight:700;">${ready ? key.toUpperCase()+"✓" : cdSecs+"s"}</span>`;
-        } else {
-            slot.innerHTML = `<span style="color:rgba(255,255,255,0.2);font-size:10px">${key.toUpperCase()} ריק</span>`;
-        }
+        slot.className = "ability-slot" + (ready ? " ready" : " cooldown");
+        slot.title = ab.name;
+        slot.innerHTML = `<span style="font-size:18px">${ab.emoji}</span>
+            <span style="flex:1;font-size:11px">${ab.name}</span>
+            <span style="font-size:10px;color:${ready?"#4ade80":"#fbbf24"};font-weight:700;">${ready ? ab.key.toUpperCase()+"✓" : cdSecs+"s"}</span>`;
         hudEl.appendChild(slot);
 
         // Mobile button update
         if (mabContainer) {
-            const btn = document.getElementById(`mab-${i}`);
+            const btn = document.getElementById(`mab-0`);
             if (btn) {
                 const iconEl = btn.querySelector(".mab-icon");
                 const keyEl = btn.querySelector(".mab-key");
                 let cdEl = btn.querySelector(".mab-cd");
-                if (ab) {
-                    btn.classList.remove("empty");
-                    btn.classList.toggle("on-cooldown", !ready);
-                    iconEl.textContent = ab.emoji;
-                    keyEl.textContent = key.toUpperCase();
-                    if (!ready) {
-                        if (!cdEl) { cdEl = document.createElement("div"); cdEl.className = "mab-cd"; btn.appendChild(cdEl); }
-                        cdEl.textContent = cdSecs + "s";
-                    } else {
-                        if (cdEl) cdEl.remove();
-                    }
+                btn.classList.remove("empty");
+                btn.classList.toggle("on-cooldown", !ready);
+                iconEl.textContent = ab.emoji;
+                keyEl.textContent = ab.key.toUpperCase();
+                if (!ready) {
+                    if (!cdEl) { cdEl = document.createElement("div"); cdEl.className = "mab-cd"; btn.appendChild(cdEl); }
+                    cdEl.textContent = cdSecs + "s";
                 } else {
-                    btn.classList.add("empty");
-                    btn.classList.remove("on-cooldown");
-                    iconEl.textContent = "❔";
-                    keyEl.textContent = key.toUpperCase();
                     if (cdEl) cdEl.remove();
                 }
             }
         }
-    });
+    }
 }
 
 const bossImages = {};
@@ -3942,9 +3915,6 @@ function closeSettings() {
 function refreshSettingsUI() {
     document.getElementById("kb-inflate").textContent = formatKey(keybinds.inflate);
     document.getElementById("kb-ab0").textContent = formatKey(keybinds.ab0);
-    document.getElementById("kb-ab1").textContent = formatKey(keybinds.ab1);
-    document.getElementById("kb-ab2").textContent = formatKey(keybinds.ab2);
-    document.getElementById("kb-ab3").textContent = formatKey(keybinds.ab3);
     ["wasd","arrows","mouse"].forEach(m => {
         document.getElementById("mm-" + m).classList.toggle("active", moveMode === m);
     });
