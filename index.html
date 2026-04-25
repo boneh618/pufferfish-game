@@ -2245,17 +2245,17 @@ function getEquippedSharkSkin() {
 }
 
 const ABILITIES = [
-    { id: "poison_cloud",  name: "ענן רעל",      desc: "הנח ענן רעל – כרישים בתוכו מאבדים אנרגיה לאט", emoji: "☠️",  price: 300,  cooldown: 600,  key: "q" },
-    { id: "magnet",        name: "מגנט מטבעות",   desc: "שואב מטבעות אליך למשך 6 שניות",                  emoji: "🧲",  price: 400,  cooldown: 540,  key: "f" },
-    { id: "speed_boost",   name: "האצה",          desc: "הכפל את מהירותך למשך 5 שניות",                   emoji: "⚡",  price: 500,  cooldown: 660,  key: "e" },
-    { id: "double_coins",  name: "כפל מטבעות",   desc: "ערך המטבעות מוכפל ל-10 שניות",                   emoji: "💰",  price: 600,  cooldown: 780,  key: "e" },
-    { id: "shield",        name: "מגן",           desc: "חסינות מלאה למשך 4 שניות",                       emoji: "🛡️", price: 800,  cooldown: 720,  key: "r" },
-    { id: "clone_fish",    name: "שיבוט",          desc: "מתחזה מסיח את תשומת הלב הכרישים ל-5 שניות",     emoji: "🐠",  price: 900,  cooldown: 780,  key: "f" },
-    { id: "time_slow",     name: "האטת זמן",      desc: "האט כרישים ב-50% למשך 4 שניות",                  emoji: "⏳",  price: 1000, cooldown: 900,  key: "q" },
-    { id: "shockwave",     name: "גל הלם",        desc: "דחף את כל הכרישים ממך בבת אחת",                  emoji: "💥",  price: 1200, cooldown: 900,  key: "r" },
+    { id: "poison_cloud",  name: "ענן רעל",      desc: "הנח ענן רעל – כרישים בתוכו מאבדים אנרגיה לאט", emoji: "☠️",  price: 300,  cooldown: 1200,  key: "q" },
+    { id: "magnet",        name: "מגנט מטבעות",   desc: "שואב מטבעות אליך למשך 6 שניות",                  emoji: "🧲",  price: 400,  cooldown: 1080,  key: "f" },
+    { id: "speed_boost",   name: "האצה",          desc: "הכפל את מהירותך למשך 5 שניות",                   emoji: "⚡",  price: 500,  cooldown: 1320,  key: "e" },
+    { id: "double_coins",  name: "כפל מטבעות",   desc: "ערך המטבעות מוכפל ל-10 שניות",                   emoji: "💰",  price: 600,  cooldown: 1560,  key: "e" },
+    { id: "shield",        name: "מגן",           desc: "חסינות מלאה למשך 4 שניות",                       emoji: "🛡️", price: 800,  cooldown: 1440,  key: "r" },
+    { id: "clone_fish",    name: "שיבוט",          desc: "מתחזה מסיח את תשומת הלב הכרישים ל-5 שניות",     emoji: "🐠",  price: 900,  cooldown: 1560,  key: "f" },
+    { id: "time_slow",     name: "האטת זמן",      desc: "האט כרישים ב-50% למשך 4 שניות",                  emoji: "⏳",  price: 1000, cooldown: 1800,  key: "q" },
+    { id: "shockwave",     name: "גל הלם",        desc: "דחף את כל הכרישים ממך בבת אחת",                  emoji: "💥",  price: 1200, cooldown: 1800,  key: "r" },
 ];
 
-// Slot map: 4 slots → abilities at index 0..3 in equippedAbilities
+// Single slot: only 1 ability can be equipped at a time
 const ABILITY_KEYS = ["q","e","r","f"];
 
 let poisonClouds = []; // {x, y, r, life, timer}
@@ -2311,10 +2311,8 @@ function buyAbility(id) {
 function equipAbility(id) {
     if (!gameData.equippedAbilities) gameData.equippedAbilities = [];
     if (gameData.equippedAbilities.includes(id)) return;
-    if (gameData.equippedAbilities.length >= 4) {
-        gameData.equippedAbilities.shift(); // remove oldest
-    }
-    gameData.equippedAbilities.push(id);
+    // Only 1 ability can be equipped at a time
+    gameData.equippedAbilities = [id];
     saveData();
     renderAbilityShop();
 }
