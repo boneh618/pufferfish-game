@@ -1804,7 +1804,7 @@ function isAdminUnlocked() { return localStorage.getItem("puff_admin") === "yes"
 // Set this to your Firebase Realtime Database URL (ends with .firebaseio.com)
 // Rules must allow public read/write: { "rules": { ".read": true, ".write": true } }
 // Leave as empty string "" to use offline-only localStorage mode.
-const FIREBASE_URL = "https://pufferfish-game-default-rtdb.firebaseio.com";
+const FIREBASE_URL = "https://pufferfish-game-default-rtdb.europe-west1.firebasedatabase.app";
 
 let onlineStatus = "offline"; // "offline" | "connecting" | "online"
 
@@ -4663,10 +4663,10 @@ function updateAdminButton() {
 // 1. Go to https://dashboard.stripe.com and create a free account.
 // 2. Create Payment Links for each tier (₪1 / ₪5 / ₪10 / ₪50 one-time).
 // 3. In each Payment Link's "After payment" settings set the success URL to:
-//       YOUR_GAME_URL?fishbucks_paid=10k     (for the ₪1 tier)
-//       YOUR_GAME_URL?fishbucks_paid=100k    (for the ₪5 tier)
-//       YOUR_GAME_URL?fishbucks_paid=1m      (for the ₪10 tier)
-//       YOUR_GAME_URL?fishbucks_paid=10m     (for the ₪50 tier)
+//       https://pufferfishgame.netlify.app/?fishbucks_paid=10k     (for the ₪1 tier)
+//       https://pufferfishgame.netlify.app/?fishbucks_paid=100k    (for the ₪5 tier)
+//       https://pufferfishgame.netlify.app/?fishbucks_paid=1m      (for the ₪10 tier)
+//       https://pufferfishgame.netlify.app/?fishbucks_paid=10m     (for the ₪50 tier)
 // 4. Paste the payment link URLs below.
 const STRIPE_LINKS = {
     "10k":  "PASTE_STRIPE_LINK_10K_HERE",
