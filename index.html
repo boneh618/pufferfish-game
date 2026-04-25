@@ -290,6 +290,7 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
 #shop {
     background: linear-gradient(180deg, #080818 0%, #0c1535 100%);
     overflow-y: auto;
+    justify-content: flex-start;
     padding: 20px 16px;
     gap: 6px;
 }
@@ -361,6 +362,88 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
     pointer-events: auto;
     backdrop-filter: blur(4px);
 }
+
+/* ===== MOBILE ABILITY BUTTONS ===== */
+#mobile-ability-btns {
+    position: fixed;
+    bottom: 24px;
+    right: 120px;
+    display: none;
+    flex-direction: row;
+    gap: 8px;
+    z-index: 20;
+    pointer-events: auto;
+}
+.mob-ability-btn {
+    width: 58px; height: 58px;
+    border-radius: 14px;
+    background: rgba(100,50,200,0.6);
+    border: 2px solid rgba(167,139,250,0.5);
+    backdrop-filter: blur(6px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    touch-action: manipulation;
+}
+.mob-ability-btn .mab-icon { font-size: 22px; line-height: 1; }
+.mob-ability-btn .mab-key { font-size: 9px; color: rgba(255,255,255,0.6); font-weight: 700; }
+.mob-ability-btn .mab-cd {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.6);
+    font-size: 10px;
+    color: #fbbf24;
+    text-align: center;
+    padding: 1px 0;
+    font-weight: 700;
+}
+.mob-ability-btn.on-cooldown { opacity: 0.5; }
+.mob-ability-btn.empty { opacity: 0.2; border-color: rgba(255,255,255,0.15); background: rgba(0,0,0,0.3); }
+
+/* ===== MOBILE ABILITY BUTTONS ===== */
+#mobile-ability-btns {
+    position: fixed;
+    bottom: 24px;
+    right: 120px;
+    display: none;
+    flex-direction: row;
+    gap: 8px;
+    z-index: 20;
+    pointer-events: auto;
+}
+.mob-ability-btn {
+    width: 58px; height: 58px;
+    border-radius: 14px;
+    background: rgba(100,50,200,0.6);
+    border: 2px solid rgba(167,139,250,0.5);
+    backdrop-filter: blur(6px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    touch-action: manipulation;
+}
+.mob-ability-btn .mab-icon { font-size: 22px; line-height: 1; }
+.mob-ability-btn .mab-key { font-size: 9px; color: rgba(255,255,255,0.6); font-weight: 700; }
+.mob-ability-btn .mab-cd {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.6);
+    font-size: 10px;
+    color: #fbbf24;
+    text-align: center;
+    padding: 1px 0;
+    font-weight: 700;
+}
+.mob-ability-btn.on-cooldown { opacity: 0.5; }
+.mob-ability-btn.empty { opacity: 0.2; border-color: rgba(255,255,255,0.15); background: rgba(0,0,0,0.3); }
 
 /* ===== VIRTUAL JOYSTICK ===== */
 #joystick-zone {
@@ -565,6 +648,7 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
 #ability-shop {
     background: linear-gradient(180deg, #06001a 0%, #0a0a30 100%);
     overflow-y: auto;
+    justify-content: flex-start;
     padding: 20px 16px;
     gap: 6px;
 }
@@ -837,6 +921,14 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
 
 <!-- INFLATE BUTTON (mobile) -->
 <div id="inflate-btn">🐡</div>
+
+<!-- MOBILE ABILITY BUTTONS -->
+<div id="mobile-ability-btns">
+    <div class="mob-ability-btn empty" id="mab-0" ontouchstart="mabTouch(0,event)"><span class="mab-icon">❔</span><span class="mab-key">Q</span></div>
+    <div class="mob-ability-btn empty" id="mab-1" ontouchstart="mabTouch(1,event)"><span class="mab-icon">❔</span><span class="mab-key">E</span></div>
+    <div class="mob-ability-btn empty" id="mab-2" ontouchstart="mabTouch(2,event)"><span class="mab-icon">❔</span><span class="mab-key">R</span></div>
+    <div class="mob-ability-btn empty" id="mab-3" ontouchstart="mabTouch(3,event)"><span class="mab-icon">❔</span><span class="mab-key">F</span></div>
+</div>
 
 <!-- VIRTUAL JOYSTICK -->
 <div id="joystick-zone">
@@ -1199,6 +1291,8 @@ function renderShop() {
                 saveData();
                 document.getElementById("shop-coins").textContent = gameData.coins;
                 renderShop();
+            } else {
+                openPremiumFromShop();
             }
         };
         grid.appendChild(card);
@@ -1245,6 +1339,8 @@ function renderShop() {
                 saveData();
                 document.getElementById("shop-coins").textContent = gameData.coins;
                 renderShop();
+            } else {
+                openPremiumFromShop();
             }
         };
         bossGrid.appendChild(card);
@@ -1283,6 +1379,8 @@ function renderShop() {
                 saveData();
                 document.getElementById("shop-coins").textContent = gameData.coins;
                 renderShop();
+            } else {
+                openPremiumFromShop();
             }
         };
         sharkGrid.appendChild(card);
@@ -1373,10 +1471,10 @@ const BOSS_SKINS = [
     { id: "leviathan",  name: "לויתן",       price: 1200,    emoji: "🐳" },
     { id: "undead",     name: "דג רקב",      price: 1500,    emoji: "💀" },
     { id: "mech",       name: "מכאני",       price: 2000,    emoji: "🤖" },
-    { id: "ben",        name: "בן פרניק",    price: 1000000, emoji: "👑" },
-    { id: "roi_s",      name: "רועי שמחי",   price: 1000000, emoji: "🌟" },
-    { id: "roi_r",      name: "רועי ראובן",  price: 1000000, emoji: "🔥" },
-    { id: "yoyo",       name: "יויו",         price: 1000000, emoji: "💎" },
+    { id: "ben",        name: "בן פרניק",    price: 100, emoji: "👑" },
+    { id: "roi_s",      name: "רועי שמחי",   price: 100, emoji: "🌟" },
+    { id: "roi_r",      name: "רועי ראובן",  price: 100, emoji: "🔥" },
+    { id: "yoyo",       name: "יויו",         price: 100, emoji: "💎" },
 ];
 
 // ===============================
@@ -1418,7 +1516,7 @@ function openAbilityShop() {
     showOverlay("ability-shop");
     renderAbilityShop();
 }
-function closeAbilityShop() { hideOverlay("ability-shop"); showOverlay("lobby"); }
+function closeAbilityShop() { showOverlay("lobby"); document.getElementById("lobby-coins").textContent = gameData.coins; }
 
 function renderAbilityShop() {
     const grid = document.getElementById("ability-grid");
@@ -1451,7 +1549,8 @@ function renderAbilityShop() {
 
 function buyAbility(id) {
     const ab = ABILITIES.find(a => a.id === id);
-    if (!ab || gameData.coins < ab.price) return;
+    if (!ab) return;
+    if (gameData.coins < ab.price) { openPremiumFromShop(); return; }
     gameData.coins -= ab.price;
     if (!gameData.ownedAbilities) gameData.ownedAbilities = [];
     gameData.ownedAbilities.push(id);
@@ -1599,11 +1698,20 @@ function drawCloneFish() {
     ctx.restore();
 }
 
+function mabTouch(idx, e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!gameRunning || paused) return;
+    const equippedId = (gameData.equippedAbilities || [])[idx];
+    if (equippedId) activateAbility(equippedId);
+}
+
 function renderAbilityHUD() {
     const equipped = gameData.equippedAbilities || [];
     const hudEl = document.getElementById("ability-hud");
+    const mabContainer = document.getElementById("mobile-ability-btns");
     if (!hudEl) return;
-    if (!gameState.playing) { hudEl.style.display = "none"; return; }
+    if (!gameRunning) { hudEl.style.display = "none"; return; }
     hudEl.style.display = "flex";
     hudEl.innerHTML = "";
     ABILITY_KEYS.forEach((key, i) => {
@@ -1611,20 +1719,52 @@ function renderAbilityHUD() {
         const ab = id ? ABILITIES.find(a => a.id === id) : null;
         const now = frameCount;
         const lastUsed = id ? (lastAbilityFrames[id] || -9999) : -9999;
-        const ab_obj = ab ? ABILITIES.find(a => a.id === id) : null;
-        const cooldown = ab_obj ? ab_obj.cooldown : 1;
+        const cooldown = ab ? ab.cooldown : 1;
         const elapsed = now - lastUsed;
         const ready = elapsed >= cooldown;
         const pct = Math.min(1, elapsed / cooldown);
+        const cdSecs = ab && !ready ? Math.ceil((cooldown - elapsed) / 60) : 0;
+
+        // Desktop HUD slot
         const slot = document.createElement("div");
         slot.className = "ability-slot" + (ab ? (ready ? " ready" : " cooldown") : "");
         slot.title = ab ? ab.name : "";
-        slot.innerHTML = ab
-            ? `<span style="font-size:18px">${ab.emoji}</span>
-               <span style="font-size:9px;position:absolute;bottom:1px;left:50%;transform:translateX(-50%);color:#fff">${key.toUpperCase()}</span>
-               ${!ready ? `<div style="position:absolute;bottom:0;left:0;height:${(1-pct)*100}%;width:100%;background:rgba(0,0,0,0.5);border-radius:8px"></div>` : ""}`
-            : `<span style="color:rgba(255,255,255,0.2);font-size:10px">${key.toUpperCase()}</span>`;
+        if (ab) {
+            slot.innerHTML = `<span style="font-size:18px">${ab.emoji}</span>
+                <span style="flex:1;font-size:11px">${ab.name}</span>
+                <span style="font-size:10px;color:${ready?"#4ade80":"#fbbf24"};font-weight:700;">${ready ? key.toUpperCase()+"✓" : cdSecs+"s"}</span>`;
+        } else {
+            slot.innerHTML = `<span style="color:rgba(255,255,255,0.2);font-size:10px">${key.toUpperCase()} ריק</span>`;
+        }
         hudEl.appendChild(slot);
+
+        // Mobile button update
+        if (mabContainer) {
+            const btn = document.getElementById(`mab-${i}`);
+            if (btn) {
+                const iconEl = btn.querySelector(".mab-icon");
+                const keyEl = btn.querySelector(".mab-key");
+                let cdEl = btn.querySelector(".mab-cd");
+                if (ab) {
+                    btn.classList.remove("empty");
+                    btn.classList.toggle("on-cooldown", !ready);
+                    iconEl.textContent = ab.emoji;
+                    keyEl.textContent = key.toUpperCase();
+                    if (!ready) {
+                        if (!cdEl) { cdEl = document.createElement("div"); cdEl.className = "mab-cd"; btn.appendChild(cdEl); }
+                        cdEl.textContent = cdSecs + "s";
+                    } else {
+                        if (cdEl) cdEl.remove();
+                    }
+                } else {
+                    btn.classList.add("empty");
+                    btn.classList.remove("on-cooldown");
+                    iconEl.textContent = "❔";
+                    keyEl.textContent = key.toUpperCase();
+                    if (cdEl) cdEl.remove();
+                }
+            }
+        }
     });
 }
 
@@ -1915,7 +2055,7 @@ function drawPuffer(x, y, size, inflated) {
 
     // Rainbow special: color-cycling body overlay
     if (skin.special === "rainbow") {
-        let t = Date.now() / 100;
+        let t = Date.now() / 20;
         let hue = t % 360;
         // Override body with rainbow color
         ctx.beginPath();
@@ -2132,6 +2272,13 @@ function drawBoss(x, y, size, hp, maxHp) {
     if (sid === "leviathan") { ctx.restore(); drawBossLeviathan(x, y, size, hp, maxHp, t); return; }
     if (sid === "undead")    { ctx.restore(); drawBossUndead(x, y, size, hp, maxHp, t); return; }
     if (sid === "mech")      { ctx.restore(); drawBossMech(x, y, size, hp, maxHp, t); return; }
+    if (sid === "shark")     { ctx.restore(); drawBossShark(x, y, size, hp, maxHp, t); return; }
+    if (sid === "kraken")    { ctx.restore(); drawBossKraken(x, y, size, hp, maxHp, t); return; }
+    if (sid === "dragon")    { ctx.restore(); drawBossDragon(x, y, size, hp, maxHp, t); return; }
+    if (sid === "ben")       { ctx.restore(); drawBossBen(x, y, size, hp, maxHp, t); return; }
+    if (sid === "roi_s")     { ctx.restore(); drawBossRoiS(x, y, size, hp, maxHp, t); return; }
+    if (sid === "roi_r")     { ctx.restore(); drawBossRoiR(x, y, size, hp, maxHp, t); return; }
+    if (sid === "yoyo")      { ctx.restore(); drawBossYoyo(x, y, size, hp, maxHp, t); return; }
 
     // === ANGLERFISH (default) ===
 
@@ -2548,6 +2695,368 @@ function drawBossMech(x, y, size, hp, maxHp, t) {
     ctx.restore();
 }
 
+function drawBossShark(x, y, size, hp, maxHp, t) {
+    ctx.save();
+    ctx.translate(x, y);
+    const sw = Math.sin(t) * 3;
+    // Streamlined body
+    ctx.shadowColor = "#aabbcc"; ctx.shadowBlur = 18;
+    ctx.beginPath(); ctx.ellipse(0, sw, size * 0.9, size * 0.42, 0, 0, Math.PI * 2);
+    ctx.fillStyle = "#667799"; ctx.fill(); ctx.shadowBlur = 0;
+    // White belly
+    ctx.beginPath(); ctx.ellipse(0, sw + size * 0.12, size * 0.65, size * 0.18, 0, 0, Math.PI);
+    ctx.fillStyle = "#ddeeff"; ctx.fill();
+    // Tail fin
+    ctx.beginPath(); ctx.moveTo(-size * 0.85, sw);
+    ctx.lineTo(-size * 1.4, sw - size * 0.45); ctx.lineTo(-size * 1.05, sw);
+    ctx.lineTo(-size * 1.4, sw + size * 0.45); ctx.closePath();
+    ctx.fillStyle = "#556688"; ctx.fill();
+    // Dorsal fin
+    ctx.beginPath(); ctx.moveTo(-size * 0.15, sw - size * 0.4);
+    ctx.lineTo(size * 0.15, sw - size * 1.0); ctx.lineTo(size * 0.38, sw - size * 0.4);
+    ctx.closePath(); ctx.fillStyle = "#556688"; ctx.fill();
+    // Pectoral fin
+    ctx.beginPath(); ctx.moveTo(size * 0.1, sw);
+    ctx.lineTo(size * 0.4, sw + size * 0.38); ctx.lineTo(size * 0.55, sw);
+    ctx.closePath(); ctx.fillStyle = "#4a5577"; ctx.fill();
+    // Mouth
+    ctx.beginPath(); ctx.moveTo(size * 0.72, sw - size * 0.06);
+    ctx.quadraticCurveTo(size * 0.95, sw + size * 0.15, size * 0.72, sw + size * 0.14);
+    ctx.closePath(); ctx.fillStyle = "#220010"; ctx.fill();
+    ctx.fillStyle = "#fff";
+    for (let i = 0; i < 4; i++) {
+        let tx = size * 0.74 + i * size * 0.055;
+        ctx.beginPath(); ctx.moveTo(tx, sw + 1);
+        ctx.lineTo(tx + size * 0.022, sw + size * 0.075);
+        ctx.lineTo(tx + size * 0.044, sw + 1); ctx.closePath(); ctx.fill();
+    }
+    // Gills
+    for (let i = 0; i < 3; i++) {
+        ctx.beginPath();
+        ctx.arc(size * 0.22 - i * size * 0.1, sw, size * 0.065, Math.PI * 0.2, Math.PI * 0.8);
+        ctx.strokeStyle = "rgba(100,140,200,0.5)"; ctx.lineWidth = 2; ctx.stroke();
+    }
+    // Eye
+    ctx.beginPath(); ctx.arc(size * 0.5, sw - size * 0.1, size * 0.09, 0, Math.PI * 2);
+    ctx.fillStyle = "#000"; ctx.fill();
+    ctx.beginPath(); ctx.arc(size * 0.51, sw - size * 0.11, size * 0.03, 0, Math.PI * 2);
+    ctx.fillStyle = "#fff"; ctx.fill();
+    _drawBossHpBar(size, hp, maxHp, sw, "🦈");
+    ctx.restore();
+}
+
+function drawBossKraken(x, y, size, hp, maxHp, t) {
+    ctx.save();
+    ctx.translate(x, y);
+    const sw = Math.sin(t) * 3;
+    // Tentacles (behind body)
+    for (let i = 0; i < 8; i++) {
+        let a = i * Math.PI / 4 + t * 0.25;
+        let wave = Math.sin(t * 1.5 + i) * 0.35;
+        let len = size * 1.3;
+        let sx = Math.cos(a) * size * 0.35, sy = sw + Math.sin(a) * size * 0.3;
+        let ex = sx + Math.cos(a + wave) * len, ey = sy + Math.sin(a + wave) * len;
+        let mx = (sx + ex) / 2 + Math.cos(a + Math.PI / 2) * size * 0.25 * Math.sin(t + i);
+        let my = (sy + ey) / 2 + Math.sin(a + Math.PI / 2) * size * 0.25 * Math.sin(t + i);
+        ctx.beginPath(); ctx.moveTo(sx, sy); ctx.quadraticCurveTo(mx, my, ex, ey);
+        ctx.strokeStyle = "rgba(80,20,130,0.85)"; ctx.lineWidth = Math.max(2, size * 0.1 - i * 0.5);
+        ctx.lineCap = "round"; ctx.stroke();
+        // Suckers
+        for (let j = 1; j <= 3; j++) {
+            let p = j / 4;
+            ctx.beginPath();
+            ctx.arc(sx + (ex - sx) * p, sy + (ey - sy) * p, 2.5, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(180,90,230,0.65)"; ctx.fill();
+        }
+    }
+    // Mantle
+    ctx.shadowColor = "#8800cc"; ctx.shadowBlur = 22;
+    ctx.beginPath(); ctx.ellipse(0, sw - size * 0.08, size * 0.62, size * 0.78, 0, 0, Math.PI * 2);
+    ctx.fillStyle = "#3d0066"; ctx.fill(); ctx.shadowBlur = 0;
+    // Sheen
+    ctx.beginPath(); ctx.ellipse(-size * 0.12, sw - size * 0.2, size * 0.28, size * 0.38, -0.3, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(150,60,210,0.18)"; ctx.fill();
+    // Big eyes
+    for (const ex of [-size * 0.22, size * 0.22]) {
+        ctx.beginPath(); ctx.arc(ex, sw, size * 0.15, 0, Math.PI * 2); ctx.fillStyle = "#ffd700"; ctx.fill();
+        ctx.beginPath(); ctx.arc(ex, sw, size * 0.09, 0, Math.PI * 2); ctx.fillStyle = "#000"; ctx.fill();
+        ctx.beginPath(); ctx.arc(ex - size * 0.03, sw - size * 0.03, size * 0.035, 0, Math.PI * 2); ctx.fillStyle = "#fff"; ctx.fill();
+    }
+    // Ink aura pulse
+    ctx.beginPath(); ctx.arc(0, sw, size * 1.45, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(40,0,80,${0.05 + Math.sin(t * 2) * 0.03})`; ctx.fill();
+    _drawBossHpBar(size, hp, maxHp, sw - size * 0.08, "🐙");
+    ctx.restore();
+}
+
+function drawBossDragon(x, y, size, hp, maxHp, t) {
+    ctx.save();
+    ctx.translate(x, y);
+    const sw = Math.sin(t) * 3;
+    // Tail segments
+    for (let i = 3; i >= 0; i--) {
+        let sx = -size * 0.5 - i * size * 0.32, sy = sw + Math.sin(t + i * 0.8) * size * 0.22;
+        let sr = size * (0.34 - i * 0.045);
+        ctx.beginPath(); ctx.arc(sx, sy, sr, 0, Math.PI * 2);
+        ctx.fillStyle = `hsl(${148 + i * 7},60%,${24 - i * 2}%)`; ctx.fill();
+        ctx.beginPath(); ctx.arc(sx, sy, sr * 0.65, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(0,200,80,0.2)"; ctx.lineWidth = 1; ctx.stroke();
+    }
+    // Main body
+    ctx.shadowColor = "#00aa44"; ctx.shadowBlur = 22;
+    ctx.beginPath(); ctx.ellipse(0, sw, size * 0.82, size * 0.52, 0, 0, Math.PI * 2);
+    ctx.fillStyle = "#1a5e30"; ctx.fill(); ctx.shadowBlur = 0;
+    // Scales
+    ctx.globalAlpha = 0.28;
+    for (let row = -1; row <= 1; row++) for (let col = -2; col <= 2; col++) {
+        ctx.beginPath();
+        ctx.arc(col * size * 0.27 + (row % 2) * size * 0.13, sw + row * size * 0.21, size * 0.11, 0, Math.PI);
+        ctx.fillStyle = "#00cc55"; ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    // Back spines (orange)
+    for (let i = 0; i < 5; i++) {
+        let sx = -size * 0.48 + i * size * 0.24;
+        let sh = size * 0.17 + Math.sin(t * 1.5 + i) * 4;
+        ctx.beginPath(); ctx.moveTo(sx, sw - size * 0.48);
+        ctx.lineTo(sx + size * 0.04, sw - size * 0.48 - sh);
+        ctx.lineTo(sx + size * 0.08, sw - size * 0.48);
+        ctx.closePath(); ctx.fillStyle = "#ff6600"; ctx.fill();
+    }
+    // Head
+    ctx.beginPath(); ctx.ellipse(size * 0.88, sw, size * 0.28, size * 0.2, 0.3, 0, Math.PI * 2);
+    ctx.fillStyle = "#226635"; ctx.fill();
+    // Jaw
+    ctx.beginPath(); ctx.moveTo(size * 0.73, sw + size * 0.05);
+    ctx.quadraticCurveTo(size * 1.18, sw + size * 0.28, size * 1.08, sw + size * 0.33);
+    ctx.lineTo(size * 0.68, sw + size * 0.18); ctx.closePath();
+    ctx.fillStyle = "#1a3e25"; ctx.fill();
+    // Fire breath
+    let fp = (Date.now() / 80) % (Math.PI * 2);
+    for (let i = 0; i < 5; i++) {
+        let fw = size * (0.28 + i * 0.18), fh = size * (0.07 - i * 0.008);
+        let fx = size * 1.12 + i * size * 0.22, fy = sw + Math.sin(fp + i * 0.5) * size * 0.07;
+        ctx.beginPath(); ctx.ellipse(fx, fy, fw * 0.5, fh, 0.2, 0, Math.PI * 2);
+        ctx.fillStyle = i < 2 ? "rgba(255,100,0,0.72)" : "rgba(255,200,0,0.5)"; ctx.fill();
+    }
+    // Eye
+    ctx.beginPath(); ctx.arc(size * 0.76, sw - size * 0.1, size * 0.09, 0, Math.PI * 2); ctx.fillStyle = "#ff4400"; ctx.fill();
+    ctx.beginPath(); ctx.arc(size * 0.76, sw - size * 0.1, size * 0.055, 0, Math.PI * 2); ctx.fillStyle = "#000"; ctx.fill();
+    ctx.beginPath(); ctx.arc(size * 0.74, sw - size * 0.12, size * 0.02, 0, Math.PI * 2); ctx.fillStyle = "#fff"; ctx.fill();
+    _drawBossHpBar(size, hp, maxHp, sw, "🐉");
+    ctx.restore();
+}
+
+function drawBossBen(x, y, size, hp, maxHp, t) {
+    ctx.save();
+    ctx.translate(x, y);
+    const sw = Math.sin(t) * 3;
+    // Gold glow aura
+    ctx.shadowColor = "#ffd700"; ctx.shadowBlur = 28 + Math.sin(t * 2) * 8;
+    ctx.beginPath(); ctx.arc(0, sw, size * 1.05, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(255,215,0,0.09)"; ctx.fill(); ctx.shadowBlur = 0;
+    // Round golden body
+    ctx.beginPath(); ctx.arc(0, sw, size * 0.65, 0, Math.PI * 2);
+    ctx.fillStyle = "#c8960c"; ctx.fill();
+    // Body sheen
+    ctx.beginPath(); ctx.arc(-size * 0.15, sw - size * 0.15, size * 0.38, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(255,235,80,0.22)"; ctx.fill();
+    // Ornate scale dots
+    ctx.globalAlpha = 0.32;
+    for (let i = 0; i < 8; i++) {
+        let a = i * Math.PI / 4;
+        ctx.beginPath(); ctx.arc(Math.cos(a) * size * 0.38, sw + Math.sin(a) * size * 0.35, size * 0.07, 0, Math.PI * 2);
+        ctx.fillStyle = "#ffe566"; ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    // Gold spikes
+    for (let i = 0; i < 12; i++) {
+        let a = i * Math.PI / 6, sr = size * 0.65;
+        ctx.beginPath(); ctx.moveTo(Math.cos(a) * sr, sw + Math.sin(a) * sr);
+        ctx.lineTo(Math.cos(a) * (sr + size * 0.18), sw + Math.sin(a) * (sr + size * 0.18));
+        ctx.strokeStyle = "#ffd700"; ctx.lineWidth = 2; ctx.stroke();
+    }
+    // Crown
+    let cy = sw - size * 0.72;
+    ctx.fillStyle = "#ffd700";
+    ctx.beginPath();
+    ctx.moveTo(-size * 0.34, cy + 2); ctx.lineTo(-size * 0.34, cy - size * 0.19);
+    ctx.lineTo(-size * 0.18, cy - size * 0.09); ctx.lineTo(-size * 0.04, cy - size * 0.24);
+    ctx.lineTo(size * 0.04, cy - size * 0.09); ctx.lineTo(size * 0.19, cy - size * 0.19);
+    ctx.lineTo(size * 0.34, cy - size * 0.04); ctx.lineTo(size * 0.34, cy + 2);
+    ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "#aa7700"; ctx.lineWidth = 1.5; ctx.stroke();
+    // Crown gems
+    [[-size * 0.24, cy - size * 0.17, "#f00"], [0, cy - size * 0.21, "#0af"], [size * 0.24, cy - size * 0.17, "#0f0"]]
+        .forEach(([gx, gy, gc]) => { ctx.beginPath(); ctx.arc(gx, gy, size * 0.038, 0, Math.PI * 2); ctx.fillStyle = gc; ctx.fill(); });
+    // Eyes
+    ctx.beginPath(); ctx.arc(size * 0.22, sw - size * 0.18, size * 0.12, 0, Math.PI * 2); ctx.fillStyle = "#fff"; ctx.fill();
+    ctx.beginPath(); ctx.arc(size * 0.23, sw - size * 0.18, size * 0.075, 0, Math.PI * 2); ctx.fillStyle = "#2244aa"; ctx.fill();
+    ctx.beginPath(); ctx.arc(size * 0.2, sw - size * 0.2, size * 0.028, 0, Math.PI * 2); ctx.fillStyle = "#fff"; ctx.fill();
+    // Smile
+    ctx.beginPath(); ctx.arc(size * 0.35, sw + size * 0.08, size * 0.14, 0.15, Math.PI - 0.15);
+    ctx.strokeStyle = "#7a4800"; ctx.lineWidth = 2.5; ctx.stroke();
+    // Sparkles
+    let st = Date.now() / 220;
+    for (let i = 0; i < 4; i++) {
+        let sa = i * Math.PI / 2 + st, sr = size * 0.88 + Math.sin(st * 2 + i) * 5;
+        ctx.beginPath(); ctx.arc(Math.cos(sa) * sr, sw + Math.sin(sa) * sr, 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,220,0,${0.5 + Math.sin(st + i) * 0.4})`; ctx.fill();
+    }
+    _drawBossHpBar(size, hp, maxHp, sw, "👑 בן");
+    ctx.restore();
+}
+
+function drawBossRoiS(x, y, size, hp, maxHp, t) {
+    ctx.save();
+    ctx.translate(x, y);
+    const sw = Math.sin(t) * 3;
+    // Colour-cycling hue
+    let hue = (Date.now() / 12) % 360;
+    // 5-point star body
+    ctx.shadowColor = `hsl(${hue},100%,65%)`; ctx.shadowBlur = 22 + Math.sin(t * 3) * 7;
+    ctx.beginPath();
+    for (let i = 0; i < 10; i++) {
+        let a = i * Math.PI / 5 - Math.PI / 2;
+        let r = i % 2 === 0 ? size * 0.75 : size * 0.33;
+        i === 0 ? ctx.moveTo(Math.cos(a) * r, sw + Math.sin(a) * r)
+                : ctx.lineTo(Math.cos(a) * r, sw + Math.sin(a) * r);
+    }
+    ctx.closePath(); ctx.fillStyle = `hsl(${hue},90%,55%)`; ctx.fill(); ctx.shadowBlur = 0;
+    // Inner star highlight
+    ctx.beginPath();
+    for (let i = 0; i < 10; i++) {
+        let a = i * Math.PI / 5 - Math.PI / 2;
+        let r = i % 2 === 0 ? size * 0.44 : size * 0.2;
+        i === 0 ? ctx.moveTo(Math.cos(a) * r, sw + Math.sin(a) * r)
+                : ctx.lineTo(Math.cos(a) * r, sw + Math.sin(a) * r);
+    }
+    ctx.closePath(); ctx.fillStyle = `hsl(${(hue+40)%360},100%,80%)`; ctx.fill();
+    // Sparkle rays
+    for (let i = 0; i < 8; i++) {
+        let a = i * Math.PI / 4 + t * 0.5;
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(a) * size * 0.78, sw + Math.sin(a) * size * 0.78);
+        ctx.lineTo(Math.cos(a) * (size * 1.1 + Math.sin(t * 3 + i) * 5), sw + Math.sin(a) * (size * 1.1 + Math.sin(t * 3 + i) * 5));
+        ctx.strokeStyle = `rgba(255,255,150,${0.35 + Math.sin(t + i) * 0.25})`; ctx.lineWidth = 2; ctx.stroke();
+    }
+    // Eyes
+    for (const ex of [size * 0.15, -size * 0.15]) {
+        ctx.beginPath(); ctx.arc(ex, sw - size * 0.1, size * 0.1, 0, Math.PI * 2); ctx.fillStyle = "#fff"; ctx.fill();
+        ctx.beginPath(); ctx.arc(ex, sw - size * 0.1, size * 0.06, 0, Math.PI * 2); ctx.fillStyle = "#111"; ctx.fill();
+    }
+    _drawBossHpBar(size, hp, maxHp, sw, "🌟 רועי ש");
+    ctx.restore();
+}
+
+function drawBossRoiR(x, y, size, hp, maxHp, t) {
+    ctx.save();
+    ctx.translate(x, y);
+    const sw = Math.sin(t) * 3;
+    // Fire aura
+    for (let i = 0; i < 10; i++) {
+        let fa = i * Math.PI * 2 / 10 + t * 0.8;
+        let fr = size * 0.72 + Math.sin(t * 3 + i) * size * 0.13;
+        let fh = size * (0.18 + Math.sin(t * 4 + i * 0.7) * 0.07);
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(fa) * fr, sw + Math.sin(fa) * fr);
+        ctx.lineTo(Math.cos(fa - 0.2) * (fr + fh), sw + Math.sin(fa - 0.2) * (fr + fh));
+        ctx.lineTo(Math.cos(fa + 0.2) * (fr + fh), sw + Math.sin(fa + 0.2) * (fr + fh));
+        ctx.closePath();
+        ctx.fillStyle = i % 2 === 0 ? "rgba(255,80,0,0.6)" : "rgba(255,190,0,0.45)"; ctx.fill();
+    }
+    // Volcanic dark-red body
+    ctx.shadowColor = "#ff4400"; ctx.shadowBlur = 28;
+    ctx.beginPath(); ctx.arc(0, sw, size * 0.65, 0, Math.PI * 2); ctx.fillStyle = "#5a0a00"; ctx.fill(); ctx.shadowBlur = 0;
+    // Lava cracks
+    ctx.globalAlpha = 0.75;
+    [[0, -0.28, 0.18, 0.28, -0.08, 0.55], [-0.28, 0, 0, 0.1, 0.28, 0.38], [0.1, -0.48, 0.28, -0.1, 0.1, 0.28]]
+        .forEach(([x1,y1,x2,y2,x3,y3]) => {
+            ctx.beginPath();
+            ctx.moveTo(x1*size, sw+y1*size); ctx.lineTo(x2*size, sw+y2*size); ctx.lineTo(x3*size, sw+y3*size);
+            ctx.strokeStyle = `rgba(255,${Math.floor(90+Math.sin(t)*45)},0,0.85)`; ctx.lineWidth = 2; ctx.stroke();
+        });
+    ctx.globalAlpha = 1;
+    // Magma belly
+    ctx.beginPath(); ctx.arc(0, sw + size * 0.1, size * 0.38, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(255,80,0,0.13)"; ctx.fill();
+    // Flame-tipped spikes
+    for (let i = 0; i < 12; i++) {
+        let a = i * Math.PI / 6, sr = size * 0.65;
+        let sp = size * 0.2 + Math.sin(t * 2 + i * 0.5) * 3;
+        ctx.beginPath(); ctx.moveTo(Math.cos(a)*sr, sw+Math.sin(a)*sr);
+        ctx.lineTo(Math.cos(a)*(sr+sp), sw+Math.sin(a)*(sr+sp));
+        ctx.strokeStyle = i%3===0 ? "#ff8800" : "#ff4400"; ctx.lineWidth = 2.5; ctx.stroke();
+    }
+    // Glowing eyes
+    ctx.shadowColor = "#ff6600"; ctx.shadowBlur = 14;
+    for (const ex of [-size * 0.2, size * 0.2]) {
+        ctx.beginPath(); ctx.arc(ex, sw - size * 0.14, size * 0.11, 0, Math.PI * 2); ctx.fillStyle = "#ff4400"; ctx.fill();
+        ctx.beginPath(); ctx.arc(ex, sw - size * 0.14, size * 0.065, 0, Math.PI * 2); ctx.fillStyle = "#ffaa00"; ctx.fill();
+    }
+    ctx.shadowBlur = 0;
+    _drawBossHpBar(size, hp, maxHp, sw, "🔥 רועי ר");
+    ctx.restore();
+}
+
+function drawBossYoyo(x, y, size, hp, maxHp, t) {
+    ctx.save();
+    ctx.translate(x, y);
+    const sw = Math.sin(t) * 3;
+    // Rotating hex rings
+    for (let ring = 0; ring < 3; ring++) {
+        ctx.save(); ctx.rotate(t * (0.5 + ring * 0.3));
+        ctx.beginPath();
+        for (let i = 0; i < 6; i++) {
+            let a = i * Math.PI / 3, rr = size * (0.88 + ring * 0.22);
+            i === 0 ? ctx.moveTo(Math.cos(a)*rr, sw+Math.sin(a)*rr*0.3)
+                    : ctx.lineTo(Math.cos(a)*rr, sw+Math.sin(a)*rr*0.3);
+        }
+        ctx.closePath();
+        ctx.strokeStyle = `rgba(0,220,200,${0.22 - ring * 0.05})`; ctx.lineWidth = 1; ctx.stroke();
+        ctx.restore();
+    }
+    // Crystal teal body
+    ctx.shadowColor = "#00ffdd"; ctx.shadowBlur = 22 + Math.sin(t * 2) * 8;
+    ctx.beginPath(); ctx.arc(0, sw, size * 0.65, 0, Math.PI * 2); ctx.fillStyle = "#0a3a4a"; ctx.fill(); ctx.shadowBlur = 0;
+    // Crystal facets
+    [[0.38,-0.38,0.38],[-0.38,-0.28,0.46],[0,-0.48,0.28]].forEach(([fx,fy,fr]) => {
+        ctx.globalAlpha = 0.18;
+        ctx.beginPath(); ctx.arc(fx*size, sw+fy*size, fr*size, 0, Math.PI*2);
+        ctx.fillStyle = "#88eeff"; ctx.fill(); ctx.globalAlpha = 1;
+    });
+    // Diamond spikes
+    for (let i = 0; i < 8; i++) {
+        let a = i * Math.PI / 4 + t * 0.2, sr = size * 0.65, sp = size * 0.22;
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(a-0.1)*sr, sw+Math.sin(a-0.1)*sr);
+        ctx.lineTo(Math.cos(a)*(sr+sp), sw+Math.sin(a)*(sr+sp));
+        ctx.lineTo(Math.cos(a+0.1)*sr, sw+Math.sin(a+0.1)*sr);
+        ctx.closePath();
+        ctx.fillStyle = `rgba(0,220,200,${0.48 + Math.sin(t*2+i)*0.28})`; ctx.fill();
+    }
+    // Spinning gem centre
+    ctx.save(); ctx.translate(0, sw); ctx.rotate(t * 0.6);
+    ctx.beginPath();
+    ctx.moveTo(0, -size*0.24); ctx.lineTo(size*0.18, 0); ctx.lineTo(0, size*0.24); ctx.lineTo(-size*0.18, 0);
+    ctx.closePath(); ctx.fillStyle = "#00ffee"; ctx.globalAlpha = 0.6; ctx.fill(); ctx.globalAlpha = 1;
+    ctx.restore();
+    // Icy blue eyes
+    for (const ex of [-size * 0.18, size * 0.18]) {
+        ctx.beginPath(); ctx.arc(ex, sw - size * 0.14, size * 0.1, 0, Math.PI * 2); ctx.fillStyle = "#00ddff"; ctx.fill();
+        ctx.beginPath(); ctx.arc(ex, sw - size * 0.14, size * 0.06, 0, Math.PI * 2); ctx.fillStyle = "#003355"; ctx.fill();
+        ctx.beginPath(); ctx.arc(ex - size*0.03, sw - size*0.16, size*0.024, 0, Math.PI*2); ctx.fillStyle = "#fff"; ctx.fill();
+    }
+    // Floating gem particles
+    for (let i = 0; i < 5; i++) {
+        let pa = i * Math.PI * 0.4 + t * 0.8, pr = size * 0.98 + Math.sin(t*2+i)*5;
+        ctx.beginPath(); ctx.arc(Math.cos(pa)*pr, sw+Math.sin(pa)*pr*0.4, 3, 0, Math.PI*2);
+        ctx.fillStyle = `rgba(0,220,200,${0.45+Math.sin(t*3+i)*0.3})`; ctx.fill();
+    }
+    _drawBossHpBar(size, hp, maxHp, sw, "💎 יויו");
+    ctx.restore();
+}
+
 function _drawBossHpBar(size, hp, maxHp, sway, label) {
     let barW = size * 1.8, barH = 8;
     let barY = sway - size * 0.85 - 18;
@@ -2634,24 +3143,34 @@ function spawnShark() {
 let keys = {};
 let touchTarget = null;
 
+const GAME_KEYS = new Set([" ","ArrowUp","ArrowDown","ArrowLeft","ArrowRight","w","a","s","d","W","A","S","D","q","e","r","f","Q","E","R","F","Escape"]);
 document.addEventListener("keydown", e => {
     if (e.key === "Escape") { togglePause(); return; }
-    if (paused) return;
+    // Track both cases so Mac keyboard layout variants work
     keys[e.key] = true;
-    if (e.key === " " && player) player.inflated = true;
-    // Ability keys Q/E/R/F
-    const abilityKeyMap = { q: 0, e: 1, r: 2, f: 3 };
-    const lk = e.key.toLowerCase();
-    if (lk in abilityKeyMap) {
-        const idx = abilityKeyMap[lk];
-        const equippedId = (gameData.equippedAbilities || [])[idx];
-        if (equippedId) activateAbility(equippedId);
+    keys[e.key.toLowerCase()] = true;
+    if (!paused) {
+        if ((e.key === " " || e.code === "Space") && player) player.inflated = true;
+        // Ability keys Q/E/R/F
+        const abilityKeyMap = { q: 0, e: 1, r: 2, f: 3 };
+        const lk = e.key.toLowerCase();
+        if (lk in abilityKeyMap) {
+            const idx = abilityKeyMap[lk];
+            const equippedId = (gameData.equippedAbilities || [])[idx];
+            if (equippedId) activateAbility(equippedId);
+        }
     }
-    e.preventDefault();
+    if (GAME_KEYS.has(e.key)) e.preventDefault();
 });
 document.addEventListener("keyup", e => {
     keys[e.key] = false;
-    if (e.key === " " && player) player.inflated = false;
+    keys[e.key.toLowerCase()] = false;
+    if (e.key === " " || e.code === "Space") { if (player) player.inflated = false; }
+});
+// Clear all keys when window loses focus (fixes stuck keys on Mac)
+window.addEventListener("blur", () => {
+    for (let k in keys) keys[k] = false;
+    if (player) player.inflated = false;
 });
 
 canvas.addEventListener("touchstart", e => { e.preventDefault(); });
@@ -2725,6 +3244,7 @@ function quitToLobby() {
     if (isMobile) {
         infBtn.style.display = "none";
         joystickZone.style.display = "none";
+        document.getElementById("mobile-ability-btns").style.display = "none";
     }
     document.getElementById("hud").style.display = "none";
     // Save earned coins
@@ -2848,6 +3368,7 @@ function levelUp() {
             }
         );
     } else {
+        paused = true;
         showLevelComplete();
     }
 }
@@ -2926,10 +3447,10 @@ function gameLoop() {
     // ===== MOVE PLAYER =====
     let speed = gameData.playerSpeed;
     let ax = 0, ay = 0;
-    if (keys["ArrowUp"]||keys["w"]) ay -= 1;
-    if (keys["ArrowDown"]||keys["s"]) ay += 1;
-    if (keys["ArrowLeft"]||keys["a"]) ax -= 1;
-    if (keys["ArrowRight"]||keys["d"]) ax += 1;
+    if (keys["ArrowUp"]  ||keys["w"]||keys["W"]) ay -= 1;
+    if (keys["ArrowDown"] ||keys["s"]||keys["S"]) ay += 1;
+    if (keys["ArrowLeft"] ||keys["a"]||keys["A"]) ax -= 1;
+    if (keys["ArrowRight"]||keys["d"]||keys["D"]) ax += 1;
 
     // Virtual joystick input (mobile)
     if (joystickActive) {
@@ -3114,6 +3635,7 @@ function startGame() {
     if (isMobile) {
         infBtn.style.display = "flex";
         joystickZone.style.display = "block";
+        document.getElementById("mobile-ability-btns").style.display = "flex";
     }
 
     initGame();
@@ -3136,6 +3658,7 @@ function die() {
     if (isMobile) {
         infBtn.style.display = "none";
         joystickZone.style.display = "none";
+        document.getElementById("mobile-ability-btns").style.display = "none";
     }
     document.getElementById("hud").style.display = "none";
 
@@ -3183,6 +3706,15 @@ const PAYMENT_AMOUNTS = {
 
 function openPremiumShop() {
     document.getElementById("payment-success-msg").classList.remove("show");
+    showOverlay("premium-shop");
+}
+function openPremiumFromShop() {
+    // Called when player can't afford something — navigate to premium shop with a notice
+    const notice = document.getElementById("payment-success-msg");
+    if (notice) {
+        notice.textContent = "⚠️ אין מספיק מטבעות — רכוש FishBucks!";
+        notice.classList.add("show");
+    }
     showOverlay("premium-shop");
 }
 function closePremiumShop() {
