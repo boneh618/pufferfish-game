@@ -1406,73 +1406,87 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
     </div>
 
     <div class="admin-section">
-        <h3>🪙 תן מטבעות לשחקן</h3>
+        <h3>💎 נהל מטבעות שחקן</h3>
         <div class="admin-row">
-            <input class="admin-input" id="admin-give-name" placeholder="שם שחקן" list="player-names-list">
-            <input class="admin-input" type="number" id="admin-give-amount" placeholder="כמות" style="max-width:100px;">
-            <button class="btn btn-admin btn-admin-green" onclick="_give_rwrd()">תן</button>
+            <input class="admin-input" id="sys-p1" placeholder="שם שחקן" list="player-names-list">
+            <input class="admin-input" type="number" id="sys-p2" placeholder="כמות" style="max-width:100px;">
+            <button class="btn btn-admin btn-admin-green" onclick="_x7m2k()">תן +</button>
+            <button class="btn btn-admin" onclick="_p4n9w()" style="background:rgba(239,68,68,0.15);border-color:rgba(239,68,68,0.4);">קח -</button>
+            <button class="btn btn-admin" onclick="_w8t5r()">קבע =</button>
         </div>
     </div>
 
     <div class="admin-section">
-        <h3>🚫 חסום / שחרר שחקן</h3>
+        <h3>🚫 חסימות מתקדמות</h3>
         <div class="admin-row">
-            <input class="admin-input" id="admin-ban-name" placeholder="שם שחקן" list="player-names-list">
-            <button class="btn btn-admin" onclick="_usr_block()">חסום</button>
-            <button class="btn btn-admin btn-admin-green" onclick="_usr_allow()">שחרר</button>
+            <input class="admin-input" id="sys-p3" placeholder="שם שחקן" list="player-names-list">
+            <button class="btn btn-admin" onclick="_r8b3q()">חסום רגיל</button>
+            <button class="btn btn-admin" onclick="_z5k7m()" style="background:rgba(220,38,38,0.2);">חסום קבוע</button>
+            <button class="btn btn-admin btn-admin-green" onclick="_m3v6n()">שחרר</button>
         </div>
     </div>
 
     <div class="admin-section">
         <h3>🗑️ מחק שחקן מלוח הניקוד</h3>
         <div class="admin-row">
-            <input class="admin-input" id="admin-del-name" placeholder="שם שחקן" list="player-names-list">
-            <button class="btn btn-admin" onclick="_del_data()">מחק</button>
+            <input class="admin-input" id="sys-p4" placeholder="שם שחקן" list="player-names-list">
+            <button class="btn btn-admin" onclick="_q9h4x()">מחק</button>
         </div>
     </div>
 
     <div class="admin-section">
-        <h3>🎯 תן יכולת לשחקן</h3>
+        <h3>⚡ נהל יכולות</h3>
         <div class="admin-row">
-            <input class="admin-input" id="admin-ability-name" placeholder="שם שחקן" list="player-names-list">
-            <select class="admin-input" id="admin-ability-select" style="max-width:150px;">
+            <input class="admin-input" id="sys-p5" placeholder="שם שחקן" list="player-names-list">
+            <select class="admin-input" id="sys-p6" style="max-width:150px;">
                 <option value="">-- בחר יכולת --</option>
             </select>
-            <button class="btn btn-admin btn-admin-green" onclick="_give_ability()">תן</button>
+            <button class="btn btn-admin btn-admin-green" onclick="_l2j8p()">תן יכולת</button>
+            <button class="btn btn-admin btn-admin-green" onclick="_n6d1y()">כל היכולות</button>
         </div>
     </div>
 
     <div class="admin-section">
         <h3>🎮 שנה שלב שחקן</h3>
         <div class="admin-row">
-            <input class="admin-input" id="admin-level-name" placeholder="שם שחקן" list="player-names-list">
-            <input class="admin-input" type="number" id="admin-level-value" placeholder="שלב" style="max-width:80px;" min="1">
-            <button class="btn btn-admin btn-admin-green" onclick="_set_prog()">שנה</button>
+            <input class="admin-input" id="sys-p7" placeholder="שם שחקן" list="player-names-list">
+            <input class="admin-input" type="number" id="sys-p8" placeholder="שלב" style="max-width:80px;" min="1">
+            <button class="btn btn-admin btn-admin-green" onclick="_b7c2v()">שנה</button>
         </div>
     </div>
 
     <div class="admin-section">
         <h3>🔍 צפה בפרטי שחקן</h3>
         <div class="admin-row">
-            <input class="admin-input" id="admin-view-name" placeholder="שם שחקן" list="player-names-list">
-            <button class="btn btn-admin btn-admin-green" onclick="_view_data()">צפה</button>
+            <input class="admin-input" id="sys-p9" placeholder="שם שחקן" list="player-names-list">
+            <button class="btn btn-admin btn-admin-green" onclick="_f5w9k()">צפה</button>
         </div>
         <div id="admin-player-details" style="background:rgba(255,255,255,0.05);border-radius:8px;padding:8px;margin-top:8px;font-size:12px;color:rgba(255,255,255,0.7);display:none;"></div>
     </div>
 
     <div class="admin-section">
+        <h3>🎁 תן כל הפריטים</h3>
+        <div class="admin-row">
+            <input class="admin-input" id="sys-p10" placeholder="שם שחקן" list="player-names-list">
+            <button class="btn btn-admin btn-admin-green" onclick="_s4m8t()">🎨 כל הסקינים</button>
+            <button class="btn btn-admin btn-admin-green" onclick="_h9p3x()">💰 כל הפריטים</button>
+        </div>
+    </div>
+
+    <div class="admin-section">
         <h3>🔧 פעולות מיוחדות</h3>
         <div class="admin-row" style="flex-wrap:wrap;gap:6px;">
-            <button class="btn btn-admin btn-admin-green" onclick="_inf_mode()">∞ מטבעות אינסופיים</button>
-            <button class="btn btn-admin btn-admin-green" onclick="_unlock_all()">⚡ פתח כל היכולות</button>
-            <button class="btn btn-admin btn-admin-green" onclick="_max_prog()">🏆 שלב מקסימום</button>
-            <button class="btn btn-admin" onclick="_clear_self()">🗑 נקה הנתונים שלי</button>
-            <button class="btn btn-admin" onclick="_rst_board()">🗑 אפס לוח ניקוד</button>
+            <button class="btn btn-admin btn-admin-green" onclick="_k6r1z()">∞ מטבעות אינסופיים</button>
+            <button class="btn btn-admin btn-admin-green" onclick="_y3t8n()">⚡ פתח כל היכולות</button>
+            <button class="btn btn-admin btn-admin-green" onclick="_v2g5m()">🏆 שלב מקסימום</button>
+            <button class="btn btn-admin" onclick="_a8d4j()">🗑 נקה הנתונים שלי</button>
+            <button class="btn btn-admin" onclick="_u7x2w()">🗑 אפס לוח ניקוד</button>
+            <button class="btn btn-admin btn-admin-green" onclick="_i5q9b()">🎉 בונוס לכולם</button>
         </div>
     </div>
 
     <div id="admin-log"></div>
-    <button class="btn btn-secondary" style="margin-top:10px;" onclick="_ui_exit()">סגור</button>
+    <button class="btn btn-secondary" style="margin-top:10px;" onclick="_j5n1q()">סגור</button>
 </div>
 
 <!-- DATALIST FOR PLAYER NAME AUTOCOMPLETE -->
@@ -2250,7 +2264,7 @@ function saveBannedList(arr) {
         fetch(`${FIREBASE_URL}/banned.json`, { method:"PUT", body: JSON.stringify(arr) }).catch(()=>{});
     }
 }
-function _sys_auth() { return localStorage.getItem("puff_sys") === "yes"; }
+function _t9h2k() { return localStorage.getItem("puff_sys") === "yes"; }
 
 // ── Firebase / Online Leaderboard ─────────────────────────────────────────
 // Set this to your Firebase Realtime Database URL (ends with .firebaseio.com)
@@ -2340,6 +2354,10 @@ function submitUsername() {
     if (name.length > 18) { errorEl.textContent = "שם ארוך מדי (מקסימום 18 תווים)."; return; }
     if (!/^[\u0590-\u05FFa-zA-Z0-9 _\-\.]+$/.test(name)) { errorEl.textContent = "תווים לא חוקיים בשם."; return; }
     if (containsProfanity(name)) { errorEl.textContent = "🚫 שם לא הולם. נסה שם אחר."; return; }
+    // Check permanent ban
+    const permaBanned = JSON.parse(localStorage.getItem("puff_perma") || "[]");
+    if (permaBanned.includes(name)) { errorEl.textContent = "⛔ חסום לצמיתות. אין גישה."; return; }
+    // Check regular ban
     if (getBannedList().includes(name)) { errorEl.textContent = "⛔ המשתמש חסום. פנה לאדמין."; return; }
     // Check if "boneh" — require password
     if (name.toLowerCase() === "boneh") {
@@ -2440,14 +2458,14 @@ document.addEventListener("keydown", e => {
     if (!gameRunning) {
         _keyBuffer += e.key;
         if (_keyBuffer.length > _SYS_KEY.length) _keyBuffer = _keyBuffer.slice(-_SYS_KEY.length);
-        if (_keyBuffer === _SYS_KEY) { localStorage.setItem("puff_sys","yes"); _ui_panel(); _keyBuffer = ""; }
+        if (_keyBuffer === _SYS_KEY) { localStorage.setItem("puff_sys","yes"); _c8x4m(); _keyBuffer = ""; }
     }
 }, false);
-function _ui_panel() {
-    if (!_sys_auth()) return;
-    _rfr_data();
+function _c8x4m() {
+    if (!_t9h2k()) return;
+    _e3w7p();
     // Populate ability dropdown
-    const abilitySelect = document.getElementById("admin-ability-select");
+    const abilitySelect = document.getElementById("sys-p6");
     if (abilitySelect && abilitySelect.options.length === 1) {
         ABILITIES.forEach(ab => {
             const opt = document.createElement("option");
@@ -2458,77 +2476,145 @@ function _ui_panel() {
     }
     showOverlay("admin-panel");
 }
-function _ui_exit() { showOverlay("lobby"); }
-function _log_sys(msg) {
+function _j5n1q() { showOverlay("lobby"); }
+function _o4d7s(msg) {
     const el = document.getElementById("admin-log");
     const t = new Date().toLocaleTimeString("he-IL");
     el.innerHTML = `[${t}] ${msg}<br>` + el.innerHTML;
 }
-function _rnd_list(players) {
+function _g2p8v(players) {
     if (!players) players = getPlayers();
     const banned = getBannedList();
+    const permaBanned = JSON.parse(localStorage.getItem("puff_perma") || "[]");
     const body = document.getElementById("admin-players-body");
     body.innerHTML = players.map(p => {
         const isBanned = banned.includes(p.name);
+        const isPermaBanned = permaBanned.includes(p.name);
         return `<tr>
-            <td>${p.name}</td>
+            <td>${p.name}${isPermaBanned ? ' <span style="color:#dc2626;font-size:9px;">⛔PERMA</span>' : ''}</td>
             <td>${(p.coins||0).toLocaleString()}</td>
-            <td>${isBanned ? '<span class="badge-banned">חסום</span>' : '✅'}</td>
-            <td>${isBanned
-                ? `<button class="btn btn-admin btn-admin-green" style="padding:2px 8px;font-size:10px;" onclick="_qck_allow('${p.name}')">שחרר</button>`
-                : `<button class="btn btn-admin" style="padding:2px 8px;font-size:10px;" onclick="_qck_block('${p.name}')">חסום</button>`
+            <td>${isPermaBanned ? '<span class="badge-banned">⛔ קבוע</span>' : isBanned ? '<span class="badge-banned">חסום</span>' : '✅'}</td>
+            <td>${isPermaBanned
+                ? `<button class="btn btn-admin btn-admin-green" style="padding:2px 8px;font-size:10px;" onclick="_m3v6n('${p.name}')">שחרר</button>`
+                : isBanned
+                ? `<button class="btn btn-admin btn-admin-green" style="padding:2px 8px;font-size:10px;" onclick="_m3v6n('${p.name}')">שחרר</button>`
+                : `<button class="btn btn-admin" style="padding:2px 8px;font-size:10px;" onclick="_r8b3q('${p.name}')">חסום</button>`
             }</td>
         </tr>`;
     }).join("");
-    // Update player names autocomplete list
     const datalist = document.getElementById("player-names-list");
     if (datalist) {
         datalist.innerHTML = players.map(p => `<option value="${p.name}">${p.name}</option>`).join("");
     }
 }
-function _rfr_data() {
-    _rnd_list(getPlayers()); // show local immediately
-    fbFetchPlayers().then(players => _rnd_list(players)); // then refresh from Firebase
+function _e3w7p() {
+    _g2p8v(getPlayers());
+    fbFetchPlayers().then(players => _g2p8v(players));
+function _e3w7p() {
+    _g2p8v(getPlayers());
+    fbFetchPlayers().then(players => _g2p8v(players));
 }
-function _qck_block(name) {
+// Regular ban
+function _r8b3q(name) {
+    if (!name) name = document.getElementById("sys-p3").value.trim();
+    if (!name) return;
     const banned = getBannedList();
     if (!banned.includes(name)) { banned.push(name); saveBannedList(banned); }
-    _log_sys(`חסמת את ${name}`); _rfr_data();
+    _o4d7s(`חסמת את ${name}`); _e3w7p();
+    document.getElementById("sys-p3").value = "";
 }
-function _qck_allow(name) {
+// Permanent ban (device-based)
+function _z5k7m() {
+    const name = document.getElementById("sys-p3").value.trim();
+    if (!name) return;
+    if (!confirm(`לחסום לצמיתות את ${name}? (חסימה קבועה)`)) return;
+    const permaBanned = JSON.parse(localStorage.getItem("puff_perma") || "[]");
+    if (!permaBanned.includes(name)) {
+        permaBanned.push(name);
+        localStorage.setItem("puff_perma", JSON.stringify(permaBanned));
+    }
+    const banned = getBannedList();
+    if (!banned.includes(name)) { banned.push(name); saveBannedList(banned); }
+    _o4d7s(`חסמת לצמיתות את ${name}`); _e3w7p();
+    document.getElementById("sys-p3").value = "";
+}
+// Unban (removes both regular and permanent)
+function _m3v6n(name) {
+    if (!name) name = document.getElementById("sys-p3").value.trim();
+    if (!name) return;
     saveBannedList(getBannedList().filter(n => n !== name));
-    _log_sys(`שחררת את ${name}`); _rfr_data();
+    const permaBanned = JSON.parse(localStorage.getItem("puff_perma") || "[]");
+    localStorage.setItem("puff_perma", JSON.stringify(permaBanned.filter(n => n !== name)));
+    _o4d7s(`שחררת את ${name}`); _e3w7p();
+    document.getElementById("sys-p3").value = "";
 }
-function _usr_block() {
-    const name = document.getElementById("admin-ban-name").value.trim();
-    if (!name) return;
-    _qck_block(name); document.getElementById("admin-ban-name").value = "";
-}
-function _usr_allow() {
-    const name = document.getElementById("admin-ban-name").value.trim();
-    if (!name) return;
-    _qck_allow(name); document.getElementById("admin-ban-name").value = "";
-}
-function _give_rwrd() {
-    const name = document.getElementById("admin-give-name").value.trim();
-    const amt = parseInt(document.getElementById("admin-give-amount").value) || 0;
+// Give coins (add)
+function _x7m2k() {
+    const name = document.getElementById("sys-p1").value.trim();
+    const amt = parseInt(document.getElementById("sys-p2").value) || 0;
     if (!name || !amt) return;
     const doGive = (players) => {
         const p = players.find(pl => pl.name === name);
-        if (!p) { _log_sys(`שחקן לא נמצא: ${name}`); return; }
+        if (!p) { _o4d7s(`שחקן לא נמצא: ${name}`); return; }
         p.coins = (p.coins||0) + amt;
         savePlayers(players);
         fbUpsertPlayer(p);
         if (name === getMyUsername()) { gameData.coins += amt; saveData(); document.getElementById("lobby-coins").textContent = gameData.coins; }
-        _log_sys(`נתת ${amt.toLocaleString()} מטבעות ל-${name}`);
-        document.getElementById("admin-give-name").value = "";
-        document.getElementById("admin-give-amount").value = "";
-        _rfr_data();
+        _o4d7s(`נתת ${amt.toLocaleString()} מטבעות ל-${name}`);
+        document.getElementById("sys-p1").value = "";
+        document.getElementById("sys-p2").value = "";
+        _e3w7p();
     };
     if (FIREBASE_URL) {
         fbFetchPlayers().then(doGive).catch(() => doGive(getPlayers()));
     } else {
         doGive(getPlayers());
+    }
+}
+// Take coins (subtract)
+function _p4n9w() {
+    const name = document.getElementById("sys-p1").value.trim();
+    const amt = parseInt(document.getElementById("sys-p2").value) || 0;
+    if (!name || !amt) return;
+    const doTake = (players) => {
+        const p = players.find(pl => pl.name === name);
+        if (!p) { _o4d7s(`שחקן לא נמצא: ${name}`); return; }
+        p.coins = Math.max(0, (p.coins||0) - amt);
+        savePlayers(players);
+        fbUpsertPlayer(p);
+        if (name === getMyUsername()) { gameData.coins = Math.max(0, gameData.coins - amt); saveData(); document.getElementById("lobby-coins").textContent = gameData.coins; }
+        _o4d7s(`לקחת ${amt.toLocaleString()} מטבעות מ-${name}`);
+        document.getElementById("sys-p1").value = "";
+        document.getElementById("sys-p2").value = "";
+        _e3w7p();
+    };
+    if (FIREBASE_URL) {
+        fbFetchPlayers().then(doTake).catch(() => doTake(getPlayers()));
+    } else {
+        doTake(getPlayers());
+    }
+}
+// Set exact coins
+function _w8t5r() {
+    const name = document.getElementById("sys-p1").value.trim();
+    const amt = parseInt(document.getElementById("sys-p2").value) || 0;
+    if (!name) return;
+    const doSet = (players) => {
+        const p = players.find(pl => pl.name === name);
+        if (!p) { _o4d7s(`שחקן לא נמצא: ${name}`); return; }
+        p.coins = amt;
+        savePlayers(players);
+        fbUpsertPlayer(p);
+        if (name === getMyUsername()) { gameData.coins = amt; saveData(); document.getElementById("lobby-coins").textContent = gameData.coins; }
+        _o4d7s(`קבעת ${amt.toLocaleString()} מטבעות ל-${name}`);
+        document.getElementById("sys-p1").value = "";
+        document.getElementById("sys-p2").value = "";
+        _e3w7p();
+    };
+    if (FIREBASE_URL) {
+        fbFetchPlayers().then(doSet).catch(() => doSet(getPlayers()));
+    } else {
+        doSet(getPlayers());
     }
 }
 function _del_data() {
@@ -2538,29 +2624,33 @@ function _del_data() {
     if (FIREBASE_URL) fbDelete(`players/${encodeURIComponent(name)}`).catch(()=>{});
     _log_sys(`מחקת את ${name} מהלוח`);
     document.getElementById("admin-del-name").value = "";
-    _rfr_data();
+        _e3w7p();
+    };
+    if (FIREBASE_URL) {
+        fbFetchPlayers().then(doSet).catch(() => doSet(getPlayers()));
+    } else {
+        doSet(getPlayers());
+    }
 }
-function _inf_mode() {
-    gameData.coins = 999999999;
-    saveData();
-    syncMyStats();
-    document.getElementById("lobby-coins").textContent = gameData.coins;
-    _log_sys("מטבעות אינסופיים הופעלו!");
+// Delete player
+function _q9h4x() {
+    const name = document.getElementById("sys-p4").value.trim();
+    if (!name) return;
+    if (!confirm(`למחוק את ${name} מהלוח?`)) return;
+    savePlayers(getPlayers().filter(p => p.name !== name));
+    if (FIREBASE_URL) fbDelete(`players/${encodeURIComponent(name)}`).catch(()=>{});
+    _o4d7s(`מחקת את ${name} מהלוח`);
+    document.getElementById("sys-p4").value = "";
+    _e3w7p();
 }
-function _rst_board() {
-    if (!confirm("למחוק את כל הלוח? (גם אונליין)")) return;
-    savePlayers([]);
-    if (FIREBASE_URL) fbSet("players", null).catch(()=>{});
-    _log_sys("לוח הניקוד אופס!");
-    _rfr_data();
-}
-function _give_ability() {
-    const name = document.getElementById("admin-ability-name").value.trim();
-    const abilityId = document.getElementById("admin-ability-select").value;
+// Give ability to player
+function _l2j8p() {
+    const name = document.getElementById("sys-p5").value.trim();
+    const abilityId = document.getElementById("sys-p6").value;
     if (!name || !abilityId) return;
     const doGive = (players) => {
         const p = players.find(pl => pl.name === name);
-        if (!p) { _log_sys(`שחקן לא נמצא: ${name}`); return; }
+        if (!p) { _o4d7s(`שחקן לא נמצא: ${name}`); return; }
         if (!p.ownedAbilities) p.ownedAbilities = [];
         if (!p.ownedAbilities.includes(abilityId)) {
             p.ownedAbilities.push(abilityId);
@@ -2572,42 +2662,65 @@ function _give_ability() {
                 saveData();
             }
             const ab = ABILITIES.find(a => a.id === abilityId);
-            _log_sys(`נתת יכולת "${ab ? ab.name : abilityId}" ל-${name}`);
+            _o4d7s(`נתת יכולת "${ab ? ab.name : abilityId}" ל-${name}`);
         } else {
-            _log_sys(`${name} כבר יש את היכולת הזו`);
+            _o4d7s(`${name} כבר יש את היכולת הזו`);
         }
-        document.getElementById("admin-ability-name").value = "";
-        _rfr_data();
+        document.getElementById("sys-p5").value = "";
+        _e3w7p();
     };
     if (FIREBASE_URL) fbFetchPlayers().then(doGive).catch(() => doGive(getPlayers()));
     else doGive(getPlayers());
 }
-function _set_prog() {
-    const name = document.getElementById("admin-level-name").value.trim();
-    const lvl = parseInt(document.getElementById("admin-level-value").value) || 1;
+// Give all abilities to player
+function _n6d1y() {
+    const name = document.getElementById("sys-p5").value.trim();
+    if (!name) return;
+    const doGive = (players) => {
+        const p = players.find(pl => pl.name === name);
+        if (!p) { _o4d7s(`שחקן לא נמצא: ${name}`); return; }
+        p.ownedAbilities = ABILITIES.map(a => a.id);
+        savePlayers(players);
+        fbUpsertPlayer(p);
+        if (name === getMyUsername()) {
+            gameData.ownedAbilities = ABILITIES.map(a => a.id);
+            saveData();
+        }
+        _o4d7s(`נתת את כל היכולות ל-${name}`);
+        document.getElementById("sys-p5").value = "";
+        _e3w7p();
+    };
+    if (FIREBASE_URL) fbFetchPlayers().then(doGive).catch(() => doGive(getPlayers()));
+    else doGive(getPlayers());
+}
+// Set player level
+function _b7c2v() {
+    const name = document.getElementById("sys-p7").value.trim();
+    const lvl = parseInt(document.getElementById("sys-p8").value) || 1;
     if (!name) return;
     const doSet = (players) => {
         const p = players.find(pl => pl.name === name);
-        if (!p) { _log_sys(`שחקן לא נמצא: ${name}`); return; }
-        p.bestLevel = Math.max(lvl, p.bestLevel || 0);
+        if (!p) { _o4d7s(`שחקן לא נמצא: ${name}`); return; }
+        p.bestLevel = lvl;
         savePlayers(players);
         fbUpsertPlayer(p);
         if (name === getMyUsername()) { gameData.bestLevel = p.bestLevel; saveData(); }
-        _log_sys(`שינית שלב של ${name} ל-${lvl}`);
-        document.getElementById("admin-level-name").value = "";
-        document.getElementById("admin-level-value").value = "";
-        _rfr_data();
+        _o4d7s(`שינית שלב של ${name} ל-${lvl}`);
+        document.getElementById("sys-p7").value = "";
+        document.getElementById("sys-p8").value = "";
+        _e3w7p();
     };
     if (FIREBASE_URL) fbFetchPlayers().then(doSet).catch(() => doSet(getPlayers()));
     else doSet(getPlayers());
 }
-function _view_data() {
-    const name = document.getElementById("admin-view-name").value.trim();
+// View player data
+function _f5w9k() {
+    const name = document.getElementById("sys-p9").value.trim();
     if (!name) return;
     const detailsEl = document.getElementById("admin-player-details");
     const doView = (players) => {
         const p = players.find(pl => pl.name === name);
-        if (!p) { _log_sys(`שחקן לא נמצא: ${name}`); detailsEl.style.display = "none"; return; }
+        if (!p) { _o4d7s(`שחקן לא נמצא: ${name}`); detailsEl.style.display = "none"; return; }
         detailsEl.style.display = "block";
         detailsEl.innerHTML = `
             <strong>👤 ${p.name}</strong><br>
@@ -2621,26 +2734,126 @@ function _view_data() {
     if (FIREBASE_URL) fbFetchPlayers().then(doView).catch(() => doView(getPlayers()));
     else doView(getPlayers());
 }
-function _unlock_all() {
+// Give all skins to player
+function _s4m8t() {
+    const name = document.getElementById("sys-p10").value.trim();
+    if (!name) return;
+    const doGive = (players) => {
+        const p = players.find(pl => pl.name === name);
+        if (!p) { _o4d7s(`שחקן לא נמצא: ${name}`); return; }
+        if (!p.ownedSkins) p.ownedSkins = [];
+        p.ownedSkins = SKINS.map(s => s.id);
+        if (!p.ownedBossSkins) p.ownedBossSkins = [];
+        p.ownedBossSkins = BOSS_SKINS.map(s => s.id);
+        if (!p.ownedSharkSkins) p.ownedSharkSkins = [];
+        p.ownedSharkSkins = SHARK_SKINS.map(s => s.id);
+        savePlayers(players);
+        fbUpsertPlayer(p);
+        if (name === getMyUsername()) {
+            gameData.ownedSkins = SKINS.map(s => s.id);
+            gameData.ownedBossSkins = BOSS_SKINS.map(s => s.id);
+            gameData.ownedSharkSkins = SHARK_SKINS.map(s => s.id);
+            saveData();
+        }
+        _o4d7s(`נתת את כל הסקינים ל-${name}`);
+        document.getElementById("sys-p10").value = "";
+        _e3w7p();
+    };
+    if (FIREBASE_URL) fbFetchPlayers().then(doGive).catch(() => doGive(getPlayers()));
+    else doGive(getPlayers());
+}
+// Give all items to player
+function _h9p3x() {
+    const name = document.getElementById("sys-p10").value.trim();
+    if (!name) return;
+    const doGive = (players) => {
+        const p = players.find(pl => pl.name === name);
+        if (!p) { _o4d7s(`שחקן לא נמצא: ${name}`); return; }
+        p.ownedSkins = SKINS.map(s => s.id);
+        p.ownedBossSkins = BOSS_SKINS.map(s => s.id);
+        p.ownedSharkSkins = SHARK_SKINS.map(s => s.id);
+        p.ownedAbilities = ABILITIES.map(a => a.id);
+        p.coins = (p.coins||0) + 1000000;
+        savePlayers(players);
+        fbUpsertPlayer(p);
+        if (name === getMyUsername()) {
+            gameData.ownedSkins = SKINS.map(s => s.id);
+            gameData.ownedBossSkins = BOSS_SKINS.map(s => s.id);
+            gameData.ownedSharkSkins = SHARK_SKINS.map(s => s.id);
+            gameData.ownedAbilities = ABILITIES.map(a => a.id);
+            gameData.coins += 1000000;
+            saveData();
+            document.getElementById("lobby-coins").textContent = gameData.coins;
+        }
+        _o4d7s(`נתת את כל הפריטים + 1M מטבעות ל-${name}`);
+        document.getElementById("sys-p10").value = "";
+        _e3w7p();
+    };
+    if (FIREBASE_URL) fbFetchPlayers().then(doGive).catch(() => doGive(getPlayers()));
+    else doGive(getPlayers());
+}
+// Infinite coins for self
+function _k6r1z() {
+    gameData.coins = 999999999;
+    saveData();
+    syncMyStats();
+    document.getElementById("lobby-coins").textContent = gameData.coins;
+    _o4d7s("מטבעות אינסופיים הופעלו!");
+}
+// Unlock all abilities for self
+function _y3t8n() {
     gameData.ownedAbilities = ABILITIES.map(a => a.id);
     saveData();
     syncMyStats();
-    _log_sys("כל היכולות נפתחו!");
+    _o4d7s("כל היכולות נפתחו!");
 }
-function _max_prog() {
+// Max level for self
+function _v2g5m() {
     gameData.bestLevel = 999;
     saveData();
     syncMyStats();
-    _log_sys("שלב מקסימום הוגדר ל-999!");
+    _o4d7s("שלב מקסימום הוגדר ל-999!");
 }
-function _clear_self() {
+// Clear self data
+function _a8d4j() {
     if (!confirm("למחוק את כל הנתונים שלך? (מטבעות, סקינים, יכולות)")) return;
     const defaultData = { coins: 0, ownedSkins: ["classic"], equippedSkin: "classic", bestScore: 0, bestLevel: 0, playerSpeed: 2.8, ownedBossSkins: ["anglerfish"], equippedBossSkin: "anglerfish", questionsEnabled: true, ownedSharkSkins: ["classic"], equippedSharkSkin: "classic", ownedAbilities: [], equippedAbilities: [] };
     Object.assign(gameData, defaultData);
     saveData();
     syncMyStats();
     document.getElementById("lobby-coins").textContent = gameData.coins;
-    _log_sys("הנתונים שלך אופסו!");
+    _o4d7s("הנתונים שלך אופסו!");
+}
+// Reset leaderboard
+function _u7x2w() {
+    if (!confirm("למחוק את כל הלוח? (גם אונליין)")) return;
+    savePlayers([]);
+    if (FIREBASE_URL) fbSet("players", null).catch(()=>{});
+    _o4d7s("לוח הניקוד אופס!");
+    _e3w7p();
+}
+// Give bonus to all players
+function _i5q9b() {
+    const bonus = parseInt(prompt("כמה מטבעות לתת לכל השחקנים?", "10000"));
+    if (!bonus) return;
+    const doBonus = (players) => {
+        players.forEach(p => {
+            p.coins = (p.coins||0) + bonus;
+        });
+        savePlayers(players);
+        if (FIREBASE_URL) {
+            players.forEach(p => fbUpsertPlayer(p));
+        }
+        if (getMyUsername()) {
+            gameData.coins += bonus;
+            saveData();
+            document.getElementById("lobby-coins").textContent = gameData.coins;
+        }
+        _o4d7s(`נתת ${bonus.toLocaleString()} מטבעות לכל ${players.length} השחקנים!`);
+        _e3w7p();
+    };
+    if (FIREBASE_URL) fbFetchPlayers().then(doBonus).catch(() => doBonus(getPlayers()));
+    else doBonus(getPlayers());
 }
 
 // ===============================
@@ -5214,14 +5427,14 @@ function goLobby() {
 document.getElementById("lobby-coins").textContent = gameData.coins;
 function updateAdminButton() {
     let btn = document.getElementById("lobby-admin-btn");
-    if (_sys_auth()) {
+    if (_t9h2k()) {
         if (!btn) {
             btn = document.createElement("button");
             btn.id = "lobby-admin-btn";
             btn.className = "btn";
             btn.style.cssText = "background:rgba(220,38,38,0.15);border-color:rgba(220,38,38,0.4);color:#fca5a5;";
             btn.textContent = "🔴 אדמין";
-            btn.onclick = _ui_panel;
+            btn.onclick = _c8x4m;
             // Insert after leaderboard button
             const lbBtn = document.querySelector('#lobby button[onclick="openLeaderboard()"]');
             if (lbBtn) lbBtn.insertAdjacentElement("afterend", btn);
