@@ -2278,15 +2278,27 @@ function hideAllOverlays() {
 // ===============================
 const PROFANITY = [
     // English
-    "arse","arsehead","arsehole","ass","asshole","bastard","bitch","bloody","bollocks","brotherfucker","bugger","bullshit",
+    "porn","sex","cum","goon","hoe","arse","arsehead","arsehole","ass","asshole","bastard","bitch","bloody","bollocks","brotherfucker","bugger","bullshit",
     "chigga","childfucker","cock","cocksucker","crap","cunt","dammit","damn","damned","dickhead","dick","dumbass","dyke",
     "fag","faggot","fatherfucker","fuck","fucked","fucker","fucking","goddammit","goddamn","goddamned","goddamnit","godsdamn",
     "hell","horseshit","jackass","kike","motherfucker","nigga","nigger","nigra","pigfucker","piss","prick","pussy",
-    "shit","shite","sisterfuck","sisterfucker","slut","spastic","tranny","twat","wanker","whore","retard","idiot","stupid","moron",
-    // Hebrew
-    "כוס","זין","זונה","בןזונה","בנזונה","מנייק","שרמוטה","נאלץ","מזדיין","מציץ","חרא","טמבל","אידיוט","מפגר",
-    "כסחה","באלי","ערס","פרוצה","מניאק","חתיכתחרא","קורבן","שרמוט","זונות","כוסאמו","זיןאבא",
-    "מתניין","זיון","לזיין","להזדיין","מקורבן","זיונים"
+    "shit","shite","sisterfuck","sisterfucker","slut","spastic","tranny","twat","wanker","whore","retard",
+    // Common variations/leetspeak
+    "fuk","fck","sht","btch","cnt","asz","azz","fvck","fuq","phuck","biatch","bewbs","bewb",
+    "tits","tit","boob","boobs","penis","vagina","rape","rapist","nazi","nazis",
+    // Hebrew - common insults
+    "טמבל","אידיוט","מטומטמת","טיפש","סתומה","אהבל","אהבלה","חמור","דפוק","דפוקה",
+    "שקרן","קמצן","נצלן","רשע","צבוע","מניאק","מפגר","חולהרוח","נוכל","מושחת",
+    // Hebrew - vulgar
+    "כוס","קוס","קוסעמק","קוסאוחתק","כוסעמק","כוסאמעמק","כוסאמו","זין","זיןאבא",
+    "זונה","בןזונה","בנזונה","בתזונה","שרמוטה","שרמוט","קיבינימאט","זונות",
+    "מזדיין","תזדיין","לזיין","זיון","זיונים","להזדיין","מתניין","מנייק","מציץ","מוצץ","מוצצת",
+    "חרא","חראבלבן","חתיכתחרא","סקס","אונן","אונני","מזיין","כלבה","סכין",
+    // Hebrew - offensive
+    "אפס","אפסמאופס","נבזה","זבל","חלאה","חלאתהמיןהאנושי",
+    "שיקסע","בור","עמהארץ","עוכרישראל",
+    "המןהרשע","עמלק","היטלר","שטן","נאצי",
+    "נאלץ","כסחה","באלי","ערס","פרוצה","קורבן","מקורבן"
 ];
 function containsProfanity(name) {
     const lower = name.toLowerCase().replace(/\s+/g,"");
@@ -2432,7 +2444,6 @@ function submitUsername() {
     if (!name) { errorEl.textContent = "נא להזין שם משתמש."; return; }
     if (name.length < 2) { errorEl.textContent = "שם קצר מדי (מינימום 2 תווים)."; return; }
     if (name.length > 18) { errorEl.textContent = "שם ארוך מדי (מקסימום 18 תווים)."; return; }
-    if (!/^[\u0590-\u05FFa-zA-Z0-9 _\-\.]+$/.test(name)) { errorEl.textContent = "תווים לא חוקיים בשם."; return; }
     if (containsProfanity(name)) { errorEl.textContent = "🚫 שם לא הולם. נסה שם אחר."; return; }
     if (!password) { errorEl.textContent = "נא להזין סיסמה."; return; }
     if (password.length < 4) { errorEl.textContent = "סיסמה קצרה מדי (מינימום 4 תווים)."; return; }
@@ -5137,7 +5148,6 @@ function changeUsername() {
     if (!newName) { errEl.textContent = "נא להזין שם."; return; }
     if (newName.length < 2) { errEl.textContent = "שם קצר מדי (מינימום 2)."; return; }
     if (newName.length > 18) { errEl.textContent = "שם ארוך מדי (מקסימום 18)."; return; }
-    if (!/^[\u0590-\u05FFa-zA-Z0-9 _\-\.]+$/.test(newName)) { errEl.textContent = "תווים לא חוקיים."; return; }
     if (containsProfanity(newName)) { errEl.textContent = "🚫 שם לא הולם. נסה שם אחר."; return; }
     if (getBannedList().includes(newName)) { errEl.textContent = "⛔ שם זה חסום."; return; }
     const oldName = getMyUsername();
