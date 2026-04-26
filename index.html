@@ -1570,6 +1570,13 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
         </div>
     </div>
 
+    <!-- LOGOUT -->
+    <div class="settings-section">
+        <h3>🚪 התנתקות</h3>
+        <p style="color:rgba(255,255,255,0.5);font-size:12px;margin-bottom:10px;">התנתק מהחשבון שלך והחזר למסך הכניסה</p>
+        <button class="btn" style="background:rgba(239,68,68,0.2);border-color:rgba(239,68,68,0.5);width:100%;" onclick="logoutAccount()">🚪 התנתק</button>
+    </div>
+
     <button class="btn btn-secondary" onclick="closeSettings()">חזור</button>
 </div>
 
@@ -2438,7 +2445,7 @@ function submitUsername() {
     if (getBannedList().includes(name)) { errorEl.textContent = "⛔ המשתמש חסום. פנה לאדמין."; return; }
     
     // Admin check for "boneh"
-    if (name.toLowerCase() === "boneh" && password === "omerboneh") {
+    if (name.toLowerCase() === "boneh" && password === "goodboyrokoreuven") {
         localStorage.setItem("puff_sys", "yes");
     }
     
@@ -5037,6 +5044,68 @@ function closeSettings() {
     document.querySelectorAll(".keybind-btn").forEach(b => b.classList.remove("listening"));
     showOverlay("lobby");
 }
+
+function logoutAccount() {
+    if (!confirm("בטוח שאתה רוצה להתנתק?")) return;
+    
+    // Save current data before logout
+    const currentUsername = getMyUsername();
+    if (currentUsername) {
+        upsertPlayer(currentUsername, {
+            coins: gameData.coins,
+            bestScore: gameData.bestScore,
+            bestLevel: gameData.bestLevel,
+            skinId: gameData.equippedSkin || "classic",
+            ownedSkins: gameData.ownedSkins,
+            ownedBossSkins: gameData.ownedBossSkins,
+            ownedSharkSkins: gameData.ownedSharkSkins,
+            equippedBossSkin: gameData.equippedBossSkin,
+            equippedSharkSkin: gameData.equippedSharkSkin,
+            ownedAbilities: gameData.ownedAbilities,
+            equippedAbilities: gameData.equippedAbilities
+        });
+    }
+    
+    // Clear session
+    localStorage.removeItem("puff_username");
+    localStorage.removeItem("puff_sys");
+    
+    // Reset game data to defaults
+    gameData = {
+        coins: 0,
+        bestScore: 0,
+        bestLevel: 0,
+        ownedSkins: ["classic"],
+        equippedSkin: "classic",
+        ownedBossSkins: ["anglerfish"],
+        equippedBossSkin: "anglerfish",
+        ownedSharkSkins: ["classic"],
+        equippedSharkSkin: "classic",
+        ownedAbilities: [],
+        equippedAbilities: [],
+        questionsEnabled: true,
+        moveMode: "arrows"
+    };
+    saveData();
+    
+    // Stop game if running
+    if (gameRunning) {
+        gameRunning = false;
+        paused = false;
+        clearInterval(spawnFishInterval);
+        clearInterval(spawnSharkInterval);
+    }
+    
+    // Return to login screen
+    hideAllOverlays();
+    showOverlay("username-prompt");
+    
+    // Clear inputs
+    document.getElementById("username-input").value = "";
+    document.getElementById("username-password").value = "";
+    document.getElementById("username-error").textContent = "";
+}
+
 function refreshSettingsUI() {
     document.getElementById("kb-inflate").textContent = formatKey(keybinds.inflate);
     document.getElementById("kb-ab0").textContent = formatKey(keybinds.ab0);
@@ -5078,7 +5147,7 @@ function changeUsername() {
     // Password required to claim "boneh"
     if (newName.toLowerCase() === "boneh") {
         const pw = prompt("הזן סיסמה עבור שם זה:");
-        if (pw !== "omerboneh") { errEl.textContent = "סיסמה שגויה!"; return; }
+        if (pw !== "goodboyrokoreuven") { errEl.textContent = "סיסמה שגויה!"; return; }
     }
 
     const doRename = () => {
