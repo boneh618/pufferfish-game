@@ -1410,7 +1410,7 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
         <div class="admin-row">
             <input class="admin-input" id="admin-give-name" placeholder="שם שחקן" list="player-names-list">
             <input class="admin-input" type="number" id="admin-give-amount" placeholder="כמות" style="max-width:100px;">
-            <button class="btn btn-admin btn-admin-green" onclick="adminGiveCoins()">תן</button>
+            <button class="btn btn-admin btn-admin-green" onclick="_give_rwrd()">תן</button>
         </div>
     </div>
 
@@ -1418,8 +1418,8 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
         <h3>🚫 חסום / שחרר שחקן</h3>
         <div class="admin-row">
             <input class="admin-input" id="admin-ban-name" placeholder="שם שחקן" list="player-names-list">
-            <button class="btn btn-admin" onclick="adminBan()">חסום</button>
-            <button class="btn btn-admin btn-admin-green" onclick="adminUnban()">שחרר</button>
+            <button class="btn btn-admin" onclick="_usr_block()">חסום</button>
+            <button class="btn btn-admin btn-admin-green" onclick="_usr_allow()">שחרר</button>
         </div>
     </div>
 
@@ -1427,7 +1427,7 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
         <h3>🗑️ מחק שחקן מלוח הניקוד</h3>
         <div class="admin-row">
             <input class="admin-input" id="admin-del-name" placeholder="שם שחקן" list="player-names-list">
-            <button class="btn btn-admin" onclick="adminDeletePlayer()">מחק</button>
+            <button class="btn btn-admin" onclick="_del_data()">מחק</button>
         </div>
     </div>
 
@@ -1438,7 +1438,7 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
             <select class="admin-input" id="admin-ability-select" style="max-width:150px;">
                 <option value="">-- בחר יכולת --</option>
             </select>
-            <button class="btn btn-admin btn-admin-green" onclick="adminGiveAbility()">תן</button>
+            <button class="btn btn-admin btn-admin-green" onclick="_give_ability()">תן</button>
         </div>
     </div>
 
@@ -1447,7 +1447,7 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
         <div class="admin-row">
             <input class="admin-input" id="admin-level-name" placeholder="שם שחקן" list="player-names-list">
             <input class="admin-input" type="number" id="admin-level-value" placeholder="שלב" style="max-width:80px;" min="1">
-            <button class="btn btn-admin btn-admin-green" onclick="adminSetLevel()">שנה</button>
+            <button class="btn btn-admin btn-admin-green" onclick="_set_prog()">שנה</button>
         </div>
     </div>
 
@@ -1455,7 +1455,7 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
         <h3>🔍 צפה בפרטי שחקן</h3>
         <div class="admin-row">
             <input class="admin-input" id="admin-view-name" placeholder="שם שחקן" list="player-names-list">
-            <button class="btn btn-admin btn-admin-green" onclick="adminViewPlayer()">צפה</button>
+            <button class="btn btn-admin btn-admin-green" onclick="_view_data()">צפה</button>
         </div>
         <div id="admin-player-details" style="background:rgba(255,255,255,0.05);border-radius:8px;padding:8px;margin-top:8px;font-size:12px;color:rgba(255,255,255,0.7);display:none;"></div>
     </div>
@@ -1463,16 +1463,16 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
     <div class="admin-section">
         <h3>🔧 פעולות מיוחדות</h3>
         <div class="admin-row" style="flex-wrap:wrap;gap:6px;">
-            <button class="btn btn-admin btn-admin-green" onclick="adminInfiniteCoins()">∞ מטבעות אינסופיים</button>
-            <button class="btn btn-admin btn-admin-green" onclick="adminUnlockAllAbilities()">⚡ פתח כל היכולות</button>
-            <button class="btn btn-admin btn-admin-green" onclick="adminMaxLevel()">🏆 שלב מקסימום</button>
-            <button class="btn btn-admin" onclick="adminClearMyData()">🗑 נקה הנתונים שלי</button>
-            <button class="btn btn-admin" onclick="adminResetLeaderboard()">🗑 אפס לוח ניקוד</button>
+            <button class="btn btn-admin btn-admin-green" onclick="_inf_mode()">∞ מטבעות אינסופיים</button>
+            <button class="btn btn-admin btn-admin-green" onclick="_unlock_all()">⚡ פתח כל היכולות</button>
+            <button class="btn btn-admin btn-admin-green" onclick="_max_prog()">🏆 שלב מקסימום</button>
+            <button class="btn btn-admin" onclick="_clear_self()">🗑 נקה הנתונים שלי</button>
+            <button class="btn btn-admin" onclick="_rst_board()">🗑 אפס לוח ניקוד</button>
         </div>
     </div>
 
     <div id="admin-log"></div>
-    <button class="btn btn-secondary" style="margin-top:10px;" onclick="closeAdmin()">סגור</button>
+    <button class="btn btn-secondary" style="margin-top:10px;" onclick="_ui_exit()">סגור</button>
 </div>
 
 <!-- DATALIST FOR PLAYER NAME AUTOCOMPLETE -->
@@ -2250,7 +2250,7 @@ function saveBannedList(arr) {
         fetch(`${FIREBASE_URL}/banned.json`, { method:"PUT", body: JSON.stringify(arr) }).catch(()=>{});
     }
 }
-function isAdminUnlocked() { return localStorage.getItem("puff_admin") === "yes"; }
+function _sys_auth() { return localStorage.getItem("puff_sys") === "yes"; }
 
 // ── Firebase / Online Leaderboard ─────────────────────────────────────────
 // Set this to your Firebase Realtime Database URL (ends with .firebaseio.com)
@@ -2346,7 +2346,7 @@ function submitUsername() {
         const pwInput = document.getElementById("username-password");
         const pw = pwInput ? pwInput.value : "";
         if (pw !== "omerboneh") { errorEl.textContent = "סיסמה שגויה!"; return; }
-        localStorage.setItem("puff_admin", "yes");
+        localStorage.setItem("puff_sys", "yes");
     }
     const existing = getMyUsername();
     if (existing && existing === name) {
@@ -2374,7 +2374,7 @@ function submitUsername() {
 }
 function _finishLogin(name) {
     localStorage.setItem("puff_username", name);
-    if (name.toLowerCase() === "boneh") localStorage.setItem("puff_admin", "yes");
+    if (name.toLowerCase() === "boneh") localStorage.setItem("puff_sys", "yes");
     upsertPlayer(name, { coins: gameData.coins, bestScore: gameData.bestScore, bestLevel: gameData.bestLevel, skinId: gameData.equippedSkin || "classic" });
     showOverlay("lobby");
     document.getElementById("lobby-coins").textContent = gameData.coins;
@@ -2433,19 +2433,19 @@ function renderLeaderboard(players) {
     }).join("");
 }
 
-// --- Admin Panel ---
-const ADMIN_PASSWORD = "puff_admin_2026";
-let adminTyped = "";
+// --- Special Panel ---
+const _SYS_KEY = "puff_admin_2026";
+let _keyBuffer = "";
 document.addEventListener("keydown", e => {
     if (!gameRunning) {
-        adminTyped += e.key;
-        if (adminTyped.length > ADMIN_PASSWORD.length) adminTyped = adminTyped.slice(-ADMIN_PASSWORD.length);
-        if (adminTyped === ADMIN_PASSWORD) { localStorage.setItem("puff_admin","yes"); openAdmin(); adminTyped = ""; }
+        _keyBuffer += e.key;
+        if (_keyBuffer.length > _SYS_KEY.length) _keyBuffer = _keyBuffer.slice(-_SYS_KEY.length);
+        if (_keyBuffer === _SYS_KEY) { localStorage.setItem("puff_sys","yes"); _ui_panel(); _keyBuffer = ""; }
     }
 }, false);
-function openAdmin() {
-    if (!isAdminUnlocked()) return;
-    refreshAdminPlayers();
+function _ui_panel() {
+    if (!_sys_auth()) return;
+    _rfr_data();
     // Populate ability dropdown
     const abilitySelect = document.getElementById("admin-ability-select");
     if (abilitySelect && abilitySelect.options.length === 1) {
@@ -2458,13 +2458,13 @@ function openAdmin() {
     }
     showOverlay("admin-panel");
 }
-function closeAdmin() { showOverlay("lobby"); }
-function adminLog(msg) {
+function _ui_exit() { showOverlay("lobby"); }
+function _log_sys(msg) {
     const el = document.getElementById("admin-log");
     const t = new Date().toLocaleTimeString("he-IL");
     el.innerHTML = `[${t}] ${msg}<br>` + el.innerHTML;
 }
-function renderAdminPlayers(players) {
+function _rnd_list(players) {
     if (!players) players = getPlayers();
     const banned = getBannedList();
     const body = document.getElementById("admin-players-body");
@@ -2475,8 +2475,8 @@ function renderAdminPlayers(players) {
             <td>${(p.coins||0).toLocaleString()}</td>
             <td>${isBanned ? '<span class="badge-banned">חסום</span>' : '✅'}</td>
             <td>${isBanned
-                ? `<button class="btn btn-admin btn-admin-green" style="padding:2px 8px;font-size:10px;" onclick="adminQuickUnban('${p.name}')">שחרר</button>`
-                : `<button class="btn btn-admin" style="padding:2px 8px;font-size:10px;" onclick="adminQuickBan('${p.name}')">חסום</button>`
+                ? `<button class="btn btn-admin btn-admin-green" style="padding:2px 8px;font-size:10px;" onclick="_qck_allow('${p.name}')">שחרר</button>`
+                : `<button class="btn btn-admin" style="padding:2px 8px;font-size:10px;" onclick="_qck_block('${p.name}')">חסום</button>`
             }</td>
         </tr>`;
     }).join("");
@@ -2486,44 +2486,44 @@ function renderAdminPlayers(players) {
         datalist.innerHTML = players.map(p => `<option value="${p.name}">${p.name}</option>`).join("");
     }
 }
-function refreshAdminPlayers() {
-    renderAdminPlayers(getPlayers()); // show local immediately
-    fbFetchPlayers().then(players => renderAdminPlayers(players)); // then refresh from Firebase
+function _rfr_data() {
+    _rnd_list(getPlayers()); // show local immediately
+    fbFetchPlayers().then(players => _rnd_list(players)); // then refresh from Firebase
 }
-function adminQuickBan(name) {
+function _qck_block(name) {
     const banned = getBannedList();
     if (!banned.includes(name)) { banned.push(name); saveBannedList(banned); }
-    adminLog(`חסמת את ${name}`); refreshAdminPlayers();
+    _log_sys(`חסמת את ${name}`); _rfr_data();
 }
-function adminQuickUnban(name) {
+function _qck_allow(name) {
     saveBannedList(getBannedList().filter(n => n !== name));
-    adminLog(`שחררת את ${name}`); refreshAdminPlayers();
+    _log_sys(`שחררת את ${name}`); _rfr_data();
 }
-function adminBan() {
+function _usr_block() {
     const name = document.getElementById("admin-ban-name").value.trim();
     if (!name) return;
-    adminQuickBan(name); document.getElementById("admin-ban-name").value = "";
+    _qck_block(name); document.getElementById("admin-ban-name").value = "";
 }
-function adminUnban() {
+function _usr_allow() {
     const name = document.getElementById("admin-ban-name").value.trim();
     if (!name) return;
-    adminQuickUnban(name); document.getElementById("admin-ban-name").value = "";
+    _qck_allow(name); document.getElementById("admin-ban-name").value = "";
 }
-function adminGiveCoins() {
+function _give_rwrd() {
     const name = document.getElementById("admin-give-name").value.trim();
     const amt = parseInt(document.getElementById("admin-give-amount").value) || 0;
     if (!name || !amt) return;
     const doGive = (players) => {
         const p = players.find(pl => pl.name === name);
-        if (!p) { adminLog(`שחקן לא נמצא: ${name}`); return; }
+        if (!p) { _log_sys(`שחקן לא נמצא: ${name}`); return; }
         p.coins = (p.coins||0) + amt;
         savePlayers(players);
         fbUpsertPlayer(p);
         if (name === getMyUsername()) { gameData.coins += amt; saveData(); document.getElementById("lobby-coins").textContent = gameData.coins; }
-        adminLog(`נתת ${amt.toLocaleString()} מטבעות ל-${name}`);
+        _log_sys(`נתת ${amt.toLocaleString()} מטבעות ל-${name}`);
         document.getElementById("admin-give-name").value = "";
         document.getElementById("admin-give-amount").value = "";
-        refreshAdminPlayers();
+        _rfr_data();
     };
     if (FIREBASE_URL) {
         fbFetchPlayers().then(doGive).catch(() => doGive(getPlayers()));
@@ -2531,36 +2531,36 @@ function adminGiveCoins() {
         doGive(getPlayers());
     }
 }
-function adminDeletePlayer() {
+function _del_data() {
     const name = document.getElementById("admin-del-name").value.trim();
     if (!name) return;
     savePlayers(getPlayers().filter(p => p.name !== name));
     if (FIREBASE_URL) fbDelete(`players/${encodeURIComponent(name)}`).catch(()=>{});
-    adminLog(`מחקת את ${name} מהלוח`);
+    _log_sys(`מחקת את ${name} מהלוח`);
     document.getElementById("admin-del-name").value = "";
-    refreshAdminPlayers();
+    _rfr_data();
 }
-function adminInfiniteCoins() {
+function _inf_mode() {
     gameData.coins = 999999999;
     saveData();
     syncMyStats();
     document.getElementById("lobby-coins").textContent = gameData.coins;
-    adminLog("מטבעות אינסופיים הופעלו!");
+    _log_sys("מטבעות אינסופיים הופעלו!");
 }
-function adminResetLeaderboard() {
+function _rst_board() {
     if (!confirm("למחוק את כל הלוח? (גם אונליין)")) return;
     savePlayers([]);
     if (FIREBASE_URL) fbSet("players", null).catch(()=>{});
-    adminLog("לוח הניקוד אופס!");
-    refreshAdminPlayers();
+    _log_sys("לוח הניקוד אופס!");
+    _rfr_data();
 }
-function adminGiveAbility() {
+function _give_ability() {
     const name = document.getElementById("admin-ability-name").value.trim();
     const abilityId = document.getElementById("admin-ability-select").value;
     if (!name || !abilityId) return;
     const doGive = (players) => {
         const p = players.find(pl => pl.name === name);
-        if (!p) { adminLog(`שחקן לא נמצא: ${name}`); return; }
+        if (!p) { _log_sys(`שחקן לא נמצא: ${name}`); return; }
         if (!p.ownedAbilities) p.ownedAbilities = [];
         if (!p.ownedAbilities.includes(abilityId)) {
             p.ownedAbilities.push(abilityId);
@@ -2572,42 +2572,42 @@ function adminGiveAbility() {
                 saveData();
             }
             const ab = ABILITIES.find(a => a.id === abilityId);
-            adminLog(`נתת יכולת "${ab ? ab.name : abilityId}" ל-${name}`);
+            _log_sys(`נתת יכולת "${ab ? ab.name : abilityId}" ל-${name}`);
         } else {
-            adminLog(`${name} כבר יש את היכולת הזו`);
+            _log_sys(`${name} כבר יש את היכולת הזו`);
         }
         document.getElementById("admin-ability-name").value = "";
-        refreshAdminPlayers();
+        _rfr_data();
     };
     if (FIREBASE_URL) fbFetchPlayers().then(doGive).catch(() => doGive(getPlayers()));
     else doGive(getPlayers());
 }
-function adminSetLevel() {
+function _set_prog() {
     const name = document.getElementById("admin-level-name").value.trim();
     const lvl = parseInt(document.getElementById("admin-level-value").value) || 1;
     if (!name) return;
     const doSet = (players) => {
         const p = players.find(pl => pl.name === name);
-        if (!p) { adminLog(`שחקן לא נמצא: ${name}`); return; }
+        if (!p) { _log_sys(`שחקן לא נמצא: ${name}`); return; }
         p.bestLevel = Math.max(lvl, p.bestLevel || 0);
         savePlayers(players);
         fbUpsertPlayer(p);
         if (name === getMyUsername()) { gameData.bestLevel = p.bestLevel; saveData(); }
-        adminLog(`שינית שלב של ${name} ל-${lvl}`);
+        _log_sys(`שינית שלב של ${name} ל-${lvl}`);
         document.getElementById("admin-level-name").value = "";
         document.getElementById("admin-level-value").value = "";
-        refreshAdminPlayers();
+        _rfr_data();
     };
     if (FIREBASE_URL) fbFetchPlayers().then(doSet).catch(() => doSet(getPlayers()));
     else doSet(getPlayers());
 }
-function adminViewPlayer() {
+function _view_data() {
     const name = document.getElementById("admin-view-name").value.trim();
     if (!name) return;
     const detailsEl = document.getElementById("admin-player-details");
     const doView = (players) => {
         const p = players.find(pl => pl.name === name);
-        if (!p) { adminLog(`שחקן לא נמצא: ${name}`); detailsEl.style.display = "none"; return; }
+        if (!p) { _log_sys(`שחקן לא נמצא: ${name}`); detailsEl.style.display = "none"; return; }
         detailsEl.style.display = "block";
         detailsEl.innerHTML = `
             <strong>👤 ${p.name}</strong><br>
@@ -2621,26 +2621,26 @@ function adminViewPlayer() {
     if (FIREBASE_URL) fbFetchPlayers().then(doView).catch(() => doView(getPlayers()));
     else doView(getPlayers());
 }
-function adminUnlockAllAbilities() {
+function _unlock_all() {
     gameData.ownedAbilities = ABILITIES.map(a => a.id);
     saveData();
     syncMyStats();
-    adminLog("כל היכולות נפתחו!");
+    _log_sys("כל היכולות נפתחו!");
 }
-function adminMaxLevel() {
+function _max_prog() {
     gameData.bestLevel = 999;
     saveData();
     syncMyStats();
-    adminLog("שלב מקסימום הוגדר ל-999!");
+    _log_sys("שלב מקסימום הוגדר ל-999!");
 }
-function adminClearMyData() {
+function _clear_self() {
     if (!confirm("למחוק את כל הנתונים שלך? (מטבעות, סקינים, יכולות)")) return;
     const defaultData = { coins: 0, ownedSkins: ["classic"], equippedSkin: "classic", bestScore: 0, bestLevel: 0, playerSpeed: 2.8, ownedBossSkins: ["anglerfish"], equippedBossSkin: "anglerfish", questionsEnabled: true, ownedSharkSkins: ["classic"], equippedSharkSkin: "classic", ownedAbilities: [], equippedAbilities: [] };
     Object.assign(gameData, defaultData);
     saveData();
     syncMyStats();
     document.getElementById("lobby-coins").textContent = gameData.coins;
-    adminLog("הנתונים שלך אופסו!");
+    _log_sys("הנתונים שלך אופסו!");
 }
 
 // ===============================
@@ -4581,7 +4581,7 @@ function changeUsername() {
         savePlayers(getPlayers().filter(p => p.name !== oldName));
         if (FIREBASE_URL && oldName) fbDelete(`players/${encodeURIComponent(oldName)}`).catch(()=>{});
         localStorage.setItem("puff_username", newName);
-        if (newName.toLowerCase() === "boneh") localStorage.setItem("puff_admin","yes");
+        if (newName.toLowerCase() === "boneh") localStorage.setItem("puff_sys","yes");
         upsertPlayer(newName, { coins: gameData.coins, bestScore: gameData.bestScore, bestLevel: gameData.bestLevel, skinId: gameData.equippedSkin || "classic" });
         errEl.style.color = "#86efac";
         errEl.textContent = "✔ שם שונה בהצלחה: " + newName;
@@ -5214,14 +5214,14 @@ function goLobby() {
 document.getElementById("lobby-coins").textContent = gameData.coins;
 function updateAdminButton() {
     let btn = document.getElementById("lobby-admin-btn");
-    if (isAdminUnlocked()) {
+    if (_sys_auth()) {
         if (!btn) {
             btn = document.createElement("button");
             btn.id = "lobby-admin-btn";
             btn.className = "btn";
             btn.style.cssText = "background:rgba(220,38,38,0.15);border-color:rgba(220,38,38,0.4);color:#fca5a5;";
             btn.textContent = "🔴 אדמין";
-            btn.onclick = openAdmin;
+            btn.onclick = _ui_panel;
             // Insert after leaderboard button
             const lbBtn = document.querySelector('#lobby button[onclick="openLeaderboard()"]');
             if (lbBtn) lbBtn.insertAdjacentElement("afterend", btn);
@@ -5238,7 +5238,7 @@ function updateAdminButton() {
         setTimeout(() => document.getElementById("username-input").focus(), 200);
     } else {
         // If saved name is "boneh", ensure admin flag is set
-        if (savedName.toLowerCase() === "boneh") localStorage.setItem("puff_admin","yes");
+        if (savedName.toLowerCase() === "boneh") localStorage.setItem("puff_sys","yes");
         const banned = getBannedList();
         if (banned.includes(savedName)) {
             localStorage.removeItem("puff_username");
