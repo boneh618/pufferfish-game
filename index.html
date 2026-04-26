@@ -1576,6 +1576,19 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
         <div class="hud-item hud-level">שלב <span id="hud-level">1</span></div>
         <div id="pause-btn" onclick="togglePause()">⏸</div>
     </div>
+    <div class="hud-top-center" style="position:absolute;top:10px;left:50%;transform:translateX(-50%);display:none;" id="boss-timer-container">
+        <div style="background:rgba(0,0,0,0.6);border:2px solid rgba(220,38,38,0.8);border-radius:12px;padding:8px 16px;backdrop-filter:blur(8px);">
+            <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:20px;">👹</span>
+                <div style="display:flex;flex-direction:column;gap:2px;">
+                    <span style="font-size:11px;color:#fca5a5;font-weight:600;">הבוס מגיע!</span>
+                    <div style="width:150px;height:6px;background:rgba(0,0,0,0.4);border-radius:3px;overflow:hidden;">
+                        <div id="boss-timer-bar" style="height:100%;background:linear-gradient(90deg,#dc2626,#f87171);transition:width 0.3s;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="hud-bottom-left">
         <div class="hud-bar-container">
             <span class="hud-bar-label">❤️</span>
@@ -2625,9 +2638,6 @@ function _g2p8v(players) {
 function _e3w7p() {
     _g2p8v(getPlayers());
     fbFetchPlayers().then(players => _g2p8v(players));
-function _e3w7p() {
-    _g2p8v(getPlayers());
-    fbFetchPlayers().then(players => _g2p8v(players));
 }
 // Regular ban
 function _r8b3q(name) {
@@ -2724,21 +2734,6 @@ function _w8t5r() {
         _o4d7s(`קבעת ${amt.toLocaleString()} מטבעות ל-${name}`);
         document.getElementById("sys-p1").value = "";
         document.getElementById("sys-p2").value = "";
-        _e3w7p();
-    };
-    if (FIREBASE_URL) {
-        fbFetchPlayers().then(doSet).catch(() => doSet(getPlayers()));
-    } else {
-        doSet(getPlayers());
-    }
-}
-function _del_data() {
-    const name = document.getElementById("admin-del-name").value.trim();
-    if (!name) return;
-    savePlayers(getPlayers().filter(p => p.name !== name));
-    if (FIREBASE_URL) fbDelete(`players/${encodeURIComponent(name)}`).catch(()=>{});
-    _log_sys(`מחקת את ${name} מהלוח`);
-    document.getElementById("admin-del-name").value = "";
         _e3w7p();
     };
     if (FIREBASE_URL) {
@@ -3145,12 +3140,12 @@ const BOSS_SKINS = [
     { id: "kraken",     name: "קראקן",        price: 400,     emoji: "🐙" },
     { id: "dragon",     name: "דרקון ים",    price: 600,     emoji: "🐉" },
     { id: "nautilus",   name: "נאוטילוס",    price: 800,     emoji: "🐚" },
-    { id: "leviathan",  name: "לויתן",       price: 1200,    emoji: "🐳" },
+    { id: "leviathan",  name: "לוויתן",       price: 1200,    emoji: "🐳" },
     { id: "undead",     name: "דג רקב",      price: 1500,    emoji: "💀" },
     { id: "mech",       name: "מכאני",       price: 2000,    emoji: "🤖" },
     { id: "ben",        name: "בן פרניק",    price: 1000000, emoji: "👑" },
     { id: "roi_s",      name: "רועי שמחי",   price: 1000000, emoji: "🌟" },
-    { id: "roi_r",      name: "רועי ראבן",  price: 1000000, emoji: "🔥" },
+    { id: "roi_r",      name: "רועי ראובן",  price: 1000000, emoji: "🔥" },
     { id: "yoyo",       name: "יויו",         price: 1000000, emoji: "💎" },
 ];
 
@@ -3171,14 +3166,14 @@ function getEquippedSharkSkin() {
 }
 
 const ABILITIES = [
-    { id: "poison_cloud",  name: "ענן רעל",      desc: "הנח ענן רעל – כרישים בתוכו מאבדים אנרגיה לאט", emoji: "☠️",  price: 300,  cooldown: 1800,  key: "q" },
-    { id: "magnet",        name: "מגנט מטבעות",   desc: "שואב מטבעות אליך למשך 6 שניות",                  emoji: "🧲",  price: 400,  cooldown: 1800,  key: "f" },
-    { id: "speed_boost",   name: "האצה",          desc: "הכפל את מהירותך למשך 5 שניות",                   emoji: "⚡",  price: 500,  cooldown: 1800,  key: "e" },
+    { id: "poison_cloud",  name: "ענן רעל",      desc: "הנח ענן רעל – כרישים נהרגים מיידית ובוסים מקבלים נזק", emoji: "☠️",  price: 300,  cooldown: 1800,  key: "q" },
+    { id: "magnet",        name: "מגנט דגים",   desc: "שואב דגים אליך למשך 6 שניות",                  emoji: "🧲",  price: 400,  cooldown: 1800,  key: "f" },
+    { id: "speed_boost",   name: "האצה",          desc: "מהירות על למשך 5 שניות",                   emoji: "⚡",  price: 500,  cooldown: 1800,  key: "e" },
     { id: "double_coins",  name: "כפל מטבעות",   desc: "ערך המטבעות מוכפל ל-10 שניות",                   emoji: "💰",  price: 600,  cooldown: 1800,  key: "e" },
-    { id: "shield",        name: "מגן",           desc: "חסינות מלאה למשך 4 שניות",                       emoji: "🛡️", price: 800,  cooldown: 1800,  key: "r" },
-    { id: "clone_fish",    name: "שיבוט",          desc: "מתחזה מסיח את תשומת הלב הכרישים ל-5 שניות",     emoji: "🐠",  price: 900,  cooldown: 1800,  key: "f" },
-    { id: "time_slow",     name: "האטת זמן",      desc: "האט כרישים ב-50% למשך 4 שניות",                  emoji: "⏳",  price: 1000, cooldown: 2100,  key: "q" },
-    { id: "shockwave",     name: "גל הלם",        desc: "דחף את כל הכרישים ממך בבת אחת",                  emoji: "💥",  price: 1200, cooldown: 2100,  key: "r" },
+    { id: "shield",        name: "מגן",           desc: "חסינות מלאה למשך 6 שניות",                       emoji: "🛡️", price: 800,  cooldown: 1800,  key: "r" },
+    { id: "clone_fish",    name: "שיבוט",          desc: "מתחזה מושך כרישים למשך 16 שניות - לא מזיק לך!",     emoji: "🐠",  price: 900,  cooldown: 1800,  key: "f" },
+    { id: "time_slow",     name: "האטת זמן",      desc: "האט כרישים ב-75% למשך 4 שניות",                  emoji: "⏳",  price: 1000, cooldown: 2100,  key: "q" },
+    { id: "shockwave",     name: "גל צונאמי",        desc: "הורג את כל הכרישים בטווח הראייה!",                  emoji: "🌊",  price: 1200, cooldown: 2100,  key: "r" },
 ];
 
 // Single slot: only 1 ability can be equipped at a time
@@ -3288,7 +3283,7 @@ function activateAbility(id) {
     } else if (id === "speed_boost") {
         abilityEffects["speed_boost"] = { active: true, timer: 300 };
     } else if (id === "shield") {
-        abilityEffects["shield"] = { active: true, timer: 240 };
+        abilityEffects["shield"] = { active: true, timer: 360 }; // 6 seconds
     } else if (id === "magnet") {
         abilityEffects["magnet"] = { active: true, timer: 360 };
     } else if (id === "time_slow") {
@@ -3296,14 +3291,20 @@ function activateAbility(id) {
     } else if (id === "double_coins") {
         abilityEffects["double_coins"] = { active: true, timer: 600 }; // 10 seconds at 60fps
     } else if (id === "shockwave") {
-        sharks.forEach(s => {
-            let dx = s.x - player.x, dy = s.y - player.y;
-            let dist = Math.hypot(dx, dy) || 1;
-            s.x += (dx / dist) * 180;
-            s.y += (dy / dist) * 180;
-        });
+        // Kill all sharks on screen
+        for (let i = sharks.length - 1; i >= 0; i--) {
+            const s = sharks[i];
+            if (s.x >= -50 && s.x <= canvas.width + 50 && s.y >= -50 && s.y <= canvas.height + 50) {
+                showParticle(s.x, s.y, "💀");
+                earnedCoins += 3;
+                const scoreGain = Math.floor(2 * getScoreMultiplier());
+                score += scoreGain;
+                sharks.splice(i, 1);
+            }
+        }
+        updateHUD();
     } else if (id === "clone_fish") {
-        cloneFish = { x: player.x + 80, y: player.y, life: 300 };
+        cloneFish = { x: player.x + 80, y: player.y, life: 960 }; // 16 seconds
     }
 }
 
@@ -3323,13 +3324,25 @@ function updateAbilities() {
         const cloud = poisonClouds[i];
         cloud.life--;
         if (cloud.life <= 0) { poisonClouds.splice(i, 1); continue; }
-        // Damage sharks in cloud every 60 frames
-        if (frameCount % 60 === 0) {
+        // Insta-kill sharks in cloud, damage boss
+        if (frameCount % 30 === 0) {
             sharks.forEach(s => {
                 if (Math.hypot(s.x - cloud.x, s.y - cloud.y) < cloud.r + s.size) {
-                    s.hp = (s.hp || 3) - 1;
+                    s.hp = 0; // Insta-kill
                 }
             });
+            // Damage boss if in cloud
+            if (boss && Math.hypot(boss.x - cloud.x, boss.y - cloud.y) < cloud.r + boss.size) {
+                boss.hp -= 1; // Small damage to boss
+                if (boss.hp <= 0) {
+                    let reward = 20 + level * 10;
+                    const scoreGain = Math.floor(5 * getScoreMultiplier());
+                    earnedCoins += reward; score += scoreGain; shakeTimer = 12;
+                    showParticle(boss.x, boss.y, `🏆 בוס הובס! +${reward}🪙`);
+                    for (let b = 0; b < 12; b++) spawnBubble(boss.x, boss.y);
+                    levelUp();
+                }
+            }
         }
     }
     // Remove dead sharks from poison
@@ -5301,6 +5314,7 @@ function gameLoop() {
 
     // ===== MOVE PLAYER =====
     let speed = gameData.playerSpeed;
+    if (abilityEffects["speed_boost"]?.active) speed *= 4; // 4x speed boost
     let ax = 0, ay = 0;
 
     if (moveMode === "mouse" && mouseX !== null && mouseY !== null) {
@@ -5406,16 +5420,25 @@ function gameLoop() {
     for (let i = sharks.length - 1; i >= 0; i--) {
         let s = sharks[i];
         let targetX = player.x, targetY = player.y;
-        // Clone fish lure overrides target
+        // Clone fish lure overrides target - sharks only chase clone when it exists
         if (cloneFish) { targetX = cloneFish.x; targetY = cloneFish.y; }
         let dx = targetX - s.x, dy = targetY - s.y;
         let dist = Math.hypot(dx, dy);
-        let spd = s.speed * (abilityEffects["time_slow"]?.active ? 0.5 : 1);
+        let spd = s.speed * (abilityEffects["time_slow"]?.active ? 0.25 : 1); // 75% slow
         if (dist > 0) { s.x += (dx/dist)*spd; s.y += (dy/dist)*spd; }
         s.dir = dx > 0 ? 1 : -1;
         const ssk = SHARK_SKINS.find(sk => sk.id === s.skinId) || SHARK_SKINS[0];
         drawShark(s.x, s.y, s.size, s.dir, ssk);
-        if (dist < ps + s.size * 0.5) {
+        
+        // Check collision with clone fish (no damage to player)
+        if (cloneFish && dist < cloneFish.life && Math.hypot(s.x - cloneFish.x, s.y - cloneFish.y) < s.size + 20) {
+            // Shark hit clone but doesn't damage it or player
+            continue;
+        }
+        
+        // Check collision with player
+        const playerDist = Math.hypot(player.x - s.x, player.y - s.y);
+        if (playerDist < ps + s.size * 0.5) {
             if (player.inflated) {
                 sharks.splice(i, 1);
                 const scoreGain = Math.floor(2 * getScoreMultiplier());
@@ -5442,6 +5465,23 @@ function gameLoop() {
     }
 
     // ===== BOSS =====
+    // Update boss timer bar
+    const bossTimerContainer = document.getElementById("boss-timer-container");
+    const bossTimerBar = document.getElementById("boss-timer-bar");
+    if (bossTimerContainer && bossTimerBar && !boss) {
+        const scoreInLevel = score - (level - 1) * 15;
+        const nextBossScore = 15;
+        if (scoreInLevel < nextBossScore && score > 0) {
+            const progressToBoss = scoreInLevel / nextBossScore;
+            bossTimerContainer.style.display = "block";
+            bossTimerBar.style.width = (progressToBoss * 100) + "%";
+        } else {
+            bossTimerContainer.style.display = "none";
+        }
+    } else if (bossTimerContainer && boss) {
+        bossTimerContainer.style.display = "none";
+    }
+    
     if (score > 0 && score % 15 === 0 && !boss && score > (level-1)*15) {
         let maxHp = getMaxBossHp();
         boss = { x:canvas.width/2, y:-80, size:60+level*10, hp:maxHp, maxHp, speed:1+level*0.35, dir:1 };
