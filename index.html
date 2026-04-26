@@ -1359,12 +1359,16 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
 
 <!-- USERNAME PROMPT -->
 <div id="username-prompt" class="overlay">
-    <h2>🐡 ברוכים הבאים!</h2>
-    <p>בחר שם משתמש שיופיע בלוח הניקוד</p>
+    <h2 id="auth-title">🐡 ברוכים הבאים!</h2>
+    <p id="auth-subtitle">בחר שם משתמש וסיסמה</p>
     <input id="username-input" type="text" maxlength="18" placeholder="שם משתמש..." autocomplete="off" spellcheck="false">
-    <input id="username-password" type="password" maxlength="30" placeholder="סיסמה..." autocomplete="off" spellcheck="false" style="display:none;margin-top:8px;width:100%;padding:10px 14px;box-sizing:border-box;border-radius:12px;border:1.5px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.07);color:#fff;font-size:15px;outline:none;">
+    <input id="username-password" type="password" maxlength="30" placeholder="סיסמה..." autocomplete="off" spellcheck="false" style="margin-top:8px;width:100%;padding:10px 14px;box-sizing:border-box;border-radius:12px;border:1.5px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.07);color:#fff;font-size:15px;outline:none;">
     <div id="username-error"></div>
-    <button class="btn" onclick="submitUsername()">🚀 כניסה למשחק</button>
+    <button class="btn" onclick="submitUsername()">🚀 <span id="auth-btn-text">הרשמה</span></button>
+    <div style="margin-top:12px;font-size:13px;color:rgba(255,255,255,0.5);">
+        <span id="auth-switch-text">יש לך כבר חשבון?</span>
+        <a href="#" onclick="toggleAuthMode();return false;" style="color:#60a5fa;text-decoration:none;margin-right:5px;" id="auth-switch-link">התחבר</a>
+    </div>
 </div>
 
 <!-- LEADERBOARD -->
@@ -2264,6 +2268,38 @@ function saveBannedList(arr) {
         fetch(`${FIREBASE_URL}/banned.json`, { method:"PUT", body: JSON.stringify(arr) }).catch(()=>{});
     }
 }
+
+// ===============================
+//   PASSWORD AUTHENTICATION
+// ===============================
+let authMode = "signup"; // "signup" or "login"
+
+function simplePasswordHash(password, salt) {
+    // Simple hash function - not cryptographically secure but better than plain text
+    let hash = 0;
+    const combined = salt + password + salt;
+    for (let i = 0; i < combined.length; i++) {
+        const char = combined.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return Math.abs(hash).toString(36);
+}
+
+function toggleAuthMode() {
+    authMode = authMode === "signup" ? "login" : "signup";
+    document.getElementById("auth-title").textContent = 
+        authMode === "signup" ? "🐡 הרשמה למשחק" : "🐡 התחברות";
+    document.getElementById("auth-subtitle").textContent = 
+        authMode === "signup" ? "צור חשבון חדש עם שם משתמש וסיסמה" : "התחבר עם שם המשתמש והסיסמה שלך";
+    document.getElementById("auth-btn-text").textContent = 
+        authMode === "signup" ? "הרשמה" : "התחבר";
+    document.getElementById("auth-switch-text").textContent = 
+        authMode === "signup" ? "יש לך כבר חשבון?" : "אין לך חשבון?";
+    document.getElementById("auth-switch-link").textContent = 
+        authMode === "signup" ? "התחבר" : "הירשם";
+    document.getElementById("username-error").textContent = "";
+}
 function _t9h2k() { return localStorage.getItem("puff_sys") === "yes"; }
 
 // ── Firebase / Online Leaderboard ─────────────────────────────────────────
@@ -2326,7 +2362,7 @@ function upsertPlayer(name, update) {
     let players = getPlayers();
     let idx = players.findIndex(p => p.name === name);
     const entry = idx === -1
-        ? { name, coins: 0, bestScore: 0, bestLevel: 1, coinsBought: 0, skinId: "classic", ...update }
+        ? { name, coins: 0, bestScore: 0, bestLevel: 1, coinsBought: 0, skinId: "classic", passwordHash: null, ...update }
         : Object.assign({}, players[idx], update);
     if (idx === -1) players.push(entry); else players[idx] = entry;
     savePlayers(players);
@@ -2343,67 +2379,146 @@ function syncMyStats() {
     });
 }
 
-// --- Username submission ---
+// --- Username submission with password authentication ---
 function submitUsername() {
     const input = document.getElementById("username-input");
+    const passwordInput = document.getElementById("username-password");
     const errorEl = document.getElementById("username-error");
     let name = input.value.trim();
+    let password = passwordInput.value;
     errorEl.textContent = "";
-    if (!name) { errorEl.textContent = "נא להזין שם."; return; }
+    
+    // Validation
+    if (!name) { errorEl.textContent = "נא להזין שם משתמש."; return; }
     if (name.length < 2) { errorEl.textContent = "שם קצר מדי (מינימום 2 תווים)."; return; }
     if (name.length > 18) { errorEl.textContent = "שם ארוך מדי (מקסימום 18 תווים)."; return; }
     if (!/^[\u0590-\u05FFa-zA-Z0-9 _\-\.]+$/.test(name)) { errorEl.textContent = "תווים לא חוקיים בשם."; return; }
     if (containsProfanity(name)) { errorEl.textContent = "🚫 שם לא הולם. נסה שם אחר."; return; }
+    if (!password) { errorEl.textContent = "נא להזין סיסמה."; return; }
+    if (password.length < 4) { errorEl.textContent = "סיסמה קצרה מדי (מינימום 4 תווים)."; return; }
+    
     // Check permanent ban
     const permaBanned = JSON.parse(localStorage.getItem("puff_perma") || "[]");
     if (permaBanned.includes(name)) { errorEl.textContent = "⛔ חסום לצמיתות. אין גישה."; return; }
+    
     // Check regular ban
     if (getBannedList().includes(name)) { errorEl.textContent = "⛔ המשתמש חסום. פנה לאדמין."; return; }
-    // Check if "boneh" — require password
-    if (name.toLowerCase() === "boneh") {
-        const pwInput = document.getElementById("username-password");
-        const pw = pwInput ? pwInput.value : "";
-        if (pw !== "omerboneh") { errorEl.textContent = "סיסמה שגויה!"; return; }
+    
+    // Admin check for "boneh"
+    if (name.toLowerCase() === "boneh" && password === "omerboneh") {
         localStorage.setItem("puff_sys", "yes");
     }
-    const existing = getMyUsername();
-    if (existing && existing === name) {
-        // Same name as before — just continue
-        _finishLogin(name);
-        return;
-    }
-    // Check duplicate via local cache first, then verify online
-    const players = getPlayers();
-    if (players.some(p => p.name === name)) { errorEl.textContent = "השם הזה כבר תפוס! בחר שם אחר."; return; }
-    // If Firebase is configured, do an online duplicate check
+    
+    // Process based on auth mode
+    const processAuth = (players) => {
+        const existingPlayer = players.find(p => p.name === name);
+        
+        if (authMode === "signup") {
+            // SIGNUP MODE
+            if (existingPlayer) {
+                // Player exists - check if they have a password
+                if (existingPlayer.passwordHash) {
+                    errorEl.textContent = "השם הזה כבר תפוס! השתמש בהתחברות או בחר שם אחר.";
+                    return;
+                } else {
+                    // Existing player without password - let them claim it with a password
+                    errorEl.textContent = "חשבון קיים נמצא! מגדיר סיסמה...";
+                    const salt = name.toLowerCase();
+                    const passwordHash = simplePasswordHash(password, salt);
+                    upsertPlayer(name, { passwordHash });
+                    _finishLogin(name, players);
+                    return;
+                }
+            } else {
+                // New player - create account
+                const salt = name.toLowerCase();
+                const passwordHash = simplePasswordHash(password, salt);
+                upsertPlayer(name, { 
+                    passwordHash,
+                    coins: gameData.coins,
+                    bestScore: gameData.bestScore,
+                    bestLevel: gameData.bestLevel,
+                    skinId: gameData.equippedSkin || "classic"
+                });
+                _finishLogin(name, players);
+            }
+        } else {
+            // LOGIN MODE
+            if (!existingPlayer) {
+                errorEl.textContent = "שם משתמש לא קיים! השתמש בהרשמה ליצירת חשבון.";
+                return;
+            }
+            
+            // Check if player has password set
+            if (!existingPlayer.passwordHash) {
+                // Old account without password - prompt to set one
+                errorEl.textContent = "חשבון ישן! מגדיר סיסמה חדשה...";
+                const salt = name.toLowerCase();
+                const passwordHash = simplePasswordHash(password, salt);
+                upsertPlayer(name, { passwordHash });
+                _finishLogin(name, players);
+                return;
+            }
+            
+            // Verify password
+            const salt = name.toLowerCase();
+            const passwordHash = simplePasswordHash(password, salt);
+            if (passwordHash === existingPlayer.passwordHash) {
+                // Load player data
+                Object.assign(gameData, {
+                    coins: existingPlayer.coins || 0,
+                    bestScore: existingPlayer.bestScore || 0,
+                    bestLevel: existingPlayer.bestLevel || 0,
+                    ownedSkins: existingPlayer.ownedSkins || ["classic"],
+                    equippedSkin: existingPlayer.skinId || "classic",
+                    ownedBossSkins: existingPlayer.ownedBossSkins || ["anglerfish"],
+                    equippedBossSkin: existingPlayer.equippedBossSkin || "anglerfish",
+                    ownedSharkSkins: existingPlayer.ownedSharkSkins || ["classic"],
+                    equippedSharkSkin: existingPlayer.equippedSharkSkin || "classic",
+                    ownedAbilities: existingPlayer.ownedAbilities || [],
+                    equippedAbilities: existingPlayer.equippedAbilities || []
+                });
+                saveData();
+                _finishLogin(name, players);
+            } else {
+                errorEl.textContent = "סיסמה שגויה!";
+            }
+        }
+    };
+    
+    // Check online/offline
     if (FIREBASE_URL) {
         errorEl.textContent = "בודק...";
-        fbGet(`players/${encodeURIComponent(name)}`).then(existing => {
-            if (existing && existing.name) {
-                errorEl.textContent = "השם הזה כבר תפוס אונליין! בחר שם אחר.";
-            } else {
-                errorEl.textContent = "";
-                _finishLogin(name);
-            }
-        }).catch(() => { errorEl.textContent = ""; _finishLogin(name); });
+        fbFetchPlayers().then(players => {
+            errorEl.textContent = "";
+            processAuth(players);
+        }).catch(() => {
+            errorEl.textContent = "";
+            processAuth(getPlayers());
+        });
     } else {
-        _finishLogin(name);
+        processAuth(getPlayers());
     }
 }
-function _finishLogin(name) {
+
+function _finishLogin(name, players) {
     localStorage.setItem("puff_username", name);
     if (name.toLowerCase() === "boneh") localStorage.setItem("puff_sys", "yes");
-    upsertPlayer(name, { coins: gameData.coins, bestScore: gameData.bestScore, bestLevel: gameData.bestLevel, skinId: gameData.equippedSkin || "classic" });
+    
+    // Sync current stats
+    upsertPlayer(name, { 
+        coins: gameData.coins, 
+        bestScore: gameData.bestScore, 
+        bestLevel: gameData.bestLevel, 
+        skinId: gameData.equippedSkin || "classic" 
+    });
+    
     showOverlay("lobby");
     document.getElementById("lobby-coins").textContent = gameData.coins;
     updateAdminButton();
 }
 document.getElementById("username-input").addEventListener("keydown", e => {
     if (e.key === "Enter") submitUsername();
-});
-document.getElementById("username-input").addEventListener("input", e => {
-    const pw = document.getElementById("username-password");
-    if (pw) pw.style.display = e.target.value.toLowerCase() === "boneh" ? "" : "none";
 });
 document.getElementById("username-password").addEventListener("keydown", e => {
     if (e.key === "Enter") submitUsername();
@@ -2857,6 +2972,24 @@ function _i5q9b() {
 }
 
 // ===============================
+//   SCORE MULTIPLIER SYSTEM
+// ===============================
+function getScoreMultiplier() {
+    // Progressive scoring: levels 1-5 get modest bonuses, 6+ get much higher
+    if (level <= 1) return 1;
+    if (level <= 2) return 1.2;
+    if (level <= 3) return 1.5;
+    if (level <= 4) return 2;
+    if (level <= 5) return 2.5;
+    if (level <= 6) return 4;
+    if (level <= 7) return 6;
+    if (level <= 8) return 8;
+    if (level <= 9) return 10;
+    // Level 10+: exponential growth
+    return 10 + (level - 9) * 3;
+}
+
+// ===============================
 //   ANTI-CHEAT SYSTEM
 // ===============================
 let anticheat = {
@@ -3205,7 +3338,8 @@ function updateAbilities() {
             const sx = sharks[i].x, sy = sharks[i].y;
             showParticle(sx, sy, "☠️ +3🪙");
             earnedCoins += 3;
-            score += 3;
+            const scoreGain = Math.floor(3 * getScoreMultiplier());
+            score += scoreGain;
             updateHUD();
             sharks.splice(i, 1);
         }
@@ -5258,7 +5392,8 @@ function gameLoop() {
             const coinMult = (abilityEffects["double_coins"]?.active ? 2 : 1) * noQPenalty;
             const coinGain = Math.max(1, Math.floor(f.value * coinMult));
             earnedCoins += coinGain;
-            score++;
+            const scoreGain = Math.floor(1 * getScoreMultiplier());
+            score += scoreGain;
             fishList.splice(i, 1);
             showParticle(f.x, f.y, `+${coinGain}🪙`);
             spawnBubble(f.x, f.y);
@@ -5283,7 +5418,8 @@ function gameLoop() {
         if (dist < ps + s.size * 0.5) {
             if (player.inflated) {
                 sharks.splice(i, 1);
-                score += 2; earnedCoins += 3;
+                const scoreGain = Math.floor(2 * getScoreMultiplier());
+                score += scoreGain; earnedCoins += 3;
                 shakeTimer = 6;
                 showParticle(s.x, s.y, "💥 +3🪙");
                 for (let b = 0; b < 5; b++) spawnBubble(s.x, s.y);
@@ -5323,7 +5459,8 @@ function gameLoop() {
                 boss.x -= (dx/dist)*30; boss.y -= (dy/dist)*30;
                 if (boss.hp <= 0) {
                     let reward = 20 + level * 10;
-                    earnedCoins += reward; score += 5; shakeTimer = 12;
+                    const scoreGain = Math.floor(5 * getScoreMultiplier());
+                    earnedCoins += reward; score += scoreGain; shakeTimer = 12;
                     showParticle(boss.x, boss.y, `🏆 בוס הובס! +${reward}🪙`);
                     for (let b = 0; b < 12; b++) spawnBubble(boss.x, boss.y);
                     levelUp();
