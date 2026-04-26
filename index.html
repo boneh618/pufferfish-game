@@ -5339,24 +5339,16 @@ function quitToLobby() {
 //         QUIZ SYSTEM
 // ===============================
 const QUIZ_QUESTIONS = [
-    { q: "🐡 מה שם הדג שמתנפח כשהוא בסכנה?", opts: ["כריש", "דג הבלון", "דולפין", "סרטן"], correct: 1 },
-    { q: "🐡 מאיפה לוקח דג הבלון את הנפיחות שלו?", opts: ["הוא נושף אוויר", "הוא בולע מים או אוויר", "שרירים", "גידול בבטן"], correct: 1 },
-    { q: "🐡 מה הגנה הראשית של דג הבלון?", opts: ["שיניים חדות", "הרעל שבגופו", "מהירות שחייה", "קשקשים קשים"], correct: 1 },
-    { q: "🐡 מה שם הרעל המצוי בדג הבלון?", opts: ["ונום", "טטרודוטוקסין", "פויזון", "נוירוטוקסין"], correct: 1 },
-    { q: "🐡 האם דגי בלון יכולים להרוג בני אדם?", opts: ["לא, הם לא רעילים", "כן, הרעל שלהם מסוכן מאוד", "רק ביבשה", "רק ילדים"], correct: 1 },
-    { q: "🐡 איך שוחה דג הבלון בדרך כלל?", opts: ["מהר מאוד", "לאחור", "לאט יחסית", "בסיבובים"], correct: 2 },
-    { q: "🐡 בגוף איזה אוקיינוס נפוץ דג הבלון?", opts: ["אוקיינוס ארקטי", "אוקיינוס האטלנטי", "הים התיכון בלבד", "האוקיינוס השקט וההודי"], correct: 3 },
-    { q: "🐡 כמה גדול יכול להגיע דג בלון ממוצע?", opts: ["30 ס\"מ", "1 מטר", "5 מטר", "5 ס\"מ"], correct: 0 },
-    { q: "🐡 מה אוכלים דגי בלון?", opts: ["רק עשבים", "רק דגים גדולים", "צדפות, חסרי חוליות ואצות", "פלנקטון בלבד"], correct: 2 },
-    { q: "🐡 כמה פי חזק רעל דג הבלון מסייניד?", opts: ["פי 2", "פי 1,200", "אותו חוזק", "חלש יותר"], correct: 1 },
-    { q: "🐡 האם ניתן לאכול דג בלון?", opts: ["לא, הוא תמיד רעיל", "כן, במסעדות יפניות מיוחדות", "כן, כמו כל דג", "רק חי"], correct: 1 },
-    { q: "🐡 מה שם המאכל היפני מדג בלון?", opts: ["סושי", "פוגו", "סאשימי", "טמפורה"], correct: 1 },
-    { q: "🐡 איזה איבר חסר לדג הבלון לעומת דגים אחרים?", opts: ["עיניים", "סנפירים", "כישורי קשקשים וקיבה", "לב"], correct: 2 },
-    { q: "🐡 מה קורה לדג הבלון כשהוא מתנפח?", opts: ["הוא מת", "הוא נהיה כדורי וקשה לבליעה", "הוא מזריק רעל", "הוא בורח מהר"], correct: 1 },
-    { q: "🐡 כמה זמן יכול לוקח לדג בלון להתנפח?", opts: ["שעה", "יום", "כמה שניות", "חודש"], correct: 2 },
-    { q: "🐡 איפה נמצא רוב הרעל בגוף דג הבלון?", opts: ["בשרירים", "בכבד, בכליות ובעור", "בסנפירים", "בדם בלבד"], correct: 1 },
-    { q: "🐡 כיצד מגן דג הבלון על ביצי גם כשהוא לא נמצא?", opts: ["בונה קן", "מסתיר בצוק", "הביצים עצמן רעילות", "שומר עליהן"], correct: 2 },
-    { q: "🐡 לאיזה סדרת דגים שייך דג הבלון?", opts: ["כרישים", "Tetraodontiformes", "Perciformes", "דגי חרב"], correct: 1 },
+    { q: "🐡 באיזה טמפרטורה דג הבלון חי?", opts: ["23-28 מעלות צלזיוס", "30-34 מעלות צלזיוס", "20-23", "13-20"], correct: 0 },
+    { q: "🐡 כשדג הבלון מתנפח זה בגלל שהוא רוצה לצוד דגים אחרים", opts: ["נכון", "לא נכון"], correct: 1 },
+    { q: "🐡 הגוף של דג הבלון גמיש ועגול", opts: ["נכון", "לא נכון"], correct: 0 },
+    { q: "🐡 בגופו של דג הבלון יש רעל", opts: ["נכון", "לא נכון"], correct: 0 },
+    { q: "🐡 אצל דגי הבלון מי מטיל את הביצים?", opts: ["זכר", "נקבה"], correct: 1 },
+    { q: "🐡 באיזה אקלים דג הבלון חי?", opts: ["טרופי וסובטרופי", "רק טרופי", "רק סובטרופי", "שמשי"], correct: 0 },
+    { q: "🐡 באיזה צמחייה דג הבלון חי?", opts: ["צמחייה שמספקת מסתור ומזון", "שוניות אלמוגים", "באלמוגי Anthozoa", "דג הבלון לא צריך צמחייה"], correct: 0 },
+    { q: "🐡 באיזה סוג מים דג הבלון חי?", opts: ["רדודים", "עמוקים", "מים חוליים", "מים קרים"], correct: 0 },
+    { q: "🐡 באיזה סביבה דג הבלון חי?", opts: ["מוגנת ושקטה", "מלאה בדגים", "סביבה עם הרבה דגי אנשובי", "סביבה עם הרבה אלמוגים"], correct: 0 },
+    { q: "🐡 מה דג הבלון אוכל?", opts: ["צדפות", "דגים אחרים", "צמחייה ימית", "דגי אנשובי"], correct: 0 },
 ];
 
 let quizCallback = null;
@@ -5370,23 +5362,30 @@ function showQuiz(onCorrect, onWrong) {
     container.innerHTML = "";
     document.getElementById("quiz-feedback").textContent = "";
 
-    q.opts.forEach((opt, idx) => {
+    // Shuffle answer options
+    const shuffled = q.opts.map((opt, idx) => ({ text: opt, originalIdx: idx }));
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+
+    shuffled.forEach((item, idx) => {
         const btn = document.createElement("button");
         btn.className = "quiz-opt";
-        btn.textContent = `${idx + 1}. ${opt}`;
-        btn.onclick = () => handleQuizAnswer(idx, q.correct, container);
+        btn.textContent = `${idx + 1}. ${item.text}`;
+        btn.onclick = () => handleQuizAnswer(item.originalIdx, q.correct, container, shuffled);
         container.appendChild(btn);
     });
 
     document.getElementById("quiz-overlay").classList.add("show");
 }
 
-function handleQuizAnswer(chosen, correct, container) {
+function handleQuizAnswer(chosen, correct, container, shuffled) {
     const btns = container.querySelectorAll(".quiz-opt");
     btns.forEach((b, i) => {
         b.classList.add("disabled");
-        if (i === correct) b.classList.add("correct");
-        else if (i === chosen) b.classList.add("wrong");
+        if (shuffled[i].originalIdx === correct) b.classList.add("correct");
+        else if (shuffled[i].originalIdx === chosen) b.classList.add("wrong");
     });
 
     const feedback = document.getElementById("quiz-feedback");
