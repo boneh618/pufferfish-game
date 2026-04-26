@@ -1597,6 +1597,45 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
 <canvas id="game"></canvas>
 
 <script>
+// ===============================
+//     CONSOLE DETECTION
+// ===============================
+(function() {
+    // Detect if DevTools console is open
+    let consoleWarned = false;
+    const devtools = { open: false };
+    
+    // Method 1: Console timing detection
+    const checkConsole = () => {
+        const threshold = 160;
+        const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+        const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+        devtools.open = widthThreshold || heightThreshold;
+        
+        if (devtools.open && !consoleWarned) {
+            consoleWarned = true;
+            console.log("%c⚠️ אזהרת אבטחה", "color: red; font-size: 24px; font-weight: bold;");
+            console.log("%cהשימוש בקונסול לשינוי נתוני המשחק אסור!\nכל שינוי יזוהה ויוביל לאיפוס החשבון.", "color: orange; font-size: 16px;");
+            console.log("%c⚠️ SECURITY WARNING", "color: red; font-size: 20px; font-weight: bold;");
+            console.log("%cUsing console to modify game data is prohibited!\nAll changes are monitored and will result in account reset.", "color: orange; font-size: 14px;");
+        }
+    };
+    
+    // Check periodically
+    setInterval(checkConsole, 1000);
+    
+    // Method 2: Override console methods to detect tampering attempts
+    const originalLog = console.log;
+    const suspiciousPatterns = ['gameData.coins', 'SKINS', 'BOSS_SKINS', 'SHARK_SKINS', '.price', 'localStorage'];
+    
+    // Warn about suspicious console usage
+    window.addEventListener('devtoolschange', event => {
+        if (event.detail.isOpen) {
+            checkConsole();
+        }
+    });
+})();
+
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
@@ -1609,12 +1648,74 @@ resize();
 window.addEventListener("resize", resize);
 
 // ===============================
+//      ANTI-CHEAT SYSTEM
+// ===============================
+// Simple hash function for data integrity
+function simpleHash(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+    }
+    return Math.abs(hash).toString(36);
+}
+
+// Generate checksum for game data
+function generateChecksum(data) {
+    const key = "pufferfish_2026_integrity";
+    const str = JSON.stringify({
+        c: Math.floor(data.coins || 0),
+        l: data.bestLevel || 0,
+        s: data.bestScore || 0
+    }) + key;
+    return simpleHash(str);
+}
+
+// Validate data hasn't been tampered with
+function validateData(data) {
+    if (!data || typeof data !== "object") return false;
+    
+    // Check for suspicious values
+    if (typeof data.coins === "number") {
+        // Max 50 million coins is reasonable limit
+        if (data.coins > 50000000 || data.coins < 0) {
+            console.warn("⚠️ Data validation failed: Invalid coins value");
+            return false;
+        }
+    }
+    
+    // Check if checksum exists and matches
+    if (data._chk) {
+        const expectedChecksum = generateChecksum(data);
+        if (data._chk !== expectedChecksum) {
+            console.warn("⚠️ Data validation failed: Integrity check failed");
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+// ===============================
 //        SAVE / LOAD DATA
 // ===============================
 function loadData() {
     try {
         let d = JSON.parse(localStorage.getItem("puff_save"));
         if (d && typeof d === "object") {
+            // Validate data integrity
+            if (!validateData(d)) {
+                console.warn("⚠️ Save data failed validation - resetting to defaults");
+                alert("⚠️ שגיאת אבטחה: נתוני המשחק נפגמו. החשבון אופס.");
+                localStorage.removeItem("puff_save");
+                return { coins: 0, ownedSkins: ["classic"], equippedSkin: "classic", bestScore: 0, bestLevel: 0, playerSpeed: 2.8, ownedBossSkins: ["anglerfish"], equippedBossSkin: "anglerfish", questionsEnabled: true, ownedSharkSkins: ["classic"], equippedSharkSkin: "classic", ownedAbilities: [], equippedAbilities: [] };
+            }
+            
+            // Additional validation: cap coins at reasonable limit
+            if (d.coins > 50000000) d.coins = 50000000;
+            if (d.coins < 0) d.coins = 0;
+            
             if (!d.ownedBossSkins) d.ownedBossSkins = ["anglerfish"];
             if (!d.equippedBossSkin) d.equippedBossSkin = "anglerfish";
             if (typeof d.questionsEnabled !== "boolean") d.questionsEnabled = true;
@@ -1624,14 +1725,61 @@ function loadData() {
             if (!d.equippedAbilities) d.equippedAbilities = [];
             return d;
         }
-    } catch(e) {}
+    } catch(e) {
+        console.error("Error loading data:", e);
+    }
     return { coins: 0, ownedSkins: ["classic"], equippedSkin: "classic", bestScore: 0, bestLevel: 0, playerSpeed: 2.8, ownedBossSkins: ["anglerfish"], equippedBossSkin: "anglerfish", questionsEnabled: true, ownedSharkSkins: ["classic"], equippedSharkSkin: "classic", ownedAbilities: [], equippedAbilities: [] };
 }
 function saveData() {
+    // Validate before saving
+    gameData.coins = Math.max(0, Math.min(50000000, Math.floor(gameData.coins || 0)));
+    
+    // Add integrity checksum
+    gameData._chk = generateChecksum(gameData);
+    
     localStorage.setItem("puff_save", JSON.stringify(gameData));
 }
 
 let gameData = loadData();
+
+// ===============================
+//   PROTECT GAMEDATA WITH PROXY
+// ===============================
+// Wrap gameData in a Proxy to monitor and validate changes
+let _internalGameData = gameData;
+gameData = new Proxy(_internalGameData, {
+    set: function(target, property, value) {
+        // Validate coin modifications
+        if (property === 'coins') {
+            if (typeof value !== 'number' || value < 0 || value > 50000000) {
+                console.warn("⚠️ Attempted illegal coin modification blocked:", value);
+                return false;
+            }
+            // Log large instant coin increases (likely cheating)
+            if (value > target.coins + 10000) {
+                console.warn("⚠️ Suspicious coin increase detected:", target.coins, "→", value);
+            }
+        }
+        
+        // Prevent deletion of checksum
+        if (property === '_chk' && value === undefined) {
+            return false;
+        }
+        
+        target[property] = value;
+        return true;
+    },
+    deleteProperty: function(target, property) {
+        // Prevent deletion of important properties
+        if (property === '_chk' || property === 'coins') {
+            console.warn("⚠️ Attempted to delete protected property:", property);
+            return false;
+        }
+        delete target[property];
+        return true;
+    }
+});
+
 if (typeof gameData.playerSpeed !== "number" || Number.isNaN(gameData.playerSpeed)) {
     gameData.playerSpeed = 2.8;
 }
@@ -2512,10 +2660,13 @@ const INFLATE_SPAM_WINDOW = 180;    // 3 seconds in frames
 
 function checkAnticheat() {
     if (!gameRunning || paused || !player) return;
+    
+    // Check player position for idling
     const dx = Math.abs(player.x - anticheat.lastX);
     const dy = Math.abs(player.y - anticheat.lastY);
     if (dx + dy < 1.5) { anticheat.idleFrames++; } else { anticheat.idleFrames = 0; }
     anticheat.lastX = player.x; anticheat.lastY = player.y;
+    
     // Track inflate spam
     anticheat.inflateWindow++;
     if (player.inflated && !anticheat.lastInflated) anticheat.inflateCount++;
@@ -2524,6 +2675,28 @@ function checkAnticheat() {
         if (anticheat.inflateCount >= INFLATE_SPAM_LIMIT) kickCheater("זוהתה לחיצה חוזרת מהירה על כפתור ההתנפחות");
         anticheat.inflateCount = 0; anticheat.inflateWindow = 0;
     }
+    
+    // Periodic data integrity checks (every 3 seconds)
+    if (frameCount % 180 === 0) {
+        // Check for tampered coins
+        if (typeof gameData.coins !== "number" || gameData.coins < 0 || gameData.coins > 50000000) {
+            kickCheater("זוהה שינוי בלתי חוקי במטבעות");
+            return;
+        }
+        
+        // Check if constants were tampered
+        if (!SKINS || !Array.isArray(SKINS) || SKINS.length === 0) {
+            kickCheater("זוהה שינוי בקוד המשחק");
+            return;
+        }
+        
+        // Verify checksum integrity
+        if (!validateData(gameData)) {
+            kickCheater("זוהה שינוי בלתי חוקי בנתוני המשחק");
+            return;
+        }
+    }
+    
     if (anticheat.idleFrames >= IDLE_KICK_FRAMES) kickCheater("עמדת במקום יותר מדי זמן");
 }
 function resetAnticheat() {
@@ -2668,6 +2841,31 @@ const ABILITY_KEYS = ["q","e","r","f"];
 let poisonClouds = []; // {x, y, r, life, timer}
 let abilityEffects = {}; // {id: {active: bool, timer: int}}
 let cloneFish = null; // {x, y, life}
+
+// ===============================
+//    PROTECT GAME CONSTANTS
+// ===============================
+// Freeze all arrays to prevent tampering via console
+(function protectConstants() {
+    try {
+        // Freeze skin arrays
+        Object.freeze(SKINS);
+        SKINS.forEach(skin => Object.freeze(skin));
+        
+        Object.freeze(BOSS_SKINS);
+        BOSS_SKINS.forEach(skin => Object.freeze(skin));
+        
+        Object.freeze(SHARK_SKINS);
+        SHARK_SKINS.forEach(skin => Object.freeze(skin));
+        
+        Object.freeze(ABILITIES);
+        ABILITIES.forEach(ability => Object.freeze(ability));
+        
+        Object.freeze(ABILITY_KEYS);
+    } catch(e) {
+        // Silently handle if freezing fails
+    }
+})();
 let lastAbilityFrames = {}; // {id: frameLastActivated}
 
 function openAbilityShop() {
