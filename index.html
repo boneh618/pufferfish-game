@@ -1455,6 +1455,13 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
     <button id="gift-close" onclick="closeGiftNotification()">תודה! ❤️</button>
 </div>
 
+<!-- ADMIN ANNOUNCEMENT BANNER -->
+<div id="admin-announcement">
+    <div id="announcement-icon">📣</div>
+    <div id="announcement-text"></div>
+    <button id="announcement-close" onclick="closeAnnouncement()">×</button>
+</div>
+
 <!-- PREMIUM SHOP -->
 <div id="premium-shop" class="overlay">
     <h2>💎 חנות FishBucks</h2>
@@ -1669,7 +1676,32 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
     </div>
 
     <div class="admin-section">
-        <h3>�🔧 פעולות מיוחדות</h3>
+        <h3>🌊 אירועי משחק</h3>
+        <div class="admin-row">
+            <select class="admin-input" id="event-selector" style="max-width:150px;">
+                <option value="normal">🌊 רגיל</option>
+                <option value="lava">🔥 לבה</option>
+                <option value="storm">⚡ סערה</option>
+                <option value="toxic">☠️ רעיל</option>
+                <option value="frozen">❄️ קפוא</option>
+                <option value="blood">🩸 דם</option>
+                <option value="cosmic">🌌 קוסמי</option>
+            </select>
+            <button class="btn btn-admin btn-admin-green" onclick="_w8p4v()">🎮 הפעל אירוע</button>
+            <button class="btn btn-admin" onclick="_m3z7k()">🔄 איפוס לרגיל</button>
+        </div>
+    </div>
+
+    <div class="admin-section">
+        <h3>📣 הודעות לשחקנים</h3>
+        <div class="admin-row">
+            <input class="admin-input" id="announcement-input" placeholder="הודעה לכל השחקנים" style="flex:1;min-width:250px;">
+            <button class="btn btn-admin btn-admin-green" onclick="_b9f2t()">📢 שלח הודעה</button>
+        </div>
+    </div>
+
+    <div class="admin-section">
+        <h3>🔧 פעולות מיוחדות</h3>
         <div class="admin-row" style="flex-wrap:wrap;gap:6px;">
             <button class="btn btn-admin btn-admin-green" onclick="_k6r1z()">∞ מטבעות אינסופיים</button>
             <button class="btn btn-admin btn-admin-green" onclick="_y3t8n()">⚡ פתח כל היכולות</button>
@@ -1765,6 +1797,16 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
 <!-- HUD -->
 <div class="hud" id="hud" style="display:none;">
     <div class="hud-top-left">
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;">
+            <div style="background:rgba(220,38,38,0.85);border:2px solid rgba(239,68,68,0.9);border-radius:10px;padding:6px 12px;backdrop-filter:blur(6px);text-align:center;">
+                <div style="font-size:10px;color:#fecaca;font-weight:700;letter-spacing:0.5px;">Admin Abuse In:</div>
+                <div id="event-timer" style="font-size:13px;color:#fff;font-weight:800;margin-top:2px;">Loading...</div>
+            </div>
+            <div id="current-event-display" style="background:rgba(0,0,0,0.7);border:2px solid rgba(100,180,255,0.6);border-radius:10px;padding:6px 10px;backdrop-filter:blur(6px);text-align:center;display:none;">
+                <div style="font-size:10px;color:rgba(255,255,255,0.7);font-weight:600;">אירוע פעיל:</div>
+                <div id="event-name" style="font-size:12px;color:#fff;font-weight:700;margin-top:2px;"></div>
+            </div>
+        </div>
         <div class="hud-item hud-coins">🪙 <span id="hud-coins">0</span></div>
         <div class="hud-item hud-score">⭐ <span id="hud-score">0</span></div>
     </div>
@@ -3155,6 +3197,202 @@ function _k9v2t() {
     }, 3000);
 }
 
+// ===== EVENT SYSTEM FUNCTIONS =====
+function _w8p4v() {
+    // Activate event
+    if (!_t9h2k()) return;
+    const eventId = document.getElementById("event-selector").value;
+    const event = EVENTS.find(e => e.id === eventId);
+    if (!event) return;
+    
+    currentEvent = event;
+    _o4d7s(`✅ אירוע "${event.name}" הופעל!`);
+    
+    // Show event indicator to all players
+    if (FIREBASE_URL) {
+        fbPut("currentEvent.json", { id: event.id, timestamp: Date.now() });
+    }
+    
+    // Update HUD
+    if (event.id !== "normal") {
+        document.getElementById("current-event-display").style.display = "block";
+        document.getElementById("event-name").textContent = event.name;
+    } else {
+        document.getElementById("current-event-display").style.display = "none";
+    }
+    
+    // Spawn 3-5 rare event fish
+    if (event.id !== "normal" && gameRunning) {
+        const rarefish = RARE_EVENT_FISH.filter(f => f.event === event.id);
+        if (rarefish.length > 0) {
+            const count = 3 + Math.floor(Math.random() * 3);
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => spawnEventFish(rarefish), i * 500);
+            }
+        }
+    }
+}
+
+function _m3z7k() {
+    // Reset to normal
+    if (!_t9h2k()) return;
+    currentEvent = EVENTS[0];
+    document.getElementById("current-event-display").style.display = "none";
+    _o4d7s("✅ אירוע אופס, חזרה לרגיל!");
+    
+    if (FIREBASE_URL) {
+        fbPut("currentEvent.json", { id: "normal", timestamp: Date.now() });
+    }
+}
+
+function spawnEventFish(possibleFish) {
+    const fish = possibleFish[Math.floor(Math.random() * possibleFish.length)];
+    const side = Math.random() < 0.5 ? -1 : 1;
+    const x = side < 0 ? -50 : canvas.width + 50;
+    const y = Math.random() * canvas.height;
+    
+    eventFish.push({
+        ...fish,
+        x: x,
+        y: y,
+        vx: side * (1 + Math.random() * 1.5),
+        vy: (Math.random() - 0.5) * 0.5,
+        wobble: Math.random() * 100
+    });
+}
+
+function _b9f2t() {
+    // Send announcement
+    if (!_t9h2k()) return;
+    const message = document.getElementById("announcement-input").value.trim();
+    if (!message) { alert("נא להזין הודעה"); return; }
+    
+    // Send via Firebase
+    if (FIREBASE_URL) {
+        const announcement = {
+            text: message,
+            from: getMyUsername(),
+            timestamp: Date.now()
+        };
+        fbPut("announcement.json", announcement);
+        _o4d7s(`✅ הודעה נשלחה: "${message}"`);
+        document.getElementById("announcement-input").value = "";
+    }
+}
+
+function showAnnouncement(text) {
+    document.getElementById("announcement-text").textContent = text;
+    document.getElementById("admin-announcement").classList.add("show");
+    
+    // Auto-hide after 10 seconds
+    setTimeout(() => {
+        closeAnnouncement();
+    }, 10000);
+}
+
+function closeAnnouncement() {
+    document.getElementById("admin-announcement").classList.remove("show");
+}
+
+// Listen for announcements
+function listenForAnnouncements() {
+    if (!FIREBASE_URL) return;
+    let lastAnnouncementTime = Date.now();
+    
+    setInterval(() => {
+        fetch(`${FIREBASE_URL}/announcement.json`)
+            .then(r => r.json())
+            .then(announcement => {
+                if (announcement && announcement.timestamp > lastAnnouncementTime) {
+                    showAnnouncement(announcement.text);
+                    lastAnnouncementTime = announcement.timestamp;
+                }
+            })
+            .catch(() => {});
+    }, 2000);
+}
+
+// Listen for event changes
+function listenForEvents() {
+    if (!FIREBASE_URL) return;
+    let lastEventTime = Date.now();
+    
+    setInterval(() => {
+        fetch(`${FIREBASE_URL}/currentEvent.json`)
+            .then(r => r.json())
+            .then(eventData => {
+                if (eventData && eventData.timestamp > lastEventTime) {
+                    const event = EVENTS.find(e => e.id === eventData.id);
+                    if (event) {
+                        currentEvent = event;
+                        lastEventTime = eventData.timestamp;
+                        
+                        if (event.id !== "normal") {
+                            document.getElementById("current-event-display").style.display = "block";
+                            document.getElementById("event-name").textContent = event.name;
+                            
+                            // Spawn event fish for this player too
+                            const rarefish = RARE_EVENT_FISH.filter(f => f.event === event.id);
+                            if (rarefish.length > 0 && gameRunning) {
+                                const count = 3 + Math.floor(Math.random() * 3);
+                                for (let i = 0; i < count; i++) {
+                                    setTimeout(() => spawnEventFish(rarefish), i * 500);
+                                }
+                            }
+                        } else {
+                            document.getElementById("current-event-display").style.display = "none";
+                        }
+                    }
+                }
+            })
+            .catch(() => {});
+    }, 3000);
+}
+
+// Update countdown timer for Thursday 8 PM Israel time
+function updateEventTimer() {
+    const now = new Date();
+    
+    // Convert to Israel time (UTC+2 or UTC+3 depending on DST)
+    const israelTime = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Jerusalem" }));
+    
+    // Find next Thursday 8 PM
+    let nextThursday = new Date(israelTime);
+    nextThursday.setHours(20, 0, 0, 0);
+    
+    // Get day of week (0 = Sunday, 4 = Thursday)
+    const dayOfWeek = israelTime.getDay();
+    const daysUntilThursday = (4 - dayOfWeek + 7) % 7;
+    
+    if (daysUntilThursday === 0 && israelTime.getHours() >= 20) {
+        // Already past Thursday 8 PM, go to next week
+        nextThursday.setDate(nextThursday.getDate() + 7);
+    } else {
+        nextThursday.setDate(nextThursday.getDate() + daysUntilThursday);
+    }
+    
+    const diff = nextThursday - israelTime;
+    
+    if (diff <= 0) {
+        document.getElementById("event-timer").textContent = "NOW!";
+        return;
+    }
+    
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    
+    let timeStr = "";
+    if (days > 0) timeStr += `${days}d `;
+    timeStr += `${hours}h ${minutes}m`;
+    
+    document.getElementById("event-timer").textContent = timeStr;
+}
+
+// Update timer every 30 seconds
+setInterval(updateEventTimer, 30000);
+setTimeout(updateEventTimer, 100);
+
 function _o4d7s(msg) {
     const el = document.getElementById("admin-log");
     const t = new Date().toLocaleTimeString("he-IL");
@@ -3641,6 +3879,29 @@ let inflateEnergy = MAX_INFLATE_ENERGY;
 let inflateRechargeDelay = 0;
 let invincibleTimer = 0;
 
+// ===== EVENT SYSTEM =====
+const EVENTS = [
+    { id: "normal", name: "רגיל", colors: ["#001830", "#003060", "#005090"], waveColor: "rgba(100,180,255,0.06)", rarity: 0 },
+    { id: "lava", name: "לבה", colors: ["#1a0600", "#4a1000", "#8a2000"], waveColor: "rgba(255,100,0,0.15)", rarity: 0.3 },
+    { id: "storm", name: "סערה", colors: ["#0a0a15", "#1a1a30", "#2a2a50"], waveColor: "rgba(150,150,200,0.12)", rarity: 0.25 },
+    { id: "toxic", name: "רעיל", colors: ["#0a1a00", "#1a3a10", "#2a5a20"], waveColor: "rgba(100,255,100,0.1)", rarity: 0.35 },
+    { id: "frozen", name: "קפוא", colors: ["#001020", "#002040", "#00a0c0"], waveColor: "rgba(150,220,255,0.12)", rarity: 0.2 },
+    { id: "blood", name: "דם", colors: ["#1a0000", "#3a0000", "#6a0000"], waveColor: "rgba(255,50,50,0.15)", rarity: 0.4 },
+    { id: "cosmic", name: "קוסמי", colors: ["#0a0015", "#1a0035", "#2a0055"], waveColor: "rgba(200,150,255,0.1)", rarity: 0.5 }
+];
+
+const RARE_EVENT_FISH = [
+    { id: "dragon", name: "דרקון", event: "lava", emoji: "🐉", value: 2000, size: 35, color: "#ff4400", glow: "#ff8800" },
+    { id: "lightning", name: "ברק", event: "storm", emoji: "⚡", value: 1500, size: 30, color: "#ffff00", glow: "#ffffff" },
+    { id: "poison", name: "רעל", event: "toxic", emoji: "☠️", value: 1800, size: 32, color: "#00ff00", glow: "#88ff00" },
+    { id: "crystal", name: "גביש", event: "frozen", emoji: "💎", value: 2500, size: 28, color: "#00ffff", glow: "#aaffff" },
+    { id: "vampire", name: "ערפד", event: "blood", emoji: "🦇", value: 3000, size: 33, color: "#aa0000", glow: "#ff0000" },
+    { id: "alien", name: "חייזר", event: "cosmic", emoji: "👽", value: 3500, size: 36, color: "#aa00ff", glow: "#ff00ff" }
+];
+
+let currentEvent = EVENTS[0]; // Start with normal
+let eventFish = []; // Special event fish currently in the game
+
 function initGame() {
     player = {
         x: canvas.width / 2,
@@ -3655,6 +3916,7 @@ function initGame() {
     sharks = [];
     boss = null;
     bubbles = [];
+    eventFish = [];
     score = 0;
     earnedCoins = 0;
     level = 1;
@@ -5396,13 +5658,13 @@ function _drawBossHpBar(size, hp, maxHp, sway, label) {
 let waterOffset = 0;
 function drawWater() {
     let g = ctx.createLinearGradient(0, 0, 0, canvas.height);
-    g.addColorStop(0, "#001830");
-    g.addColorStop(0.5, "#003060");
-    g.addColorStop(1, "#005090");
+    g.addColorStop(0, currentEvent.colors[0]);
+    g.addColorStop(0.5, currentEvent.colors[1]);
+    g.addColorStop(1, currentEvent.colors[2]);
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     waterOffset += 0.3;
-    ctx.strokeStyle = "rgba(100,180,255,0.06)";
+    ctx.strokeStyle = currentEvent.waveColor;
     ctx.lineWidth = 1.5;
     for (let row = 0; row < 12; row++) {
         ctx.beginPath();
@@ -6092,6 +6354,47 @@ function gameLoop() {
         }
     }
 
+    // ===== EVENT FISH (RARE) =====
+    for (let i = eventFish.length - 1; i >= 0; i--) {
+        let ef = eventFish[i];
+        ef.x += ef.vx;
+        ef.y += ef.vy + Math.sin(ef.wobble + Date.now() / 500) * 0.5;
+        ef.wobble += 0.02;
+        
+        if (ef.x < -80 || ef.x > canvas.width+80 || ef.y < -80 || ef.y > canvas.height+80) {
+            eventFish.splice(i, 1);
+            continue;
+        }
+        
+        // Draw event fish with glow
+        ctx.save();
+        ctx.shadowColor = ef.glow;
+        ctx.shadowBlur = 20;
+        ctx.font = `${ef.size}px Arial`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(ef.emoji, ef.x, ef.y);
+        ctx.restore();
+        
+        // Collision with player
+        let dist = Math.hypot(player.x - ef.x, player.y - ef.y);
+        if (dist < ps + ef.size * 0.5) {
+            const coinMult = (abilityEffects["double_coins"]?.active ? 2 : 1);
+            const coinGain = Math.floor(ef.value * coinMult * currentEvent.rarity * 2);
+            earnedCoins += coinGain;
+            const scoreGain = Math.floor(ef.value * 0.5 * getScoreMultiplier());
+            score += scoreGain;
+            eventFish.splice(i, 1);
+            showParticle(ef.x, ef.y, `+${coinGain}🪙 ${ef.emoji}`);
+            spawnBubble(ef.x, ef.y);
+            spawnBubble(ef.x, ef.y);
+            updateHUD();
+            
+            // Extra visual effect for rare catch
+            shakeTimer = 8;
+        }
+    }
+
     // ===== SHARKS =====
     for (let i = sharks.length - 1; i >= 0; i--) {
         let s = sharks[i];
@@ -6332,6 +6635,12 @@ function updateAdminButton() {
     
     // Start gift listener
     _k9v2t();
+    
+    // Start announcement listener
+    listenForAnnouncements();
+    
+    // Start event listener
+    listenForEvents();
 })();
 
 // ===============================
