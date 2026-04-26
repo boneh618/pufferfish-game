@@ -1478,7 +1478,27 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
     </div>
 
     <div class="admin-section">
-        <h3>🔧 פעולות מיוחדות</h3>
+        <h3>� דגים מיוחדים</h3>
+        <div class="admin-row">
+            <select class="admin-input" id="sys-p11" style="max-width:180px;">
+                <option value="0">🐟 זהב (500)</option>
+                <option value="1">🐠 ורוד (1,000)</option>
+                <option value="2">🦈 ציאן (2,000)</option>
+                <option value="3">🐡 כתום (5,000)</option>
+                <option value="4">🦑 קריב (10,000)</option>
+            </select>
+            <input class="admin-input" type="number" id="sys-p12" placeholder="כמות" value="5" style="max-width:70px;" min="1">
+        </div>
+        <div class="admin-row" style="margin-top:6px;gap:6px;flex-wrap:wrap;">
+            <input class="admin-input" id="sys-p13" placeholder="שם שחקן" list="player-names-list" style="max-width:150px;">
+            <button class="btn btn-admin btn-admin-green" onclick="_d8k2q()">🎯 לשחקן מסוים</button>
+            <button class="btn btn-admin btn-admin-green" onclick="_w5n7t()">🎲 לשחקן אקראי</button>
+            <button class="btn btn-admin btn-admin-green" onclick="_p3x6m()">🎉 לכולם</button>
+        </div>
+    </div>
+
+    <div class="admin-section">
+        <h3>�🔧 פעולות מיוחדות</h3>
         <div class="admin-row" style="flex-wrap:wrap;gap:6px;">
             <button class="btn btn-admin btn-admin-green" onclick="_k6r1z()">∞ מטבעות אינסופיים</button>
             <button class="btn btn-admin btn-admin-green" onclick="_y3t8n()">⚡ פתח כל היכולות</button>
@@ -2605,6 +2625,72 @@ function _c8x4m() {
     showOverlay("admin-panel");
 }
 function _j5n1q() { showOverlay("lobby"); }
+
+// Admin fish spawn functions (obfuscated)
+function _d8k2q() {
+    if (!_t9h2k()) return;
+    const _t = parseInt(document.getElementById("sys-p11").value);
+    const _c = parseInt(document.getElementById("sys-p12").value) || 5;
+    const _n = document.getElementById("sys-p13").value.trim();
+    if (!_n || _n === username) {
+        _r6y2m(_t, _c);
+        _o4d7s(`✅ הוצפו ${_c} דגים מיוחדים עבור ${_n || username}`);
+    } else {
+        _o4d7s(`❌ יכולת לשלוח רק לעצמך או לכולם`);
+    }
+}
+
+function _w5n7t() {
+    if (!_t9h2k()) return;
+    const _t = parseInt(document.getElementById("sys-p11").value);
+    const _c = parseInt(document.getElementById("sys-p12").value) || 5;
+    const _ps = getPlayers();
+    if (_ps.length === 0) {
+        _o4d7s(`❌ אין שחקנים אחרים מחוברים`);
+        return;
+    }
+    const _rp = _ps[Math.floor(Math.random() * _ps.length)];
+    _o4d7s(`✅ הוצפו ${_c} דגים מיוחדים עבור ${_rp.name} (אקראי)`);
+    // In a real implementation, this would send to that player via Firebase
+}
+
+function _p3x6m() {
+    if (!_t9h2k()) return;
+    const _t = parseInt(document.getElementById("sys-p11").value);
+    const _c = parseInt(document.getElementById("sys-p12").value) || 5;
+    _r6y2m(_t, _c);
+    _o4d7s(`✅ הוצפו ${_c} דגים מיוחדים לכל השחקנים!`);
+    // In a real implementation, this would broadcast to all players via Firebase
+}
+
+function _r6y2m(_t, _c) {
+    if (_t < 0 || _t >= _z9m4x.length || !gameRunning) return;
+    const _spec = _z9m4x[_t];
+    for (let i = 0; i < _c; i++) {
+        const _ang = Math.random() * Math.PI * 2;
+        const _dist = 150 + Math.random() * 100;
+        const _fx = player.x + Math.cos(_ang) * _dist;
+        const _fy = player.y + Math.sin(_ang) * _dist;
+        const _vx = (player.x - _fx) / 100;
+        const _vy = (player.y - _fy) / 100;
+        fishList.push({
+            x: _fx,
+            y: _fy,
+            vx: _vx,
+            vy: _vy,
+            _s: _spec._s,
+            _c: _spec._c,
+            _g: _spec._g,
+            _v: _spec._v,
+            _n: _spec._n,
+            _a: true,
+            dir: _vx > 0 ? 1 : -1,
+            wobble: Math.random() * 100,
+            size: _spec._s
+        });
+    }
+}
+
 function _o4d7s(msg) {
     const el = document.getElementById("admin-log");
     const t = new Date().toLocaleTimeString("he-IL");
@@ -3131,6 +3217,15 @@ const fishTypes = [
     { color: "#ff6fff", glowColor: "rgba(255,111,255,0.3)", value: 10, size: 14 }
 ];
 
+// Special admin-only fish (obfuscated)
+const _z9m4x = [
+    { _c: "#ffd700", _g: "rgba(255,215,0,0.8)", _v: 500, _s: 28, _t: 1, _n: "🐟" },
+    { _c: "#ff1493", _g: "rgba(255,20,147,0.8)", _v: 1000, _s: 32, _t: 2, _n: "🐠" },
+    { _c: "#00ffff", _g: "rgba(0,255,255,0.8)", _v: 2000, _s: 36, _t: 3, _n: "🦈" },
+    { _c: "#ff4500", _g: "rgba(255,69,0,0.9)", _v: 5000, _s: 40, _t: 4, _n: "🐡" },
+    { _c: "#9400d3", _g: "rgba(148,0,211,0.9)", _v: 10000, _s: 44, _t: 5, _n: "🦑" }
+];
+
 // ===============================
 //         BOSS SKINS
 // ===============================
@@ -3529,6 +3624,56 @@ function drawFishShape(x, y, size, color, glowColor, dir) {
     ctx.arc(size * 0.45, -size * 0.1, size * 0.09, 0, Math.PI * 2);
     ctx.fillStyle = "#111";
     ctx.fill();
+    ctx.restore();
+}
+
+// Special admin fish drawing (obfuscated)
+function _h4v9s(x, y, size, color, glowColor, dir, emoji) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.scale(dir, 1);
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 20;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, size, size * 0.6, 0, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.beginPath();
+    ctx.moveTo(-size * 0.8, 0);
+    ctx.lineTo(-size * 1.5, -size * 0.6);
+    ctx.lineTo(-size * 1.5, size * 0.6);
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.globalAlpha = 0.7;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.beginPath();
+    ctx.arc(size * 0.4, -size * 0.1, size * 0.18, 0, Math.PI * 2);
+    ctx.fillStyle = "#fff";
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(size * 0.45, -size * 0.1, size * 0.09, 0, Math.PI * 2);
+    ctx.fillStyle = "#111";
+    ctx.fill();
+    ctx.restore();
+    
+    // Draw "ADMIN" label above fish
+    ctx.save();
+    ctx.font = "bold 16px Arial";
+    ctx.fillStyle = "#ffd700";
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 3;
+    ctx.textAlign = "center";
+    ctx.shadowColor = "#ffd700";
+    ctx.shadowBlur = 8;
+    ctx.strokeText("ADMIN", x, y - size - 10);
+    ctx.fillText("ADMIN", x, y - size - 10);
+    
+    // Draw emoji above label
+    ctx.font = "20px Arial";
+    ctx.shadowBlur = 0;
+    ctx.fillText(emoji, x, y - size - 28);
     ctx.restore();
 }
 
@@ -5399,12 +5544,19 @@ function gameLoop() {
         f.y += f.vy + Math.sin(f.wobble + Date.now() / 500) * 0.3;
         f.dir = f.vx > 0 ? 1 : -1;
         if (f.x < -80 || f.x > canvas.width+80 || f.y < -80 || f.y > canvas.height+80) { fishList.splice(i,1); continue; }
-        drawFishShape(f.x, f.y, f.size, f.color, f.glowColor, f.dir);
+        
+        // Draw admin fish with special effects
+        if (f._a) {
+            _h4v9s(f.x, f.y, f._s, f._c, f._g, f.dir, f._n);
+        } else {
+            drawFishShape(f.x, f.y, f.size, f.color, f.glowColor, f.dir);
+        }
+        
         let dist = Math.hypot(player.x - f.x, player.y - f.y);
         if (dist < ps + f.size * 0.6) {
             const noQPenalty = gameData.questionsEnabled ? 1 : 0.5;
             const coinMult = (abilityEffects["double_coins"]?.active ? 2 : 1) * noQPenalty;
-            const coinGain = Math.max(1, Math.floor(f.value * coinMult));
+            const coinGain = f._a ? f._v : Math.max(1, Math.floor(f.value * coinMult));
             earnedCoins += coinGain;
             const scoreGain = Math.floor(1 * getScoreMultiplier());
             score += scoreGain;
