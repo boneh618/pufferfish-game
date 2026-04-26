@@ -1018,6 +1018,140 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
     letter-spacing: 1px;
     text-transform: uppercase;
 }
+
+/* Gift Notification */
+#gift-notification {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    background: linear-gradient(135deg, rgba(139,92,246,0.95), rgba(99,102,241,0.95));
+    border: 3px solid rgba(255,215,0,0.6);
+    border-radius: 20px;
+    padding: 30px 40px;
+    z-index: 250;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(255,215,0,0.3);
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    max-width: 400px;
+    text-align: center;
+}
+#gift-notification.show {
+    display: flex;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    animation: giftPulse 0.5s ease;
+}
+@keyframes giftPulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.05); }
+}
+#gift-icon {
+    font-size: 60px;
+    animation: giftBounce 0.6s ease infinite;
+}
+@keyframes giftBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+#gift-from {
+    font-size: 14px;
+    color: rgba(255,255,255,0.8);
+    font-weight: 600;
+}
+#gift-message {
+    font-size: 20px;
+    color: #fff;
+    font-weight: 700;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+#gift-close {
+    margin-top: 10px;
+    padding: 10px 30px;
+    background: rgba(255,255,255,0.2);
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 12px;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+#gift-close:hover {
+    background: rgba(255,255,255,0.3);
+    transform: scale(1.05);
+}
+
+/* Gift Notification */
+#gift-notification {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    background: linear-gradient(135deg, rgba(139,92,246,0.95), rgba(99,102,241,0.95));
+    border: 3px solid rgba(255,215,0,0.6);
+    border-radius: 20px;
+    padding: 30px 40px;
+    z-index: 250;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(255,215,0,0.3);
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    max-width: 400px;
+    text-align: center;
+}
+#gift-notification.show {
+    display: flex;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    animation: giftPulse 0.5s ease;
+}
+@keyframes giftPulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.05); }
+}
+#gift-icon {
+    font-size: 60px;
+    animation: giftBounce 0.6s ease infinite;
+}
+@keyframes giftBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+#gift-from {
+    font-size: 14px;
+    color: rgba(255,255,255,0.8);
+    font-weight: 600;
+}
+#gift-message {
+    font-size: 20px;
+    color: #fff;
+    font-weight: 700;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+#gift-close {
+    margin-top: 10px;
+    padding: 10px 30px;
+    background: rgba(255,255,255,0.2);
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 12px;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+#gift-close:hover {
+    background: rgba(255,255,255,0.3);
+    transform: scale(1.05);
+}
 #quiz-question {
     font-size: 17px;
     font-weight: 700;
@@ -1313,6 +1447,14 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
     <div id="quiz-stake">✅ תשובה נכונה = +10 🪙 &nbsp;|&nbsp; ❌ תשובה שגויה = מוות</div>
 </div>
 
+<!-- GIFT NOTIFICATION -->
+<div id="gift-notification">
+    <div id="gift-icon">🎁</div>
+    <div id="gift-from"></div>
+    <div id="gift-message"></div>
+    <button id="gift-close" onclick="closeGiftNotification()">תודה! ❤️</button>
+</div>
+
 <!-- PREMIUM SHOP -->
 <div id="premium-shop" class="overlay">
     <h2>💎 חנות FishBucks</h2>
@@ -1486,7 +1628,28 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
     </div>
 
     <div class="admin-section">
-        <h3>� דגים מיוחדים</h3>
+        <h3>🎁 מתנות לשחקנים</h3>
+        <div class="admin-row">
+            <select class="admin-input" id="gift-type" style="max-width:150px;" onchange="_u9k2v()">
+                <option value="coins">🪙 מטבעות</option>
+                <option value="skin">🎨 סקין</option>
+                <option value="ability">⚡ יכולת</option>
+                <option value="all-skins">🌈 כל הסקינים</option>
+                <option value="all-abilities">✨ כל היכולות</option>
+            </select>
+            <input class="admin-input" type="number" id="gift-amount" placeholder="כמות" value="1000" style="max-width:100px;" min="1">
+            <select class="admin-input" id="gift-item" style="max-width:180px;display:none;"></select>
+        </div>
+        <div class="admin-row" style="margin-top:8px;gap:6px;flex-wrap:wrap;">
+            <input class="admin-input" id="gift-player" placeholder="שם שחקן" list="player-names-list" style="max-width:150px;">
+            <button class="btn btn-admin btn-admin-green" onclick="_g7t4x()">🎯 שלח לשחקן</button>
+            <button class="btn btn-admin btn-admin-green" onclick="_e2n8k()">🎲 שלח לאקראי</button>
+            <button class="btn btn-admin btn-admin-green" onclick="_c5y1m()">🎉 שלח לכולם</button>
+        </div>
+    </div>
+
+    <div class="admin-section">
+        <h3>🐟 דגים מיוחדים</h3>
         <div class="admin-row">
             <select class="admin-input" id="sys-p11" style="max-width:180px;">
                 <option value="0">🐟 זהב (500)</option>
@@ -2731,6 +2894,265 @@ function _r6y2m(_t, _c) {
             size: _spec._s
         });
     }
+}
+
+// Gift system functions (obfuscated)
+function _u9k2v() {
+    // Update item dropdown based on gift type
+    const type = document.getElementById("gift-type").value;
+    const itemSelect = document.getElementById("gift-item");
+    const amountInput = document.getElementById("gift-amount");
+    
+    itemSelect.innerHTML = "";
+    if (type === "skin") {
+        itemSelect.style.display = "";
+        amountInput.style.display = "none";
+        SKINS.forEach(skin => {
+            const opt = document.createElement("option");
+            opt.value = skin.id;
+            opt.textContent = skin.name;
+            itemSelect.appendChild(opt);
+        });
+    } else if (type === "ability") {
+        itemSelect.style.display = "";
+        amountInput.style.display = "none";
+        ABILITIES.forEach(ab => {
+            const opt = document.createElement("option");
+            opt.value = ab.id;
+            opt.textContent = `${ab.emoji} ${ab.name}`;
+            itemSelect.appendChild(opt);
+        });
+    } else {
+        itemSelect.style.display = "none";
+        amountInput.style.display = (type === "coins") ? "" : "none";
+    }
+}
+
+function _g7t4x() {
+    // Send gift to specific player
+    if (!_t9h2k()) return;
+    const playerName = document.getElementById("gift-player").value.trim();
+    if (!playerName) { alert("נא להזין שם שחקן"); return; }
+    _x4k8t(playerName);
+}
+
+function _e2n8k() {
+    // Send gift to random player
+    if (!_t9h2k()) return;
+    const players = getPlayers().filter(p => p.name !== getMyUsername());
+    if (players.length === 0) { alert("אין שחקנים אחרים מחוברים"); return; }
+    const randomPlayer = players[Math.floor(Math.random() * players.length)];
+    _x4k8t(randomPlayer.name);
+}
+
+function _c5y1m() {
+    // Send gift to everyone
+    if (!_t9h2k()) return;
+    const players = getPlayers();
+    players.forEach(p => _x4k8t(p.name));
+    _o4d7s(`✅ המתנה נשלחה לכל השחקנים!`);
+}
+
+function _x4k8t(targetPlayer) {
+    // Process and send gift
+    const type = document.getElementById("gift-type").value;
+    const amount = parseInt(document.getElementById("gift-amount").value) || 1000;
+    const itemId = document.getElementById("gift-item").value;
+    const gifter = getMyUsername();
+    
+    let giftData = { type, from: gifter, to: targetPlayer, timestamp: Date.now() };
+    let message = "";
+    
+    if (type === "coins") {
+        giftData.amount = amount;
+        message = `${amount} מטבעות`;
+        _y3n5w(targetPlayer, amount);
+    } else if (type === "skin") {
+        const skin = SKINS.find(s => s.id === itemId);
+        giftData.itemId = itemId;
+        giftData.itemName = skin ? skin.name : itemId;
+        message = `סקין: ${giftData.itemName}`;
+        _b2m7k(targetPlayer, itemId);
+    } else if (type === "ability") {
+        const ab = ABILITIES.find(a => a.id === itemId);
+        giftData.itemId = itemId;
+        giftData.itemName = ab ? ab.name : itemId;
+        message = `יכולת: ${giftData.itemName}`;
+        _l2j8p_gift(targetPlayer, itemId);
+    } else if (type === "all-skins") {
+        message = "כל הסקינים";
+        _s4m8t_gift(targetPlayer);
+    } else if (type === "all-abilities") {
+        message = "כל היכולות";
+        _n6d1y_gift(targetPlayer);
+    }
+    
+    // Send notification via Firebase
+    if (FIREBASE_URL) {
+        const notifId = Date.now() + Math.random();
+        fetch(`${FIREBASE_URL}/gifts/${targetPlayer}/${notifId}.json`, {
+            method: "PUT",
+            body: JSON.stringify(giftData)
+        }).catch(() => {});
+    }
+    
+    _o4d7s(`✅ מתנה נשלחה ל-${targetPlayer}: ${message}`);
+    
+    // Show notification if it's for current player
+    if (targetPlayer === getMyUsername()) {
+        _q7w3n(giftData);
+    }
+}
+
+function _y3n5w(playerName, coins) {
+    // Give coins to player
+    const players = getPlayers();
+    const p = players.find(pl => pl.name === playerName);
+    if (p) {
+        p.coins = (p.coins || 0) + coins;
+        savePlayers(players);
+        upsertPlayer(playerName, { coins: p.coins });
+        if (playerName === getMyUsername()) {
+            gameData.coins += coins;
+            saveData();
+            document.getElementById("lobby-coins").textContent = gameData.coins;
+        }
+    }
+}
+
+function _b2m7k(playerName, skinId) {
+    // Give skin to player
+    const players = getPlayers();
+    const p = players.find(pl => pl.name === playerName);
+    if (p) {
+        if (!p.ownedSkins) p.ownedSkins = ["classic"];
+        if (!p.ownedSkins.includes(skinId)) {
+            p.ownedSkins.push(skinId);
+            savePlayers(players);
+            upsertPlayer(playerName, { ownedSkins: p.ownedSkins });
+            if (playerName === getMyUsername()) {
+                if (!gameData.ownedSkins) gameData.ownedSkins = ["classic"];
+                if (!gameData.ownedSkins.includes(skinId)) gameData.ownedSkins.push(skinId);
+                saveData();
+            }
+        }
+    }
+}
+
+function _l2j8p_gift(playerName, abilityId) {
+    // Give ability to player
+    const players = getPlayers();
+    const p = players.find(pl => pl.name === playerName);
+    if (p) {
+        if (!p.ownedAbilities) p.ownedAbilities = [];
+        if (!p.ownedAbilities.includes(abilityId)) {
+            p.ownedAbilities.push(abilityId);
+            savePlayers(players);
+            upsertPlayer(playerName, { ownedAbilities: p.ownedAbilities });
+            if (playerName === getMyUsername()) {
+                if (!gameData.ownedAbilities) gameData.ownedAbilities = [];
+                if (!gameData.ownedAbilities.includes(abilityId)) gameData.ownedAbilities.push(abilityId);
+                saveData();
+            }
+        }
+    }
+}
+
+function _s4m8t_gift(playerName) {
+    // Give all skins
+    const allSkinIds = SKINS.map(s => s.id);
+    const players = getPlayers();
+    const p = players.find(pl => pl.name === playerName);
+    if (p) {
+        p.ownedSkins = allSkinIds;
+        p.ownedBossSkins = BOSS_SKINS.map(bs => bs.id);
+        p.ownedSharkSkins = SHARK_SKINS.map(ss => ss.id);
+        savePlayers(players);
+        upsertPlayer(playerName, { 
+            ownedSkins: p.ownedSkins,
+            ownedBossSkins: p.ownedBossSkins,
+            ownedSharkSkins: p.ownedSharkSkins
+        });
+        if (playerName === getMyUsername()) {
+            gameData.ownedSkins = allSkinIds;
+            gameData.ownedBossSkins = BOSS_SKINS.map(bs => bs.id);
+            gameData.ownedSharkSkins = SHARK_SKINS.map(ss => ss.id);
+            saveData();
+        }
+    }
+}
+
+function _n6d1y_gift(playerName) {
+    // Give all abilities
+    const allAbilityIds = ABILITIES.map(a => a.id);
+    const players = getPlayers();
+    const p = players.find(pl => pl.name === playerName);
+    if (p) {
+        p.ownedAbilities = allAbilityIds;
+        savePlayers(players);
+        upsertPlayer(playerName, { ownedAbilities: p.ownedAbilities });
+        if (playerName === getMyUsername()) {
+            gameData.ownedAbilities = allAbilityIds;
+            saveData();
+        }
+    }
+}
+
+function _q7w3n(giftData) {
+    // Show gift notification popup
+    let message = "";
+    if (giftData.type === "coins") {
+        message = `קיבלת ${giftData.amount} מטבעות! 🪙`;
+    } else if (giftData.type === "skin") {
+        message = `קיבלת סקין חדש: ${giftData.itemName}! 🎨`;
+    } else if (giftData.type === "ability") {
+        message = `קיבלת יכולת חדשה: ${giftData.itemName}! ⚡`;
+    } else if (giftData.type === "all-skins") {
+        message = "קיבלת את כל הסקינים! 🌈";
+    } else if (giftData.type === "all-abilities") {
+        message = "קיבלת את כל היכולות! ✨";
+    }
+    
+    document.getElementById("gift-from").textContent = `${giftData.from} שלח לך מתנה! 🎁`;
+    document.getElementById("gift-message").textContent = message;
+    document.getElementById("gift-notification").classList.add("show");
+    
+    // Play sound effect (if available)
+    try {
+        const audio = new Audio();
+        audio.src = "data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIGWi77OmfTBENUKzk7bhlGQc4";
+        audio.volume = 0.3;
+        audio.play().catch(() => {});
+    } catch(e) {}
+}
+
+function closeGiftNotification() {
+    document.getElementById("gift-notification").classList.remove("show");
+}
+
+// Check for incoming gifts (Firebase listener)
+function _k9v2t() {
+    if (!FIREBASE_URL) return;
+    const myName = getMyUsername();
+    if (!myName) return;
+    
+    setInterval(() => {
+        fetch(`${FIREBASE_URL}/gifts/${myName}.json`)
+            .then(r => r.json())
+            .then(gifts => {
+                if (gifts) {
+                    Object.keys(gifts).forEach(key => {
+                        const gift = gifts[key];
+                        if (gift && gift.timestamp > (Date.now() - 10000)) {
+                            _q7w3n(gift);
+                            // Delete the gift notification
+                            fetch(`${FIREBASE_URL}/gifts/${myName}/${key}.json`, { method: "DELETE" }).catch(() => {});
+                        }
+                    });
+                }
+            })
+            .catch(() => {});
+    }, 3000);
 }
 
 function _o4d7s(msg) {
@@ -5907,6 +6329,9 @@ function updateAdminButton() {
             }
         }).catch(()=>{});
     }
+    
+    // Start gift listener
+    _k9v2t();
 })();
 
 // ===============================
