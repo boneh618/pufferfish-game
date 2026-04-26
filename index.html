@@ -1376,6 +1376,13 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
 <div id="lobby" class="overlay show">
     <h1>🐡 דג הבלון</h1>
     <p class="sub">אסוף דגים • היזהר מכרישים • הילחם בבוס</p>
+    
+    <!-- Admin Abuse Timer -->
+    <div style="background:rgba(220,38,38,0.85);border:2px solid rgba(239,68,68,0.9);border-radius:12px;padding:10px 16px;backdrop-filter:blur(6px);text-align:center;max-width:300px;margin:8px auto;">
+        <div style="font-size:11px;color:#fecaca;font-weight:700;letter-spacing:0.5px;">Admin Abuse In:</div>
+        <div id="event-timer" style="font-size:16px;color:#fff;font-weight:800;margin-top:4px;">Loading...</div>
+    </div>
+    
     <p class="saved-coins">💰 <span id="lobby-coins">0</span> מטבעות</p>
     <div class="speed-control">
         <div class="speed-label">
@@ -1639,9 +1646,13 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
         <div class="admin-row">
             <select class="admin-input" id="gift-type" style="max-width:150px;" onchange="_u9k2v()">
                 <option value="coins">🪙 מטבעות</option>
-                <option value="skin">🎨 סקין</option>
+                <option value="skin">🐡 סקין דג</option>
+                <option value="boss-skin">🎯 סקין בוס</option>
+                <option value="shark-skin">🦈 סקין כריש</option>
                 <option value="ability">⚡ יכולת</option>
-                <option value="all-skins">🌈 כל הסקינים</option>
+                <option value="all-skins">🌈 כל סקיני הדג</option>
+                <option value="all-boss-skins">👑 כל סקיני הבוס</option>
+                <option value="all-shark-skins">🦈 כל סקיני הכריש</option>
                 <option value="all-abilities">✨ כל היכולות</option>
             </select>
             <input class="admin-input" type="number" id="gift-amount" placeholder="כמות" value="1000" style="max-width:100px;" min="1">
@@ -1797,23 +1808,18 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
 <!-- HUD -->
 <div class="hud" id="hud" style="display:none;">
     <div class="hud-top-left">
-        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;">
-            <div style="background:rgba(220,38,38,0.85);border:2px solid rgba(239,68,68,0.9);border-radius:10px;padding:6px 12px;backdrop-filter:blur(6px);text-align:center;">
-                <div style="font-size:10px;color:#fecaca;font-weight:700;letter-spacing:0.5px;">Admin Abuse In:</div>
-                <div id="event-timer" style="font-size:13px;color:#fff;font-weight:800;margin-top:2px;">Loading...</div>
-            </div>
-            <div id="current-event-display" style="background:rgba(0,0,0,0.7);border:2px solid rgba(100,180,255,0.6);border-radius:10px;padding:6px 10px;backdrop-filter:blur(6px);text-align:center;display:none;">
-                <div style="font-size:10px;color:rgba(255,255,255,0.7);font-weight:600;">אירוע פעיל:</div>
-                <div id="event-name" style="font-size:12px;color:#fff;font-weight:700;margin-top:2px;"></div>
-            </div>
-        </div>
         <div class="hud-item hud-coins">🪙 <span id="hud-coins">0</span></div>
         <div class="hud-item hud-score">⭐ <span id="hud-score">0</span></div>
     </div>
     <div class="hud-top-right">
+        <div id="current-event-display" style="background:rgba(0,0,0,0.7);border:2px solid rgba(100,180,255,0.6);border-radius:10px;padding:6px 10px;backdrop-filter:blur(6px);text-align:center;display:none;margin-bottom:8px;">
+            <div style="font-size:9px;color:rgba(255,255,255,0.7);font-weight:600;">אירוע:</div>
+            <div id="event-name" style="font-size:12px;color:#fff;font-weight:700;margin-top:1px;"></div>
+        </div>
         <div class="hud-item hud-level">שלב <span id="hud-level">1</span></div>
         <div id="pause-btn" onclick="togglePause()">⏸</div>
     </div>
+    
     <div class="hud-top-center" style="position:absolute;top:10px;left:50%;transform:translateX(-50%);display:none;" id="boss-timer-container">
         <div style="background:rgba(0,0,0,0.6);border:2px solid rgba(220,38,38,0.8);border-radius:12px;padding:8px 16px;backdrop-filter:blur(8px);">
             <div style="display:flex;align-items:center;gap:8px;">
@@ -2952,7 +2958,25 @@ function _u9k2v() {
         SKINS.forEach(skin => {
             const opt = document.createElement("option");
             opt.value = skin.id;
-            opt.textContent = skin.name;
+            opt.textContent = `${skin.preview} ${skin.name}`;
+            itemSelect.appendChild(opt);
+        });
+    } else if (type === "boss-skin") {
+        itemSelect.style.display = "";
+        amountInput.style.display = "none";
+        BOSS_SKINS.forEach(skin => {
+            const opt = document.createElement("option");
+            opt.value = skin.id;
+            opt.textContent = `${skin.emoji} ${skin.name}`;
+            itemSelect.appendChild(opt);
+        });
+    } else if (type === "shark-skin") {
+        itemSelect.style.display = "";
+        amountInput.style.display = "none";
+        SHARK_SKINS.forEach(skin => {
+            const opt = document.createElement("option");
+            opt.value = skin.id;
+            opt.textContent = `🦈 ${skin.name}`;
             itemSelect.appendChild(opt);
         });
     } else if (type === "ability") {
@@ -3007,14 +3031,26 @@ function _x4k8t(targetPlayer) {
     
     if (type === "coins") {
         giftData.amount = amount;
-        message = `${amount} מטבעות`;
+        message = `${amount} מטבףות`;
         _y3n5w(targetPlayer, amount);
     } else if (type === "skin") {
         const skin = SKINS.find(s => s.id === itemId);
         giftData.itemId = itemId;
         giftData.itemName = skin ? skin.name : itemId;
-        message = `סקין: ${giftData.itemName}`;
+        message = `סקין דג: ${giftData.itemName}`;
         _b2m7k(targetPlayer, itemId);
+    } else if (type === "boss-skin") {
+        const skin = BOSS_SKINS.find(s => s.id === itemId);
+        giftData.itemId = itemId;
+        giftData.itemName = skin ? skin.name : itemId;
+        message = `סקין בוס: ${giftData.itemName}`;
+        _p8h3b(targetPlayer, itemId);
+    } else if (type === "shark-skin") {
+        const skin = SHARK_SKINS.find(s => s.id === itemId);
+        giftData.itemId = itemId;
+        giftData.itemName = skin ? skin.name : itemId;
+        message = `סקין כריש: ${giftData.itemName}`;
+        _t6n2y(targetPlayer, itemId);
     } else if (type === "ability") {
         const ab = ABILITIES.find(a => a.id === itemId);
         giftData.itemId = itemId;
@@ -3022,8 +3058,14 @@ function _x4k8t(targetPlayer) {
         message = `יכולת: ${giftData.itemName}`;
         _l2j8p_gift(targetPlayer, itemId);
     } else if (type === "all-skins") {
-        message = "כל הסקינים";
-        _s4m8t_gift(targetPlayer);
+        message = "כל סקיני הדג";
+        _d9v4j(targetPlayer);
+    } else if (type === "all-boss-skins") {
+        message = "כל סקיני הבוס";
+        _r3w8m(targetPlayer);
+    } else if (type === "all-shark-skins") {
+        message = "כל סקיני הכריש";
+        _z5k7p(targetPlayer);
     } else if (type === "all-abilities") {
         message = "כל היכולות";
         _n6d1y_gift(targetPlayer);
@@ -3100,8 +3142,94 @@ function _l2j8p_gift(playerName, abilityId) {
     }
 }
 
+function _p8h3b(playerName, bossSkinId) {
+    // Give boss skin to player
+    const players = getPlayers();
+    const p = players.find(pl => pl.name === playerName);
+    if (p) {
+        if (!p.ownedBossSkins) p.ownedBossSkins = ["anglerfish"];
+        if (!p.ownedBossSkins.includes(bossSkinId)) {
+            p.ownedBossSkins.push(bossSkinId);
+            savePlayers(players);
+            upsertPlayer(playerName, { ownedBossSkins: p.ownedBossSkins });
+            if (playerName === getMyUsername()) {
+                if (!gameData.ownedBossSkins) gameData.ownedBossSkins = ["anglerfish"];
+                if (!gameData.ownedBossSkins.includes(bossSkinId)) gameData.ownedBossSkins.push(bossSkinId);
+                saveData();
+            }
+        }
+    }
+}
+
+function _t6n2y(playerName, sharkSkinId) {
+    // Give shark skin to player
+    const players = getPlayers();
+    const p = players.find(pl => pl.name === playerName);
+    if (p) {
+        if (!p.ownedSharkSkins) p.ownedSharkSkins = ["classic"];
+        if (!p.ownedSharkSkins.includes(sharkSkinId)) {
+            p.ownedSharkSkins.push(sharkSkinId);
+            savePlayers(players);
+            upsertPlayer(playerName, { ownedSharkSkins: p.ownedSharkSkins });
+            if (playerName === getMyUsername()) {
+                if (!gameData.ownedSharkSkins) gameData.ownedSharkSkins = ["classic"];
+                if (!gameData.ownedSharkSkins.includes(sharkSkinId)) gameData.ownedSharkSkins.push(sharkSkinId);
+                saveData();
+            }
+        }
+    }
+}
+
+function _d9v4j(playerName) {
+    // Give all fish skins (normal skins only)
+    const allSkinIds = SKINS.map(s => s.id);
+    const players = getPlayers();
+    const p = players.find(pl => pl.name === playerName);
+    if (p) {
+        p.ownedSkins = allSkinIds;
+        savePlayers(players);
+        upsertPlayer(playerName, { ownedSkins: p.ownedSkins });
+        if (playerName === getMyUsername()) {
+            gameData.ownedSkins = allSkinIds;
+            saveData();
+        }
+    }
+}
+
+function _r3w8m(playerName) {
+    // Give all boss skins
+    const allBossSkinIds = BOSS_SKINS.map(bs => bs.id);
+    const players = getPlayers();
+    const p = players.find(pl => pl.name === playerName);
+    if (p) {
+        p.ownedBossSkins = allBossSkinIds;
+        savePlayers(players);
+        upsertPlayer(playerName, { ownedBossSkins: p.ownedBossSkins });
+        if (playerName === getMyUsername()) {
+            gameData.ownedBossSkins = allBossSkinIds;
+            saveData();
+        }
+    }
+}
+
+function _z5k7p(playerName) {
+    // Give all shark skins
+    const allSharkSkinIds = SHARK_SKINS.map(ss => ss.id);
+    const players = getPlayers();
+    const p = players.find(pl => pl.name === playerName);
+    if (p) {
+        p.ownedSharkSkins = allSharkSkinIds;
+        savePlayers(players);
+        upsertPlayer(playerName, { ownedSharkSkins: p.ownedSharkSkins });
+        if (playerName === getMyUsername()) {
+            gameData.ownedSharkSkins = allSharkSkinIds;
+            saveData();
+        }
+    }
+}
+
 function _s4m8t_gift(playerName) {
-    // Give all skins
+    // Give ALL skins (fish + boss + shark) - legacy function for backwards compatibility
     const allSkinIds = SKINS.map(s => s.id);
     const players = getPlayers();
     const p = players.find(pl => pl.name === playerName);
@@ -3146,11 +3274,19 @@ function _q7w3n(giftData) {
     if (giftData.type === "coins") {
         message = `קיבלת ${giftData.amount} מטבעות! 🪙`;
     } else if (giftData.type === "skin") {
-        message = `קיבלת סקין חדש: ${giftData.itemName}! 🎨`;
+        message = `קיבלת סקין דג חדש: ${giftData.itemName}! 🐡`;
+    } else if (giftData.type === "boss-skin") {
+        message = `קיבלת סקין בוס חדש: ${giftData.itemName}! 🎯`;
+    } else if (giftData.type === "shark-skin") {
+        message = `קיבלת סקין כריש חדש: ${giftData.itemName}! 🦈`;
     } else if (giftData.type === "ability") {
         message = `קיבלת יכולת חדשה: ${giftData.itemName}! ⚡`;
     } else if (giftData.type === "all-skins") {
-        message = "קיבלת את כל הסקינים! 🌈";
+        message = "קיבלת את כל סקיני הדג! 🌈";
+    } else if (giftData.type === "all-boss-skins") {
+        message = "קיבלת את כל סקיני הבוס! 👑";
+    } else if (giftData.type === "all-shark-skins") {
+        message = "קיבלת את כל סקיני הכריש! 🦈";
     } else if (giftData.type === "all-abilities") {
         message = "קיבלת את כל היכולות! ✨";
     }
