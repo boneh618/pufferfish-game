@@ -1260,12 +1260,20 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
             הצג שאלות בין שלבים
         </label>
     </div>
-    <button class="btn" onclick="startGame()">🎮 התחל משחק</button>
-    <button class="btn btn-shop" onclick="openShop()">🛒 חנות סקינים</button>
-    <button class="btn btn-ability" onclick="openAbilityShop()">⚡ חנות יכולות</button>
-    <button class="btn btn-premium" onclick="openPremiumShop()">💎 FishBucks</button>
-    <button class="btn" onclick="openLeaderboard()" style="background:rgba(251,191,36,0.15);border-color:rgba(251,191,36,0.4);color:#fde68a;">🏆 לוח הניקוד</button>
-    <button class="btn btn-secondary" onclick="openSettings()" style="background:rgba(100,116,139,0.15);border-color:rgba(100,116,139,0.35);">⚙️ הגדרות</button>
+    
+    <!-- Main action button -->
+    <button class="btn" onclick="startGame()" style="margin-top:10px;">🎮 התחל משחק</button>
+    
+    <!-- Button grid -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:500px;margin-top:10px;">
+        <button class="btn btn-shop" onclick="openShop()" style="font-size:14px;padding:12px;">🛒 חנות סקינים</button>
+        <button class="btn btn-ability" onclick="openAbilityShop()" style="font-size:14px;padding:12px;">⚡ חנות יכולות</button>
+        <button class="btn btn-premium" onclick="openPremiumShop()" style="font-size:14px;padding:12px;">💎 FishBucks</button>
+        <button class="btn" onclick="openLeaderboard()" style="background:rgba(251,191,36,0.15);border-color:rgba(251,191,36,0.4);color:#fde68a;font-size:14px;padding:12px;">🏆 לוח הניקוד</button>
+    </div>
+    
+    <!-- Settings button -->
+    <button class="btn btn-secondary" onclick="openSettings()" style="background:rgba(100,116,139,0.15);border-color:rgba(100,116,139,0.35);margin-top:10px;">⚙️ הגדרות</button>
 </div>
 
 <!-- GAME OVER -->
@@ -1538,13 +1546,18 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
 
     <!-- USERNAME CHANGE -->
     <div class="settings-section">
-        <h3>👤 שם משתמש</h3>
+        <h3>👤 שם משתמש והתנתקות</h3>
         <div class="keybind-row">
             <div class="keybind-label">שם נוכחי<small id="settings-current-name"></small></div>
         </div>
-        <div class="admin-row" style="margin-top:6px;">
-            <input class="admin-input" id="settings-username-input" maxlength="18" placeholder="שם חדש..." autocomplete="off" spellcheck="false">
-            <button class="btn" style="padding:7px 14px;font-size:13px;" onclick="changeUsername()">שנה</button>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px;">
+            <div>
+                <input class="admin-input" id="settings-username-input" maxlength="18" placeholder="שם חדש..." autocomplete="off" spellcheck="false" style="width:100%;margin-bottom:6px;">
+                <button class="btn" style="padding:7px 14px;font-size:13px;width:100%;" onclick="changeUsername()">שנה שם</button>
+            </div>
+            <div style="display:flex;flex-direction:column;justify-content:flex-end;">
+                <button class="btn" style="background:rgba(239,68,68,0.2);border-color:rgba(239,68,68,0.5);padding:7px 14px;font-size:13px;width:100%;" onclick="logoutAccount()">🚪 התנתק</button>
+            </div>
         </div>
         <div id="settings-username-error" style="color:#f87171;font-size:12px;min-height:16px;margin-top:4px;"></div>
     </div>
@@ -1568,13 +1581,6 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
             <div class="keybind-label">הפעלת יכולת</div>
             <div class="keybind-btn" id="kb-ab0" onclick="startRebind('ab0')"></div>
         </div>
-    </div>
-
-    <!-- LOGOUT -->
-    <div class="settings-section">
-        <h3>🚪 התנתקות</h3>
-        <p style="color:rgba(255,255,255,0.5);font-size:12px;margin-bottom:10px;">התנתק מהחשבון שלך והחזר למסך הכניסה</p>
-        <button class="btn" style="background:rgba(239,68,68,0.2);border-color:rgba(239,68,68,0.5);width:100%;" onclick="logoutAccount()">🚪 התנתק</button>
     </div>
 
     <button class="btn btn-secondary" onclick="closeSettings()">חזור</button>
@@ -2567,6 +2573,24 @@ function _finishLogin(name, players) {
     showOverlay("lobby");
     document.getElementById("lobby-coins").textContent = gameData.coins;
     updateAdminButton();
+    
+    // Check if user has password and show warning if not
+    const player = players.find(p => p.name === name);
+    if (!player || !player.passwordHash) {
+        setTimeout(() => {
+            if (confirm("⚠️ אזהרה: לא הגדרת סיסמה לחשבון שלך!\n\nבלי סיסמה, אתה עלול לאבד את הגישה לחשבון ולכל המטבעות שלך.\nהאם אתה רוצה להגדיר סיסמה עכשיו?")) {
+                const newPassword = prompt("הזן סיסמה חדשה (מינימום 4 תווים):");
+                if (newPassword && newPassword.length >= 4) {
+                    const salt = name.toLowerCase();
+                    const passwordHash = simplePasswordHash(newPassword, salt);
+                    upsertPlayer(name, { passwordHash });
+                    alert("✅ הסיסמה נשמרה בהצלחה! החשבון שלך מוגן עכשיו.");
+                } else if (newPassword !== null) {
+                    alert("❌ סיסמה קצרה מדי. אתה יכול להגדיר סיסמה מאוחר יותר בהגדרות.");
+                }
+            }
+        }, 800);
+    }
 }
 document.getElementById("username-input").addEventListener("keydown", e => {
     if (e.key === "Enter") submitUsername();
