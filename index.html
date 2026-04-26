@@ -1374,14 +1374,17 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
 
 <!-- LOBBY -->
 <div id="lobby" class="overlay show">
-    <h1>🐡 דג הבלון</h1>
-    <p class="sub">אסוף דגים • היזהר מכרישים • הילחם בבוס</p>
-    
-    <!-- Admin Abuse Timer -->
-    <div style="background:rgba(220,38,38,0.85);border:2px solid rgba(239,68,68,0.9);border-radius:12px;padding:10px 16px;backdrop-filter:blur(6px);text-align:center;max-width:300px;margin:8px auto;">
+    <!-- Admin Abuse Timer - Top Left -->
+    <div style="position:fixed;top:20px;left:20px;background:rgba(220,38,38,0.9);border:2px solid rgba(239,68,68,1);border-radius:12px;padding:10px 16px;backdrop-filter:blur(8px);text-align:center;z-index:110;box-shadow:0 4px 16px rgba(220,38,38,0.5);">
         <div style="font-size:11px;color:#fecaca;font-weight:700;letter-spacing:0.5px;">Admin Abuse In:</div>
         <div id="event-timer" style="font-size:16px;color:#fff;font-weight:800;margin-top:4px;">Loading...</div>
     </div>
+    
+    <!-- Settings Button - Top Right -->
+    <button class="btn btn-secondary" onclick="openSettings()" style="position:fixed;top:20px;right:20px;background:rgba(100,116,139,0.3);border-color:rgba(100,116,139,0.5);z-index:110;padding:10px 20px;margin:0;box-shadow:0 4px 12px rgba(0,0,0,0.3);">⚙️ הגדרות</button>
+    
+    <h1>🐡 דג הבלון</h1>
+    <p class="sub">אסוף דגים • היזהר מכרישים • הילחם בבוס</p>
     
     <p class="saved-coins">💰 <span id="lobby-coins">0</span> מטבעות</p>
     <div class="speed-control">
@@ -1402,19 +1405,14 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
         </label>
     </div>
     
-    <!-- Main action button -->
-    <button class="btn" onclick="startGame()" style="margin-top:10px;">🎮 התחל משחק</button>
-    
-    <!-- Button grid -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:500px;margin-top:10px;">
-        <button class="btn btn-shop" onclick="openShop()" style="font-size:14px;padding:12px;">🛒 חנות סקינים</button>
-        <button class="btn btn-ability" onclick="openAbilityShop()" style="font-size:14px;padding:12px;">⚡ חנות יכולות</button>
-        <button class="btn btn-premium" onclick="openPremiumShop()" style="font-size:14px;padding:12px;">💎 FishBucks</button>
-        <button class="btn" onclick="openLeaderboard()" style="background:rgba(251,191,36,0.15);border-color:rgba(251,191,36,0.4);color:#fde68a;font-size:14px;padding:12px;">🏆 לוח הניקוד</button>
+    <!-- All Buttons - Vertical Center Layout -->
+    <div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:400px;margin-top:14px;align-items:center;">
+        <button class="btn" onclick="startGame()" style="width:100%;padding:14px;font-size:16px;">🎮 התחל משחק</button>
+        <button class="btn btn-shop" onclick="openShop()" style="width:100%;font-size:15px;padding:13px;">🛒 חנות סקינים</button>
+        <button class="btn btn-ability" onclick="openAbilityShop()" style="width:100%;font-size:15px;padding:13px;">⚡ חנות יכולות</button>
+        <button class="btn btn-premium" onclick="openPremiumShop()" style="width:100%;font-size:15px;padding:13px;">💎 FishBucks</button>
+        <button class="btn" onclick="openLeaderboard()" style="width:100%;background:rgba(251,191,36,0.15);border-color:rgba(251,191,36,0.4);color:#fde68a;font-size:15px;padding:13px;">🏆 לוח הניקוד</button>
     </div>
-    
-    <!-- Settings button -->
-    <button class="btn btn-secondary" onclick="openSettings()" style="background:rgba(100,116,139,0.15);border-color:rgba(100,116,139,0.35);margin-top:10px;">⚙️ הגדרות</button>
 </div>
 
 <!-- GAME OVER -->
