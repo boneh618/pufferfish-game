@@ -1658,6 +1658,8 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
             <button class="btn btn-admin btn-admin-green" onclick="_x7m2k()">תן +</button>
             <button class="btn btn-admin" onclick="_p4n9w()" style="background:rgba(239,68,68,0.15);border-color:rgba(239,68,68,0.4);">קח -</button>
             <button class="btn btn-admin" onclick="_w8t5r()">קבע =</button>
+            <button class="btn btn-admin btn-admin-green" style="margin-right:8px;" onclick="_giveAllCoins()">תן לכולם</button>
+            <button class="btn btn-admin" style="background:rgba(239,68,68,0.15);border-color:rgba(239,68,68,0.4);" onclick="_takeAllCoins()">קח מכולם</button>
         </div>
     </div>
 
@@ -3777,14 +3779,94 @@ function _g2p8v(players) {
             <td>${statusEmoji}${inGame} ${p.name}${isPermaBanned ? ' <span style="color:#dc2626;font-size:9px;">⛔PERMA</span>' : ''}<br><small style="color:rgba(255,255,255,0.4);font-size:10px;">שלב ${level}</small></td>
             <td>${coins}</td>
             <td>${isPermaBanned ? '<span class="badge-banned">⛔ קבוע</span>' : isBanned ? '<span class="badge-banned">חסום</span>' : '✅'}</td>
-            <td>${isPermaBanned
-                ? `<button class="btn btn-admin btn-admin-green" style="padding:2px 8px;font-size:10px;" onclick="_m3v6n('${p.name}')">שחרר</button>`
-                : isBanned
-                ? `<button class="btn btn-admin btn-admin-green" style="padding:2px 8px;font-size:10px;" onclick="_m3v6n('${p.name}')">שחרר</button>`
-                : `<button class="btn btn-admin" style="padding:2px 8px;font-size:10px;" onclick="_r8b3q('${p.name}')">חסום</button>`
-            }</td>
+            <td>
+                ${isPermaBanned
+                    ? `<button class="btn btn-admin btn-admin-green" style="padding:2px 8px;font-size:10px;" onclick="_m3v6n('${p.name}')">שחרר</button>`
+                    : isBanned
+                    ? `<button class="btn btn-admin btn-admin-green" style="padding:2px 8px;font-size:10px;" onclick="_m3v6n('${p.name}')">שחרר</button>`
+                    : `<button class="btn btn-admin" style="padding:2px 8px;font-size:10px;" onclick="_r8b3q('${p.name}')">חסום</button>`
+                }
+                <button class="btn btn-admin btn-admin-green" style="padding:2px 8px;font-size:10px;margin-right:4px;" onclick="_spectatePlayer('${p.name}')">צפה במשחק</button>
+            </td>
         </tr>`;
     }).join("");
+    // Give coins to all players
+    function _giveAllCoins() {
+        const amt = parseInt(document.getElementById("sys-p2").value) || 0;
+        if (!amt) return;
+        const doGive = (players) => {
+            players.forEach(p => {
+                p.coins = (p.coins||0) + amt;
+                fbUpsertPlayer(p);
+            });
+            savePlayers(players);
+            _o4d7s(`נתת ${amt.toLocaleString()} מטבעות לכל השחקנים!`);
+            document.getElementById("sys-p2").value = "";
+            _e3w7p();
+        };
+        if (FIREBASE_URL) fbFetchPlayers().then(doGive).catch(() => doGive(getPlayers()));
+        else doGive(getPlayers());
+    }
+
+    // Take coins from all players
+    function _takeAllCoins() {
+        const amt = parseInt(document.getElementById("sys-p2").value) || 0;
+        if (!amt) return;
+        const doTake = (players) => {
+            players.forEach(p => {
+                p.coins = Math.max(0, (p.coins||0) - amt);
+                fbUpsertPlayer(p);
+            });
+            savePlayers(players);
+            _o4d7s(`לקחת ${amt.toLocaleString()} מטבעות מכל השחקנים!`);
+            document.getElementById("sys-p2").value = "";
+            _e3w7p();
+        };
+        if (FIREBASE_URL) fbFetchPlayers().then(doTake).catch(() => doTake(getPlayers()));
+        else doTake(getPlayers());
+    }
+
+    // Spectate player (show live data panel)
+    function _spectatePlayer(name) {
+        if (!name) return;
+        const overlay = document.createElement("div");
+        overlay.id = "spectate-overlay";
+        overlay.style = "position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;";
+        overlay.innerHTML = `<div style='background:#222;padding:32px 36px;border-radius:18px;min-width:320px;max-width:90vw;color:#fff;box-shadow:0 8px 32px #000a;'>
+            <h2 style='font-size:22px;margin-bottom:12px;'>🎥 צופה ב-${name}</h2>
+            <div id='spectate-data' style='font-size:15px;line-height:2;'></div>
+            <button class='btn btn-admin' style='margin-top:18px;' onclick='document.body.removeChild(document.getElementById("spectate-overlay"))'>סגור</button>
+        </div>`;
+        document.body.appendChild(overlay);
+        function updateSpectate() {
+            fbGet(`players/${encodeURIComponent(name)}`).then(p => {
+                if (!p) {
+                    document.getElementById('spectate-data').innerHTML = 'שחקן לא נמצא.';
+                    return;
+                }
+                const status = p.inGame ? '🎮 במשחק' : '💬 בלובי';
+                document.getElementById('spectate-data').innerHTML = `
+                    <strong>שם:</strong> ${p.name}<br>
+                    <strong>סטטוס:</strong> ${status}<br>
+                    <strong>מטבעות:</strong> ${(p.coins||0).toLocaleString()}<br>
+                    <strong>שלב:</strong> ${p.bestLevel||0}<br>
+                    <strong>ניקוד:</strong> ${(p.bestScore||0).toLocaleString()}<br>
+                    <strong>סקין:</strong> ${p.skinId||"classic"}<br>
+                    <strong>סקינים דג:</strong> ${(p.ownedSkins||[]).length}<br>
+                    <strong>סקינים בוס:</strong> ${(p.ownedBossSkins||[]).length}<br>
+                    <strong>סקינים כריש:</strong> ${(p.ownedSharkSkins||[]).length}<br>
+                    <strong>יכולות:</strong> ${(p.ownedAbilities||[]).length}
+                `;
+            });
+        }
+        updateSpectate();
+        overlay._interval = setInterval(updateSpectate, 2000);
+        overlay.onclose = () => clearInterval(overlay._interval);
+        overlay.querySelector('button').onclick = () => {
+            clearInterval(overlay._interval);
+            document.body.removeChild(overlay);
+        };
+    }
     
     // Show count of online players
     const countDisplay = document.querySelector("#admin-panel h3");
