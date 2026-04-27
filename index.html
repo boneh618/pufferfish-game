@@ -1694,10 +1694,11 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
     <div class="admin-section">
         <h3>🎮 שנה שלב שחקן</h3>
         <div class="admin-row">
-            <input class="admin-input" id="sys-p7" placeholder="שם שחקן" list="player-names-list">
+            <input class="admin-input" id="sys-p7" placeholder="שם שחקן" list="player-names-list" oninput="_showPlayerLevel()">
             <input class="admin-input" type="number" id="sys-p8" placeholder="שלב" style="max-width:80px;" min="1">
             <button class="btn btn-admin btn-admin-green" onclick="_b7c2v()">שנה</button>
         </div>
+        <div id="current-level-display" style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:4px;min-height:16px;"></div>
     </div>
 
     <div class="admin-section">
@@ -2962,6 +2963,49 @@ function _c8x4m() {
 }
 function _j5n1q() { showOverlay("lobby"); }
 
+// Show player's current level when typing name in set level field
+function _showPlayerLevel() {
+    const name = document.getElementById("sys-p7").value.trim();
+    const display = document.getElementById("current-level-display");
+    if (!name) {
+        display.textContent = "";
+        return;
+    }
+    
+    const players = getPlayers();
+    const p = players.find(pl => pl.name === name);
+    if (p) {
+        display.textContent = `📊 רמה נוכחית: ${p.bestLevel || 0}`;
+    } else {
+        display.textContent = `⚠️ שחקן לא נמצא`;
+    }
+}
+
+// Show player's game status when typing name in fish spawn field
+function _showPlayerGameStatus() {
+    const name = document.getElementById("sys-p13").value.trim();
+    const display = document.getElementById("fish-target-status");
+    if (!name) {
+        display.textContent = "";
+        return;
+    }
+    
+    const players = getPlayers();
+    const p = players.find(pl => pl.name === name);
+    if (p) {
+        const now = Date.now();
+        const isOnline = p.lastSeen && (now - p.lastSeen) < 120000;
+        if (!isOnline) {
+            display.textContent = `⚫ ${name} לא מחובר`;
+        } else {
+            const inGame = p.inGame ? 'במשחק 🎮' : 'בלובי 💬';
+            display.textContent = `🟢 ${name} מחובר (${inGame})`;
+        }
+    } else {
+        display.textContent = `⚠️ שחקן לא נמצא`;
+    }
+}
+
 // Admin fish spawn functions (obfuscated) - Now broadcasts to all players
 function _d8k2q() {
     if (!_t9h2k()) return;
@@ -3590,10 +3634,10 @@ function showAnnouncement(text) {
     document.getElementById("announcement-text").textContent = text;
     document.getElementById("admin-announcement").classList.add("show");
     
-    // Auto-hide after 10 seconds
+    // Auto-hide after 5 seconds
     setTimeout(() => {
         closeAnnouncement();
-    }, 10000);
+    }, 5000);
     
     // Broadcast announcement via Firebase
     if (FIREBASE_URL) {
@@ -3726,9 +3770,12 @@ function _g2p8v(players) {
         const isBanned = banned.includes(p.name);
         const isPermaBanned = permaBanned.includes(p.name);
         const statusEmoji = (now - p.lastSeen) < 30000 ? '🟢' : '🟡'; // Green if <30s, yellow if <2min
+        const level = p.bestLevel || 0;
+        const coins = (p.coins||0).toLocaleString();
+        const inGame = p.inGame ? '🎮' : '💬'; // Controller if in game, chat if in lobby
         return `<tr>
-            <td>${statusEmoji} ${p.name}${isPermaBanned ? ' <span style="color:#dc2626;font-size:9px;">⛔PERMA</span>' : ''}</td>
-            <td>${(p.coins||0).toLocaleString()}</td>
+            <td>${statusEmoji}${inGame} ${p.name}${isPermaBanned ? ' <span style="color:#dc2626;font-size:9px;">⛔PERMA</span>' : ''}<br><small style="color:rgba(255,255,255,0.4);font-size:10px;">שלב ${level}</small></td>
+            <td>${coins}</td>
             <td>${isPermaBanned ? '<span class="badge-banned">⛔ קבוע</span>' : isBanned ? '<span class="badge-banned">חסום</span>' : '✅'}</td>
             <td>${isPermaBanned
                 ? `<button class="btn btn-admin btn-admin-green" style="padding:2px 8px;font-size:10px;" onclick="_m3v6n('${p.name}')">שחרר</button>`
@@ -3929,8 +3976,8 @@ function _b7c2v() {
         p.bestLevel = lvl;
         savePlayers(players);
         fbUpsertPlayer(p);
-        if (name === getMyUsername()) { gameData.bestLevel = p.bestLevel; saveData(); }
-        _o4d7s(`שינית שלב של ${name} ל-${lvl}`);
+        if (name === getMyUsername()) { gameData.bestLevel = lvl; saveData(); }
+        _o4d7s(`שינית את השלב של ${name} ל-${lvl}`);
         document.getElementById("sys-p7").value = "";
         document.getElementById("sys-p8").value = "";
         _e3w7p();
@@ -3946,15 +3993,33 @@ function _f5w9k() {
     const doView = (players) => {
         const p = players.find(pl => pl.name === name);
         if (!p) { _o4d7s(`שחקן לא נמצא: ${name}`); detailsEl.style.display = "none"; return; }
+        
+        const skinCount = (p.ownedSkins || ["classic"]).length;
+        const bossSkinCount = (p.ownedBossSkins || ["anglerfish"]).length;
+        const sharkSkinCount = (p.ownedSharkSkins || ["classic"]).length;
+        const abilityCount = (p.ownedAbilities || []).length;
+        const now = Date.now();
+        const isOnline = p.lastSeen && (now - p.lastSeen) < 120000;
+        const inGame = p.inGame ? 'במשחק 🎮' : 'בלובי 💬';
+        const onlineStatus = isOnline ? `מחובר 🟢 (${inGame})` : 'מנותק ⚫';
+        
         detailsEl.style.display = "block";
         detailsEl.innerHTML = `
-            <strong>👤 ${p.name}</strong><br>
-            🪙 מטבעות: ${(p.coins||0).toLocaleString()}<br>
-            ⭐ ניקוד מקסימום: ${(p.bestScore||0).toLocaleString()}<br>
-            🏆 שלב מקסימום: ${p.bestLevel||0}<br>
-            🎮 סקין: ${p.skinId||"classic"}<br>
-            ⚡ יכולות: ${(p.ownedAbilities||[]).length} נרכשו
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;">
+                <div><strong>👤 שם:</strong> ${p.name}</div>
+                <div><strong>🔵 סטטוס:</strong> ${onlineStatus}</div>
+                <div><strong>🪙 מטבעות:</strong> ${(p.coins||0).toLocaleString()}</div>
+                <div><strong>🎯 שיא מיטב:</strong> ${(p.bestScore||0).toLocaleString()}</div>
+                <div><strong>🎮 שלב מקסימלי:</strong> ${p.bestLevel||0}</div>
+                <div><strong>🐡 סקיני דג:</strong> ${skinCount}/${SKINS.length}</div>
+                <div><strong>👹 סקיני בוס:</strong> ${bossSkinCount}/${BOSS_SKINS.length}</div>
+                <div><strong>🦈 סקיני כריש:</strong> ${sharkSkinCount}/${SHARK_SKINS.length}</div>
+                <div><strong>⚡ יכולות:</strong> ${abilityCount}/${ABILITIES.length}</div>
+                <div><strong>🔑 סיסמה:</strong> ${p.passwordHash ? 'מוגדרת ✅' : 'לא מוגדרת ⚠️'}</div>
+            </div>
         `;
+        _o4d7s(`צופה בפרטי ${name}`);
+        document.getElementById("sys-p9").value = "";
     };
     if (FIREBASE_URL) fbFetchPlayers().then(doView).catch(() => doView(getPlayers()));
     else doView(getPlayers());
@@ -7137,14 +7202,18 @@ function updateAdminButton() {
         const myName = getMyUsername();
         if (!myName || !FIREBASE_URL) return;
         
-        // Update lastSeen timestamp in Firebase
-        upsertPlayer(myName, { lastSeen: Date.now() });
+        // Update lastSeen timestamp AND inGame status in Firebase
+        upsertPlayer(myName, { 
+            lastSeen: Date.now(),
+            inGame: (typeof gameRunning !== 'undefined' && gameRunning) || false
+        });
         
         // Also update in local storage
         const players = getPlayers();
         const p = players.find(pl => pl.name === myName);
         if (p) {
             p.lastSeen = Date.now();
+            p.inGame = (typeof gameRunning !== 'undefined' && gameRunning) || false;
             savePlayers(players);
         }
         
