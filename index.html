@@ -2667,6 +2667,11 @@ async function fbGet(path) {
 async function fbSet(path, data) {
     await fetch(fbUrl(path), { method:"PUT", headers:{"Content-Type":"application/json"}, body: JSON.stringify(data) });
 }
+async function fbPut(path, data) {
+    // Alias for fbSet - strips .json extension if present
+    const cleanPath = path.replace(/\.json$/, '');
+    await fbSet(cleanPath, data);
+}
 async function fbDelete(path) {
     await fetch(fbUrl(path), { method:"DELETE" });
 }
@@ -3389,6 +3394,9 @@ function _q7w3n(giftData) {
     document.getElementById("gift-message").textContent = message;
     document.getElementById("gift-notification").classList.add("show");
     
+    // CRITICAL: Sync data from Firebase to get the actual gift!
+    syncPlayerDataFromFirebase();
+    
     // Auto-hide after 5 seconds
     clearTimeout(window.giftNotificationTimeout);
     window.giftNotificationTimeout = setTimeout(() => {
@@ -3416,6 +3424,57 @@ function showGiftNotificationWithTimeout(giftData) {
     giftNotificationTimeout = setTimeout(() => {
         closeGiftNotification();
     }, 5000);
+}
+
+// Sync player data FROM Firebase (pull, not push)
+async function syncPlayerDataFromFirebase() {
+    const myName = getMyUsername();
+    if (!myName || !FIREBASE_URL) return;
+    
+    try {
+        // Fetch my player data from Firebase
+        const response = await fetch(`${FIREBASE_URL}/players/${encodeURIComponent(myName)}.json`);
+        if (!response.ok) return;
+        
+        const fbData = await response.json();
+        if (!fbData) return;
+        
+        // Update local gameData with Firebase data
+        gameData.coins = fbData.coins || 0;
+        gameData.bestScore = fbData.bestScore || 0;
+        gameData.bestLevel = fbData.bestLevel || 0;
+        
+        // Update skins
+        if (fbData.ownedSkins) gameData.ownedSkins = fbData.ownedSkins;
+        if (fbData.ownedBossSkins) gameData.ownedBossSkins = fbData.ownedBossSkins;
+        if (fbData.ownedSharkSkins) gameData.ownedSharkSkins = fbData.ownedSharkSkins;
+        if (fbData.ownedAbilities) gameData.ownedAbilities = fbData.ownedAbilities;
+        
+        // Save to localStorage
+        saveData();
+        
+        // Update UI if in lobby
+        const lobbyCoins = document.getElementById("lobby-coins");
+        if (lobbyCoins) lobbyCoins.textContent = gameData.coins;
+        
+        // Update localStorage players list too
+        const players = getPlayers();
+        const p = players.find(pl => pl.name === myName);
+        if (p) {
+            p.coins = fbData.coins || 0;
+            p.bestScore = fbData.bestScore || 0;
+            p.bestLevel = fbData.bestLevel || 0;
+            p.ownedSkins = fbData.ownedSkins || ["classic"];
+            p.ownedBossSkins = fbData.ownedBossSkins || ["anglerfish"];
+            p.ownedSharkSkins = fbData.ownedSharkSkins || ["classic"];
+            p.ownedAbilities = fbData.ownedAbilities || [];
+            savePlayers(players);
+        }
+        
+        console.log("✅ Synced data from Firebase:", fbData.coins, "coins");
+    } catch(e) {
+        console.log("⚠️ Failed to sync from Firebase:", e);
+    }
 }
 
 // Check for incoming gifts (Firebase listener)
@@ -3456,7 +3515,7 @@ function _w8p4v() {
     
     // Broadcast event to all players via Firebase
     if (FIREBASE_URL) {
-        fbPut("currentEvent.json", { id: event.id, timestamp: Date.now() });
+        fbSet("currentEvent", { id: event.id, timestamp: Date.now() });
     }
     
     // Update HUD
@@ -3535,6 +3594,11 @@ function showAnnouncement(text) {
     setTimeout(() => {
         closeAnnouncement();
     }, 10000);
+    
+    // Broadcast announcement via Firebase
+    if (FIREBASE_URL) {
+        fbSet("announcement", { text, timestamp: Date.now() });
+    }
 }
 
 function closeAnnouncement() {
@@ -7068,7 +7132,7 @@ function updateAdminButton() {
     // Start gift listener
     _k9v2t();
     
-    // Start player activity tracking
+    // Start player activity tracking AND data syncing
     function updatePlayerActivity() {
         const myName = getMyUsername();
         if (!myName || !FIREBASE_URL) return;
@@ -7083,9 +7147,12 @@ function updateAdminButton() {
             p.lastSeen = Date.now();
             savePlayers(players);
         }
+        
+        // CRITICAL: Also sync data FROM Firebase to catch any admin changes
+        syncPlayerDataFromFirebase();
     }
     
-    // Update activity every 30 seconds
+    // Update activity AND sync data every 30 seconds
     if (FIREBASE_URL) {
         setInterval(updatePlayerActivity, 30000);
         updatePlayerActivity(); // Run immediately
