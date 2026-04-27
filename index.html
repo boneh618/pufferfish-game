@@ -1019,104 +1019,133 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
     text-transform: uppercase;
 }
 
-/* Gift Notification */
+/* Gift Notification - Top of screen */
 #gift-notification {
     position: fixed;
-    top: 50%;
+    top: 20px;
     left: 50%;
-    transform: translate(-50%, -50%) scale(0.8);
-    background: linear-gradient(135deg, rgba(139,92,246,0.95), rgba(99,102,241,0.95));
-    border: 3px solid rgba(255,215,0,0.6);
-    border-radius: 20px;
-    padding: 30px 40px;
-    z-index: 250;
+    transform: translateX(-50%) translateY(-100px);
+    background: linear-gradient(135deg, rgba(139,92,246,0.98), rgba(99,102,241,0.98));
+    border: 3px solid rgba(255,215,0,0.7);
+    border-radius: 16px;
+    padding: 16px 30px;
+    z-index: 300;
     display: none;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    gap: 15px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(255,215,0,0.3);
-    backdrop-filter: blur(10px);
+    gap: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 0 30px rgba(255,215,0,0.4);
+    backdrop-filter: blur(12px);
     opacity: 0;
-    transition: all 0.3s ease;
-    max-width: 400px;
-    text-align: center;
+    transition: all 0.4s ease;
+    max-width: 500px;
+    text-align: right;
 }
 #gift-notification.show {
     display: flex;
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-    animation: giftPulse 0.5s ease;
+    transform: translateX(-50%) translateY(0);
+    animation: giftSlideIn 0.4s ease;
 }
-@keyframes giftPulse {
-    0%, 100% { transform: translate(-50%, -50%) scale(1); }
-    50% { transform: translate(-50%, -50%) scale(1.05); }
+@keyframes giftSlideIn {
+    0% { transform: translateX(-50%) translateY(-100px); opacity: 0; }
+    100% { transform: translateX(-50%) translateY(0); opacity: 1; }
 }
 #gift-icon {
-    font-size: 60px;
+    font-size: 32px;
     animation: giftBounce 0.6s ease infinite;
 }
 @keyframes giftBounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
 }
 #gift-from {
-    font-size: 14px;
-    color: rgba(255,255,255,0.8);
-    font-weight: 600;
+    font-size: 13px;
+    color: rgba(255,255,255,0.9);
+    font-weight: 700;
+    margin-bottom: 2px;
 }
 #gift-message {
-    font-size: 20px;
+    font-size: 16px;
     color: #fff;
     font-weight: 700;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    text-shadow: 0 2px 8px rgba(0,0,0,0.4);
 }
 #gift-close {
-    margin-top: 10px;
-    padding: 10px 30px;
-    background: rgba(255,255,255,0.2);
-    border: 2px solid rgba(255,255,255,0.3);
-    border-radius: 12px;
+    padding: 6px 16px;
+    background: rgba(255,255,255,0.25);
+    border: 2px solid rgba(255,255,255,0.4);
+    border-radius: 10px;
     color: #fff;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s;
+    font-size: 13px;
+    white-space: nowrap;
 }
 #gift-close:hover {
-    background: rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.35);
     transform: scale(1.05);
 }
 
-/* Gift Notification */
-#gift-notification {
+/* Admin Announcement Banner - Top of screen */
+#admin-announcement {
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.8);
-    background: linear-gradient(135deg, rgba(139,92,246,0.95), rgba(99,102,241,0.95));
-    border: 3px solid rgba(255,215,0,0.6);
-    border-radius: 20px;
-    padding: 30px 40px;
-    z-index: 250;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, rgba(220,38,38,0.95), rgba(239,68,68,0.95));
+    border-bottom: 3px solid rgba(255,255,255,0.3);
+    padding: 12px 20px;
+    z-index: 280;
     display: none;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    gap: 15px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(255,215,0,0.3);
+    justify-content: center;
+    gap: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
     backdrop-filter: blur(10px);
-    opacity: 0;
-    transition: all 0.3s ease;
-    max-width: 400px;
+    transform: translateY(-100%);
+    transition: transform 0.4s ease;
+}
+#admin-announcement.show {
+    display: flex;
+    transform: translateY(0);
+}
+#announcement-icon {
+    font-size: 24px;
+    animation: announcementPulse 1s ease infinite;
+}
+@keyframes announcementPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+#announcement-text {
+    font-size: 16px;
+    color: #fff;
+    font-weight: 700;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    flex: 1;
     text-align: center;
 }
-#gift-notification.show {
+#announcement-close {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    border: 2px solid rgba(255,255,255,0.3);
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
     display: flex;
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-    animation: giftPulse 0.5s ease;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
 }
-@keyframes giftPulse {
-    0%, 100% { transform: translate(-50%, -50%) scale(1); }
-    50% { transform: translate(-50%, -50%) scale(1.05); }
+#announcement-close:hover {
+    background: rgba(255,255,255,0.3);
+    transform: scale(1.1);
 }
 #gift-icon {
     font-size: 60px;
@@ -1429,6 +1458,12 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
 <div id="pause-screen" class="overlay">
     <h2>⏸️ השהייה</h2>
     <p class="pause-sub">המשחק מושהה</p>
+    <div style="background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.3);border-radius:12px;padding:12px;margin:16px auto;max-width:300px;">
+        <div style="font-size:14px;color:#fde68a;font-weight:600;margin-bottom:6px;">💡 טיפ:</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.8);">
+            לחץ על 🛒 או <kbd style="background:rgba(255,255,255,0.2);padding:2px 6px;border-radius:4px;font-weight:700;">B</kbd> כדי לקנות לבבות ושדרוגים במהלך המשחק!
+        </div>
+    </div>
     <button class="btn" onclick="resumeGame()">▶️ המשך</button>
     <button class="btn btn-secondary" onclick="quitToLobby()">🏠 חזור ללובי</button>
 </div>
@@ -1452,15 +1487,17 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
     <div id="quiz-stake">✅ תשובה נכונה = +10 🪙 &nbsp;|&nbsp; ❌ תשובה שגויה = מוות</div>
 </div>
 
-<!-- GIFT NOTIFICATION -->
+<!-- GIFT NOTIFICATION - Shows at top of screen -->
 <div id="gift-notification">
     <div id="gift-icon">🎁</div>
-    <div id="gift-from"></div>
-    <div id="gift-message"></div>
+    <div style="display:flex;flex-direction:column;flex:1;">
+        <div id="gift-from"></div>
+        <div id="gift-message"></div>
+    </div>
     <button id="gift-close" onclick="closeGiftNotification()">תודה! ❤️</button>
 </div>
 
-<!-- ADMIN ANNOUNCEMENT BANNER -->
+<!-- ADMIN ANNOUNCEMENT BANNER - Shows at top of screen -->
 <div id="admin-announcement">
     <div id="announcement-icon">📣</div>
     <div id="announcement-text"></div>
@@ -1557,13 +1594,55 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
     <div class="cheater-timer" id="cheater-countdown">5</div>
 </div>
 
+<!-- IN-GAME SHOP -->
+<div id="ingame-shop" class="overlay" style="display:none;">
+    <h2>🛍️ חנות מהירה</h2>
+    <div style="color:rgba(255,255,255,0.7);font-size:13px;margin-bottom:16px;">
+        קנה שדרוגים במהלך המשחק!
+    </div>
+    
+    <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:16px;padding:16px;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:28px;">❤️</span>
+                <span style="font-weight:700;font-size:16px;">לב מלא</span>
+            </div>
+            <div style="color:#fbbf24;font-weight:800;font-size:18px;">500🪙</div>
+        </div>
+        <div style="color:rgba(255,255,255,0.6);font-size:12px;margin-bottom:10px;">
+            מחזיר לך לב אחד (HP+1)
+        </div>
+        <button class="btn btn-shop" onclick="buyHeart()" style="width:100%;padding:10px;">💖 קנה לב</button>
+    </div>
+    
+    <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:16px;padding:16px;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:28px;">💨</span>
+                <span style="font-weight:700;font-size:16px;">אנרגיית נפיחה</span>
+            </div>
+            <div style="color:#fbbf24;font-weight:800;font-size:18px;">300🪙</div>
+        </div>
+        <div style="color:rgba(255,255,255,0.6);font-size:12px;margin-bottom:10px;">
+            +50% זמן נפיחה למשך המשחק הזה
+        </div>
+        <button class="btn btn-ability" onclick="buyInflateBoost()" style="width:100%;padding:10px;">⚡ קנה שדרוג</button>
+    </div>
+    
+    <div style="color:#fbbf24;font-weight:700;margin-top:16px;font-size:16px;">
+        💰 יתרת מטבעות: <span id="ingame-shop-coins">0</span>
+    </div>
+    
+    <button class="btn btn-secondary" style="margin-top:14px;" onclick="closeIngameShop()">🎮 חזור למשחק</button>
+</div>
+
 <!-- ADMIN PANEL -->
 <div id="admin-panel" class="overlay">
     <h2>🔴 פאנל אדמין</h2>
     <div class="admin-sub">גישה מוגבלת — שמור בסוד!</div>
 
     <div class="admin-section">
-        <h3>👥 שחקנים</h3>
+        <h3>👥 שחקנים מחוברים</h3>
         <div id="admin-players-container">
             <table class="admin-players-table"><thead><tr>
                 <th>שם</th><th>מטבעות</th><th>סטטוס</th><th>פעולה</th>
@@ -1816,6 +1895,7 @@ canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
         </div>
         <div class="hud-item hud-level">שלב <span id="hud-level">1</span></div>
         <div id="pause-btn" onclick="togglePause()">⏸</div>
+        <div style="width:44px;height:44px;border-radius:10px;background:rgba(251,191,36,0.2);border:2px solid rgba(251,191,36,0.4);display:flex;align-items:center;justify-content:center;font-size:20px;color:#fbbf24;cursor:pointer;backdrop-filter:blur(12px);transition:all 0.2s;margin-top:8px;" onclick="openIngameShop()" title="חנות מהירה (B)">🛒</div>
     </div>
     
     <div class="hud-top-center" style="position:absolute;top:10px;left:50%;transform:translateX(-50%);display:none;" id="boss-timer-container">
@@ -2877,17 +2957,23 @@ function _c8x4m() {
 }
 function _j5n1q() { showOverlay("lobby"); }
 
-// Admin fish spawn functions (obfuscated)
+// Admin fish spawn functions (obfuscated) - Now broadcasts to all players
 function _d8k2q() {
     if (!_t9h2k()) return;
     const _t = parseInt(document.getElementById("sys-p11").value);
     const _c = parseInt(document.getElementById("sys-p12").value) || 5;
     const _n = document.getElementById("sys-p13").value.trim();
-    if (!_n || _n === username) {
-        _r6y2m(_t, _c);
-        _o4d7s(`✅ הוצפו ${_c} דגים מיוחדים עבור ${_n || username}`);
+    
+    if (_n && _n !== username) {
+        // Send to specific player via Firebase
+        if (FIREBASE_URL) {
+            fbPut(`specialFish/${_n}/${Date.now()}.json`, { type: _t, count: _c, timestamp: Date.now() });
+            _o4d7s(`✅ שולח ${_c} דגים מיוחדים ל-${_n}`);
+        }
     } else {
-        _o4d7s(`❌ יכולת לשלוח רק לעצמך או לכולם`);
+        // Spawn for admin
+        _r6y2m(_t, _c);
+        _o4d7s(`✅ הוצפו ${_c} דגים מיוחדים עבאורך`);
     }
 }
 
@@ -2901,17 +2987,25 @@ function _w5n7t() {
         return;
     }
     const _rp = _ps[Math.floor(Math.random() * _ps.length)];
-    _o4d7s(`✅ הוצפו ${_c} דגים מיוחדים עבור ${_rp.name} (אקראי)`);
-    // In a real implementation, this would send to that player via Firebase
+    
+    // Send to random player via Firebase
+    if (FIREBASE_URL) {
+        fbPut(`specialFish/${_rp.name}/${Date.now()}.json`, { type: _t, count: _c, timestamp: Date.now() });
+        _o4d7s(`✅ שולח ${_c} דגים מיוחדים ל-${_rp.name}`);
+    }
 }
 
 function _p3x6m() {
     if (!_t9h2k()) return;
     const _t = parseInt(document.getElementById("sys-p11").value);
     const _c = parseInt(document.getElementById("sys-p12").value) || 5;
-    _r6y2m(_t, _c);
-    _o4d7s(`✅ הוצפו ${_c} דגים מיוחדים לכל השחקנים!`);
-    // In a real implementation, this would broadcast to all players via Firebase
+    
+    // Broadcast to all players via Firebase
+    if (FIREBASE_URL) {
+        fbPut(`specialFishBroadcast/${Date.now()}.json`, { type: _t, count: _c, timestamp: Date.now() });
+    }
+    _r6y2m(_t, _c); // Also spawn for admin
+    _o4d7s(`✅ שולח ${_c} דגים מיוחדים לכל השחקנים!`);
 }
 
 function _r6y2m(_t, _c) {
@@ -3130,7 +3224,9 @@ function _l2j8p_gift(playerName, abilityId) {
         if (!p.ownedAbilities.includes(abilityId)) {
             p.ownedAbilities.push(abilityId);
             savePlayers(players);
+            // Update in Firebase
             upsertPlayer(playerName, { ownedAbilities: p.ownedAbilities });
+            // Update local if it's me
             if (playerName === getMyUsername()) {
                 if (!gameData.ownedAbilities) gameData.ownedAbilities = [];
                 if (!gameData.ownedAbilities.includes(abilityId)) gameData.ownedAbilities.push(abilityId);
@@ -3267,7 +3363,7 @@ function _n6d1y_gift(playerName) {
 }
 
 function _q7w3n(giftData) {
-    // Show gift notification popup
+    // Show gift notification popup at top of screen
     let message = "";
     if (giftData.type === "coins") {
         message = `קיבלת ${giftData.amount} מטבעות! 🪙`;
@@ -3293,6 +3389,12 @@ function _q7w3n(giftData) {
     document.getElementById("gift-message").textContent = message;
     document.getElementById("gift-notification").classList.add("show");
     
+    // Auto-hide after 5 seconds
+    clearTimeout(window.giftNotificationTimeout);
+    window.giftNotificationTimeout = setTimeout(() => {
+        closeGiftNotification();
+    }, 5000);
+    
     // Play sound effect (if available)
     try {
         const audio = new Audio();
@@ -3304,6 +3406,16 @@ function _q7w3n(giftData) {
 
 function closeGiftNotification() {
     document.getElementById("gift-notification").classList.remove("show");
+}
+
+// Auto-hide gift notification after 5 seconds
+let giftNotificationTimeout;
+function showGiftNotificationWithTimeout(giftData) {
+    _q7w3n(giftData);
+    clearTimeout(giftNotificationTimeout);
+    giftNotificationTimeout = setTimeout(() => {
+        closeGiftNotification();
+    }, 5000);
 }
 
 // Check for incoming gifts (Firebase listener)
@@ -3333,16 +3445,16 @@ function _k9v2t() {
 
 // ===== EVENT SYSTEM FUNCTIONS =====
 function _w8p4v() {
-    // Activate event
+    // Activate event - broadcasts to ALL players in all servers
     if (!_t9h2k()) return;
     const eventId = document.getElementById("event-selector").value;
     const event = EVENTS.find(e => e.id === eventId);
     if (!event) return;
     
     currentEvent = event;
-    _o4d7s(`✅ אירוע "${event.name}" הופעל!`);
+    _o4d7s(`✅ אירוע "${event.name}" הופעל לכל השרתים!`);
     
-    // Show event indicator to all players
+    // Broadcast event to all players via Firebase
     if (FIREBASE_URL) {
         fbPut("currentEvent.json", { id: event.id, timestamp: Date.now() });
     }
@@ -3355,7 +3467,7 @@ function _w8p4v() {
         document.getElementById("current-event-display").style.display = "none";
     }
     
-    // Spawn 3-5 rare event fish
+    // Spawn 3-5 rare event fish for admin
     if (event.id !== "normal" && gameRunning) {
         const rarefish = RARE_EVENT_FISH.filter(f => f.event === event.id);
         if (rarefish.length > 0) {
@@ -3368,12 +3480,13 @@ function _w8p4v() {
 }
 
 function _m3z7k() {
-    // Reset to normal
+    // Reset to normal - broadcasts to ALL players
     if (!_t9h2k()) return;
     currentEvent = EVENTS[0];
     document.getElementById("current-event-display").style.display = "none";
-    _o4d7s("✅ אירוע אופס, חזרה לרגיל!");
+    _o4d7s("✅ אירוע אופס, חזרה לרגיל בכל השרתים!");
     
+    // Broadcast reset to all players via Firebase
     if (FIREBASE_URL) {
         fbPut("currentEvent.json", { id: "normal", timestamp: Date.now() });
     }
@@ -3446,7 +3559,7 @@ function listenForAnnouncements() {
     }, 2000);
 }
 
-// Listen for event changes
+// Listen for event changes from all servers
 function listenForEvents() {
     if (!FIREBASE_URL) return;
     let lastEventTime = Date.now();
@@ -3457,6 +3570,7 @@ function listenForEvents() {
             .then(eventData => {
                 if (eventData && eventData.timestamp > lastEventTime) {
                     const event = EVENTS.find(e => e.id === eventData.id);
+                    lastEventTime = eventData.timestamp;
                     if (event) {
                         currentEvent = event;
                         lastEventTime = eventData.timestamp;
@@ -3536,12 +3650,20 @@ function _g2p8v(players) {
     if (!players) players = getPlayers();
     const banned = getBannedList();
     const permaBanned = JSON.parse(localStorage.getItem("puff_perma") || "[]");
+    
+    // Filter to show only online players (active in last 2 minutes)
+    const now = Date.now();
+    const onlinePlayers = players.filter(p => {
+        return p.lastSeen && (now - p.lastSeen) < 120000; // 2 minutes
+    });
+    
     const body = document.getElementById("admin-players-body");
-    body.innerHTML = players.map(p => {
+    body.innerHTML = onlinePlayers.map(p => {
         const isBanned = banned.includes(p.name);
         const isPermaBanned = permaBanned.includes(p.name);
+        const statusEmoji = (now - p.lastSeen) < 30000 ? '🟢' : '🟡'; // Green if <30s, yellow if <2min
         return `<tr>
-            <td>${p.name}${isPermaBanned ? ' <span style="color:#dc2626;font-size:9px;">⛔PERMA</span>' : ''}</td>
+            <td>${statusEmoji} ${p.name}${isPermaBanned ? ' <span style="color:#dc2626;font-size:9px;">⛔PERMA</span>' : ''}</td>
             <td>${(p.coins||0).toLocaleString()}</td>
             <td>${isPermaBanned ? '<span class="badge-banned">⛔ קבוע</span>' : isBanned ? '<span class="badge-banned">חסום</span>' : '✅'}</td>
             <td>${isPermaBanned
@@ -3552,6 +3674,13 @@ function _g2p8v(players) {
             }</td>
         </tr>`;
     }).join("");
+    
+    // Show count of online players
+    const countDisplay = document.querySelector("#admin-panel h3");
+    if (countDisplay && countDisplay.textContent.includes('👥')) {
+        countDisplay.textContent = `👥 שחקנים מחוברים (${onlinePlayers.length})`;
+    }
+    
     const datalist = document.getElementById("player-names-list");
     if (datalist) {
         datalist.innerHTML = players.map(p => `<option value="${p.name}">${p.name}</option>`).join("");
@@ -4010,6 +4139,7 @@ let playerHp = 3;
 const MAX_HP = 3;
 const MAX_INFLATE_ENERGY = 120;
 let inflateEnergy = MAX_INFLATE_ENERGY;
+let inflateEnergyBoost = 0; // Purchased boost (adds to max)
 let inflateRechargeDelay = 0;
 let invincibleTimer = 0;
 
@@ -4058,13 +4188,15 @@ function initGame() {
     shakeTimer = 0;
     paused = false;
     playerHp = MAX_HP;
-    inflateEnergy = MAX_INFLATE_ENERGY;
+    inflateEnergy = MAX_INFLATE_ENERGY + inflateEnergyBoost;
     inflateRechargeDelay = 0;
     invincibleTimer = 0;
     poisonClouds = [];
     abilityEffects = {};
     cloneFish = null;
     lastAbilityFrames = {};
+    usedQuestions = []; // Reset quiz questions for new run
+    inflateEnergyBoost = 0; // Reset inflate boost
     resetAnticheat();
 }
 
@@ -6046,7 +6178,7 @@ function startRebind(target) {
     const btn = document.getElementById("kb-" + target);
     if (btn) { btn.textContent = "..."; btn.classList.add("listening"); }
 }
-const GAME_KEYS = new Set([" ","ArrowUp","ArrowDown","ArrowLeft","ArrowRight","w","a","s","d","W","A","S","D"]);
+const GAME_KEYS = new Set([" ","ArrowUp","ArrowDown","ArrowLeft","ArrowRight","w","a","s","d","W","A","S","D","א","ש","ד","ג"]);
 document.addEventListener("keydown", e => {
     if (rebindTarget) {
         e.preventDefault(); e.stopPropagation();
@@ -6058,6 +6190,11 @@ document.addEventListener("keydown", e => {
         return;
     }
     if (e.key === "Escape") { togglePause(); return; }
+    // Open in-game shop with 'B' key
+    if ((e.key === "b" || e.key === "B") && gameRunning && !paused) {
+        openIngameShop();
+        return;
+    }
     // Track both cases so Mac keyboard layout variants work
     keys[e.key] = true;
     keys[e.key.toLowerCase()] = true;
@@ -6204,10 +6341,26 @@ const QUIZ_QUESTIONS = [
 ];
 
 let quizCallback = null;
+let usedQuestions = []; // Track which questions have been used in this run
 
 function showQuiz(onCorrect, onWrong) {
     quizCallback = { onCorrect, onWrong };
-    const q = QUIZ_QUESTIONS[Math.floor(Math.random() * QUIZ_QUESTIONS.length)];
+    
+    // Reset used questions if all have been used
+    if (usedQuestions.length >= QUIZ_QUESTIONS.length) {
+        usedQuestions = [];
+    }
+    
+    // Get available questions (not yet used)
+    const availableQuestions = QUIZ_QUESTIONS.filter((q, idx) => !usedQuestions.includes(idx));
+    
+    // Pick a random question from available ones
+    const randomIndex = Math.floor(Math.random() * availableQuestions.length);
+    const q = availableQuestions[randomIndex];
+    
+    // Mark this question as used
+    const originalIndex = QUIZ_QUESTIONS.indexOf(q);
+    usedQuestions.push(originalIndex);
 
     document.getElementById("quiz-question").textContent = q.q;
     const container = document.getElementById("quiz-options");
@@ -6260,7 +6413,23 @@ function handleQuizAnswer(chosen, correct, container, shuffled) {
 
 // ===== LEVELS =====
 
-function getMaxBossHp() { return 10 + level * 8; }
+function getMaxBossHp() {
+    // Boss HP scales more aggressively after level 6, level 10 is extremely tough
+    if (level <= 6) return 10 + level * 8;
+    if (level <= 9) return 58 + (level - 6) * 15;
+    // Level 10+: massive HP increase
+    return 103 + (level - 9) * 25;
+}
+
+// Get score requirement to spawn boss (increases after level 6)
+function getBossScoreRequirement() {
+    if (level <= 6) return 15;
+    if (level === 7) return 20;
+    if (level === 8) return 25;
+    if (level === 9) return 35;
+    // Level 10+: very hard to progress
+    return 50;
+}
 
 const levelMessages = [
     "רק מתחממים! הבוס הבא לא יהיה כזה קל...",
@@ -6270,6 +6439,9 @@ const levelMessages = [
     "אגדה של האוקיינוס! 🌊",
     "אין מי שיעצור אותך!",
     "מלך הים העמוק! 👑",
+    "עכשיו זה נעשה מאתגר! 💪",
+    "כמעט שם! המשך ככה! ⚡",
+    "🔥 שלב 10 ממתין לך! זה יהיה האתגר הגדול! 🔥",
 ];
 
 function levelUp() {
@@ -6348,7 +6520,7 @@ function updateBars() {
     document.getElementById("hp-bar").style.width = hpPct + "%";
     document.getElementById("hp-text").textContent = playerHp + "/" + MAX_HP;
     // Energy bar
-    let ePct = (inflateEnergy / MAX_INFLATE_ENERGY) * 100;
+    let ePct = (inflateEnergy / (MAX_INFLATE_ENERGY + inflateEnergyBoost)) * 100;
     let eBar = document.getElementById("energy-bar");
     eBar.style.width = ePct + "%";
     eBar.className = "hud-bar-fill " + (ePct >= 100 ? "energy-full" : "energy-fill");
@@ -6393,11 +6565,11 @@ function gameLoop() {
         if (keys["ArrowLeft"])  ax -= 1;
         if (keys["ArrowRight"]) ax += 1;
     } else {
-        // WASD (default)
-        if (keys["ArrowUp"]   || keys["w"] || keys["W"]) ay -= 1;
-        if (keys["ArrowDown"] || keys["s"] || keys["S"]) ay += 1;
-        if (keys["ArrowLeft"] || keys["a"] || keys["A"]) ax -= 1;
-        if (keys["ArrowRight"]|| keys["d"] || keys["D"]) ax += 1;
+        // WASD (default) + Hebrew keyboard support
+        if (keys["ArrowUp"]   || keys["w"] || keys["W"] || keys["'"]) ay -= 1; // ג = w
+        if (keys["ArrowDown"] || keys["s"] || keys["S"] || keys["ד"]) ay += 1; // ד = s
+        if (keys["ArrowLeft"] || keys["a"] || keys["A"] || keys["ש"]) ax -= 1; // ש = a
+        if (keys["ArrowRight"]|| keys["d"] || keys["D"] || keys["ג"]) ax += 1; // א = d
     }
 
     // Virtual joystick input (mobile)
@@ -6578,12 +6750,22 @@ function gameLoop() {
     }
 
     // ===== BOSS =====
-    // Update boss timer bar
+    // Update boss timer bar (with dynamic score requirement)
     const bossTimerContainer = document.getElementById("boss-timer-container");
     const bossTimerBar = document.getElementById("boss-timer-bar");
     if (bossTimerContainer && bossTimerBar && !boss) {
-        const scoreInLevel = score - (level - 1) * 15;
-        const nextBossScore = 15;
+        // Calculate cumulative score needed for previous bosses
+        let cumulativeScore = 0;
+        for (let i = 1; i < level; i++) {
+            if (i <= 6) cumulativeScore += 15;
+            else if (i === 7) cumulativeScore += 20;
+            else if (i === 8) cumulativeScore += 25;
+            else if (i === 9) cumulativeScore += 35;
+            else cumulativeScore += 50;
+        }
+        
+        const scoreInLevel = score - cumulativeScore;
+        const nextBossScore = getBossScoreRequirement();
         if (scoreInLevel < nextBossScore && score > 0) {
             const progressToBoss = scoreInLevel / nextBossScore;
             bossTimerContainer.style.display = "block";
@@ -6595,9 +6777,21 @@ function gameLoop() {
         bossTimerContainer.style.display = "none";
     }
     
-    if (score > 0 && score % 15 === 0 && !boss && score > (level-1)*15) {
-        let maxHp = getMaxBossHp();
-        boss = { x:canvas.width/2, y:-80, size:60+level*10, hp:maxHp, maxHp, speed:1+level*0.35, dir:1 };
+    // Spawn boss when reaching score requirement for current level
+    if (!boss && score > 0) {
+        let cumulativeScore = 0;
+        for (let i = 1; i <= level; i++) {
+            if (i <= 6) cumulativeScore += 15;
+            else if (i === 7) cumulativeScore += 20;
+            else if (i === 8) cumulativeScore += 25;
+            else if (i === 9) cumulativeScore += 35;
+            else cumulativeScore += 50;
+        }
+        
+        if (score >= cumulativeScore) {
+            let maxHp = getMaxBossHp();
+            boss = { x:canvas.width/2, y:-80, size:60+level*10, hp:maxHp, maxHp, speed:1+level*0.35, dir:1 };
+        }
     }
     if (boss) {
         let dx = player.x-boss.x, dy = player.y-boss.y;
@@ -6713,6 +6907,110 @@ function goLobby() {
     showOverlay("lobby");
 }
 
+// ===== IN-GAME SHOP FUNCTIONS =====
+function openIngameShop() {
+    if (!gameRunning) return;
+    paused = true;
+    document.getElementById("ingame-shop-coins").textContent = gameData.coins;
+    showOverlay("ingame-shop");
+}
+
+function closeIngameShop() {
+    paused = false;
+    hideAllOverlays();
+    document.getElementById("hud").style.display = "flex";
+}
+
+function buyHeart() {
+    if (gameData.coins < 500) {
+        alert("אין לך מספיק מטבעות! דרושים 500🪙");
+        return;
+    }
+    
+    if (playerHp >= MAX_HP) {
+        alert("הלבבות שלך מלאים! 💚");
+        return;
+    }
+    
+    // Purchase heart
+    gameData.coins -= 500;
+    playerHp = Math.min(playerHp + 1, MAX_HP);
+    saveData();
+    updateBars();
+    
+    document.getElementById("ingame-shop-coins").textContent = gameData.coins;
+    document.getElementById("hud-coins").textContent = earnedCoins;
+    
+    showParticle(player.x, player.y - 40, "❤️ +1 HP");
+    alert("נקנה לב! ❤️ (+1 HP)");
+}
+
+function buyInflateBoost() {
+    if (gameData.coins < 300) {
+        alert("אין לך מספיק מטבעות! דרושים 300🪙");
+        return;
+    }
+    
+    // Purchase inflate boost
+    gameData.coins -= 300;
+    const boostAmount = Math.floor(MAX_INFLATE_ENERGY * 0.5); // 50% boost
+    inflateEnergyBoost += boostAmount;
+    inflateEnergy += boostAmount; // Add to current energy too
+    saveData();
+    updateBars();
+    
+    document.getElementById("ingame-shop-coins").textContent = gameData.coins;
+    document.getElementById("hud-coins").textContent = earnedCoins;
+    
+    showParticle(player.x, player.y - 40, "💨 +50% נפיחה!");
+    alert("נקנה שדרוג נפיחה! 💨 (+50% זמן)");
+}
+
+// Listen for special fish spawns from admin
+function listenForSpecialFish() {
+    if (!FIREBASE_URL) return;
+    let lastCheckTime = Date.now();
+    
+    setInterval(() => {
+        const myName = getMyUsername();
+        if (!myName || !gameRunning) return;
+        
+        // Check for fish sent to this specific player
+        fetch(`${FIREBASE_URL}/specialFish/${myName}.json`)
+            .then(r => r.json())
+            .then(data => {
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        const fishData = data[key];
+                        if (fishData.timestamp > lastCheckTime) {
+                            _r6y2m(fishData.type, fishData.count);
+                            // Delete this entry after spawning
+                            fetch(`${FIREBASE_URL}/specialFish/${myName}/${key}.json`, { method: "DELETE" });
+                        }
+                    });
+                }
+            })
+            .catch(() => {});
+        
+        // Check for broadcast fish (sent to everyone)
+        fetch(`${FIREBASE_URL}/specialFishBroadcast.json`)
+            .then(r => r.json())
+            .then(data => {
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        const fishData = data[key];
+                        if (fishData.timestamp > lastCheckTime) {
+                            _r6y2m(fishData.type, fishData.count);
+                        }
+                    });
+                }
+            })
+            .catch(() => {});
+        
+        lastCheckTime = Date.now();
+    }, 2000);
+}
+
 // Init lobby — show username prompt if not set, else show lobby
 document.getElementById("lobby-coins").textContent = gameData.coins;
 function updateAdminButton() {
@@ -6770,11 +7068,37 @@ function updateAdminButton() {
     // Start gift listener
     _k9v2t();
     
+    // Start player activity tracking
+    function updatePlayerActivity() {
+        const myName = getMyUsername();
+        if (!myName || !FIREBASE_URL) return;
+        
+        // Update lastSeen timestamp in Firebase
+        upsertPlayer(myName, { lastSeen: Date.now() });
+        
+        // Also update in local storage
+        const players = getPlayers();
+        const p = players.find(pl => pl.name === myName);
+        if (p) {
+            p.lastSeen = Date.now();
+            savePlayers(players);
+        }
+    }
+    
+    // Update activity every 30 seconds
+    if (FIREBASE_URL) {
+        setInterval(updatePlayerActivity, 30000);
+        updatePlayerActivity(); // Run immediately
+    }
+    
     // Start announcement listener
     listenForAnnouncements();
     
     // Start event listener
     listenForEvents();
+    
+    // Start special fish listener
+    listenForSpecialFish();
 })();
 
 // ===============================
